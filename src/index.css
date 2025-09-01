@@ -1,0 +1,36 @@
+/* index.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 🔹 body 전체를 flex로 중앙 정렬 */
+body {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: #f0f0f0; /* 일단 흰색으로 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* 🔹 앱 컨테이너: 기본 모바일 스타일 */
+#root {
+  width: 100%;
+  max-width: 390px; /* iPhone 14 기준 */
+  height: 100vh; /* 모바일에서는 꽉 차게 */
+  background-color: #fff;
+  overflow: hidden;
+  border-radius: 0; /* 모바일은 모서리 없음 */
+}
+
+/* 🔹 PC/웹뷰용 스타일 */
+@media (min-width: 768px) {
+  #root {
+    height: 90vh; /* PC에서는 약간 여유 있게 */
+    border-radius: 20px; /* PC에서는 모서리 둥글게 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  }
+}
