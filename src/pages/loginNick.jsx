@@ -63,7 +63,6 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  margin-top: 57px;
   padding: 24px 36px;
   display: flex;
   flex-direction: column;
@@ -123,7 +122,7 @@ const Input = styled.input`
   font-family: 'SUITE Variable', sans-serif;
   font-size: 16px;  // 🙏 닉네임 창 확대 방지용 14 -> 16 변경
   font-weight: 500;
-  margin-bottom: ${({ isError }) => (isError ? "6px" : "150px")};
+  margin-bottom: ${({ isError }) => (isError ? "6px" : "230px")};
 `;
 
 const ErrorText = styled.p`
@@ -131,7 +130,7 @@ const ErrorText = styled.p`
   font-family: "SUITE Variable";
   font-size: 14px;
   font-weight: 800;
-  margin: 0 0 150px 0;
+  margin: 0 0 200px 0;
 `;
 
 const LoginNextBtnWrapper = styled.div`
