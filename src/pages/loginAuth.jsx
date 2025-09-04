@@ -1,11 +1,12 @@
 // pages/loginAuth.jsx
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import LoginTopBar from "../components/loginTopbar";
 import LoginNextBtn from "../components/loginNextBtn";
 
 export default function LoginAuth() {
+  const navigate = useNavigate();
   const location = useLocation();
   const nickname = location.state?.nickname || "사용자";
 
@@ -126,7 +127,12 @@ export default function LoginAuth() {
       alert("모든 필수 동의에 체크해주세요.");
       return;
     }
-    // TODO: 다음 페이지 이동 로직 추가
+    navigate("/login/loc", {
+      state: { 
+        nickname,      // 이전 페이지에서 받은 닉네임
+        regionName     // 위치 동의 후 얻은 시군구 이름
+      },
+    });
   };
 
   return (
@@ -201,7 +207,7 @@ const Content = styled.div`
 `;
 
 const WelcomeText = styled.h1`
-  color: var(--0, #404040);
+  color: #404040;
   font-family: "Maplestory OTF";
   font-size: 24px;
   font-weight: 700;
@@ -209,11 +215,11 @@ const WelcomeText = styled.h1`
 `;
 
 const Nickname = styled.span`
-  color: var(--, #7CB5A9);
+  color: #7CB5A9;
 `;
 
 const InfoText = styled.p`
-  color: var(--0, #404040);
+  color: #404040;
   font-family: "SUITE Variable";
   font-size: 16px;
   font-weight: 600;
@@ -236,7 +242,7 @@ const CheckboxLabel = styled.label`
   font-size: 16px;
   font-weight: 600;
   line-height: 150%;
-  color: var(--0, #404040);
+  color: #404040;
   cursor: pointer;
 `;
 
