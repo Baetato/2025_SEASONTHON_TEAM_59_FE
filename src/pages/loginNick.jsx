@@ -20,7 +20,7 @@ export default function LoginNick() {
       setError(true);
       return;
     }
-    navigate("/");
+    navigate("/login/auth", { state: { nickname } });
   };
 
   return (
@@ -43,7 +43,7 @@ export default function LoginNick() {
           placeholder="닉네임을 입력해주세요."
           value={nickname}
           onChange={handleChange}
-          isError={error}
+          $isError={error}
         />
         {error && <ErrorText>닉네임은 공란일 수 없습니다.</ErrorText>}
       </Content>
@@ -116,13 +116,13 @@ const Input = styled.input`
   max-width: 321px;
   height: 50px;
   border-radius: 5px;
-  border: 2px solid ${({ isError }) => (isError ? "#7CB5A9" : "#b29e99")};
-  background: ${({ isError }) => (isError ? "#FFF8E8" : "#fff8e8")};
+  border: 2px solid ${({ $isError }) => ($isError ? "#7CB5A9" : "#b29e99")};
+  background: ${({ $isError }) => ($isError ? "#FFF8E8" : "#fff8e8")};
   padding: 17px 24.55px;
   font-family: 'SUITE Variable', sans-serif;
   font-size: 16px;  // 🙏 닉네임 창 확대 방지용 14 -> 16 변경
   font-weight: 500;
-  margin-bottom: ${({ isError }) => (isError ? "6px" : "230px")};
+  margin-bottom: ${({ $isError }) => ($isError ? "6px" : "230px")};
 `;
 
 const ErrorText = styled.p`
