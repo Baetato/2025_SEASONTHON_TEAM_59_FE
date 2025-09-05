@@ -2,14 +2,13 @@ import styled from "styled-components";
 import CoinIcn from "../assets/CoinIcn.png";
 
 export default function ChallengeItem({ colors, title, points }) {
-  const { background = "#ccc", border = "#999" } = colors; // ✅ 기본값 설정
 
   return (
     <ItemWrapper>
       {/* 난이도 색 */}
       <LevelColor
-        background={colors.background}
-        border={colors.border}
+        $background={colors.background}
+        $border={colors.border}
       />
 
       {/* 챌린지 제목 */}
@@ -44,10 +43,10 @@ const LevelColor = styled.div`
   height: 49px;
   flex-shrink: 0;
   border-radius: 3px 0 0 3px;
-  border-top: 2px solid ${(props) => props.border};
-  border-bottom: 1px solid ${(props) => props.border};
-  border-left: 1px solid ${(props) => props.border};
-  background: ${(props) => props.background};
+  border-top: 2px solid ${(props) => props.$border};
+  border-bottom: 1px solid ${(props) => props.$border};
+  border-left: 1px solid ${(props) => props.$border};
+  background: ${(props) => props.$background};
 `;
 
 const Title = styled.div`

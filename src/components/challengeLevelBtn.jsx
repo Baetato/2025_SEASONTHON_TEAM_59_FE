@@ -5,22 +5,22 @@ export default function ChallengeLevelBtn({ level, activeLevel, onClick, colors 
   const isActive = activeLevel === level;
 
   return (
-    <ButtonWrapper onClick={() => onClick(level)}>
+    <ButtonWrapper onClick={() => onClick(level)} $isActive={isActive}>
       {/* 그림자 */}
-      <ShadowLayer isActive={isActive} />
+      <ShadowLayer $isActive={isActive} />
 
       {/* 색상 레이어 */}
       {isActive ? (
         <>
           {/* 선택 시: 진한색 위 조금, 중간색 아래 많이 */}
-          <BottomLayer color={colors.bottom} />
-          <MiddleLayer color={colors.middle} />
+          <BottomLayer $color={colors.bottom} />
+          <MiddleLayer $color={colors.middle} />
         </>
       ) : (
         <>
           {/* 선택 안 됨: 연한색 위 조금, 중간색 아래 많이 */}
-          <TopLayer color={colors.top} />
-          <MiddleLayer color={colors.middle} />
+          <TopLayer $color={colors.top} />
+          <MiddleLayer $color={colors.middle} />
         </>
       )}
 
@@ -41,7 +41,7 @@ const ButtonWrapper = styled.div`
 
 const ShadowLayer = styled.div`
   position: absolute;
-  top: ${(props) => (props.isActive ? "-4px" : "3px")}; /* 선택 시 그림자가 위로 살짝 */
+  top: ${(props) => (props.$isActive ? "-4px" : "3px")}; /* 선택 시 그림자가 위로 살짝 */
   left: 0;
   width: 100%;
   height: 100%;
@@ -58,7 +58,7 @@ const TopLayer = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 5px;
-  background: ${(props) => props.color};
+  background: ${(props) => props.$color};
   z-index: 1;
 `;
 
@@ -69,7 +69,7 @@ const MiddleLayer = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 5px;
-  background: ${(props) => props.color};
+  background: ${(props) => props.$color};
   z-index: 2;
 `;
 
@@ -80,7 +80,7 @@ const BottomLayer = styled.div`
   width: 100%;
   height: 100%;
   border-radius: 5px;
-  background: ${(props) => props.color};
+  background: ${(props) => props.$color};
   z-index: 1; /* MiddleLayer 위, ShadowLayer 아래 */
 `;
 

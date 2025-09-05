@@ -10,15 +10,15 @@ export default function ChallengeToggle({ active, onClick }) {
       {/* 버튼 그룹 */}
       <ButtonsWrapper>
         {/* 전체 챌린지 버튼 */}
-        <Button active={active === "all"} onClick={() => onClick("all")}>
+        <Button $active={active === "all"} onClick={() => onClick("all")}>
           {active === "all" && <ChoiceImage src={ChallengeBtn} alt="전체 챌린지 선택" />}
-          <ButtonText active={active === "all"}>전체 챌린지</ButtonText>
+          <ButtonText $active={active === "all"}>전체 챌린지</ButtonText>
         </Button>
 
         {/* 업적 챌린지 버튼 */}
-        <Button active={active === "achievement"} onClick={() => onClick("achievement")}>
+        <Button $active={active === "achievement"} onClick={() => onClick("achievement")}>
           {active === "achievement" && <ChoiceImage src={ChallengeBtn} alt="업적 챌린지 선택" />}
-          <ButtonText active={active === "achievement"}>업적 챌린지</ButtonText>
+          <ButtonText $active={active === "achievement"}>업적 챌린지</ButtonText>
         </Button>
       </ButtonsWrapper>
     </ToggleWrapper>
@@ -83,10 +83,10 @@ const ButtonText = styled.div`
   line-height: 22px;
   letter-spacing: -0.408px;
 
-  color: ${(props) => (props.active ? "transparent" : "#B29E99")};
+  color: ${(props) => (props.$active ? "transparent" : "#B29E99")};
   background: ${(props) =>
-    props.active ? "linear-gradient(180deg, #FFF8E8 0%, #FFF8E8 100%)" : "none"};
-  background-clip: ${(props) => (props.active ? "text" : "unset")};
-  -webkit-background-clip: ${(props) => (props.active ? "text" : "unset")};
-  -webkit-text-fill-color: ${(props) => (props.active ? "transparent" : "unset")};
+    props.$active ? "linear-gradient(180deg, #FFF8E8 0%, #FFF8E8 100%)" : "none"};
+  background-clip: ${(props) => (props.$active ? "text" : "unset")};
+  -webkit-background-clip: ${(props) => (props.$active ? "text" : "unset")};
+  -webkit-text-fill-color: ${(props) => (props.$active ? "transparent" : "unset")};
 `;
