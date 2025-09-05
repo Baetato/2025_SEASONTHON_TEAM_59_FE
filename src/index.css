@@ -1,14 +1,45 @@
 /* index.css */
 
+@font-face {
+  font-family: 'Maplestory OTF';
+  src: url('/fonts/MaplestoryOTF-Light.otf') format('opentype');
+  font-weight: 400; /* 라이트 */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Maplestory OTF';
+  src: url('/fonts/MaplestoryOTF-Bold.otf') format('opentype');
+  font-weight: 700; /* 볼드 */
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --font-button: 'Pretendard', sans-serif;
   --font-body: 'Pretendard', sans-serif;
+  --font-maple: 'Maplestory OTF', sans-serif;
+
+  --color-leafupBrown: #382C28;
+  --color-leafupGreen: #7CB5A9;
+  --color-accent: #FF4A4A;    /* 강조/필수 별표 등 */
+  --color-bg: #FFF8E8;        /* 배경색 */
+  --color-border: #B29E99;    /* 테두리 */
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* iOS/Android safe-area 적용 */
+body, #root {
+  padding-top: env(safe-area-inset-top);   /* iOS */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  background-color: #5C4D49;
 }
 
 /* 🔹 body 전체를 flex로 중앙 정렬 */

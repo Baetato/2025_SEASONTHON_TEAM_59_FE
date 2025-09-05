@@ -5,19 +5,29 @@ import KakaoLogo from "../assets/KakaoLogo.png";
 import GoogleLogo from "../assets/GoogleLogo.png";
 
 export default function LoginMain() {
+
+  // 로그인 공통 함수
+  const handleLogin = (provider) => {
+    // axios 대신 브라우저가 직접 이동 → 백엔드가 302로 리다이렉트 처리
+    window.location.href = `/api/v1/oauth2/login?provider=${provider}`;
+  };
+
+
   return (
     <Container>
       <Logo src={MainLogo} alt="LeafUp Logo" />
       <ButtonContainer>
-        <KakaoButton>
+
+        <KakaoButton onClick={() => handleLogin("kakao")}>
           <ButtonLogo src={KakaoLogo} alt="Kakao Logo" />
           <ButtonText>카카오톡으로 로그인</ButtonText>
         </KakaoButton>
 
-        <GoogleButton>
+        <GoogleButton onClick={() => handleLogin("google")}>
           <ButtonLogo src={GoogleLogo} alt="Google Logo" />
           <ButtonText>Continue with Google</ButtonText>
         </GoogleButton>
+
       </ButtonContainer>
     </Container>
   );
@@ -37,8 +47,8 @@ const Logo = styled.img`
   width: 184px;
   height: 298px;
   margin-left: 30px;
-  margin-top: 60px;
-  margin-bottom: 130px;
+  margin-top: 50px;
+  margin-bottom: 90px;
 `;
 
 const ButtonContainer = styled.div`

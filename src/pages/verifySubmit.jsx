@@ -1,3 +1,5 @@
+//..pages/verifySubmit.jsx
+// cameraTest.jsx 와 똑같이 작동 / TODO: 메인화면 완성되면 붙일 예정
 import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -15,7 +17,7 @@ export default function CameraPage() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   // 테스트용
-  const testPhoto = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjYwIiBoZWlnaHQ9IjM0MCIgdmlld0JveD0iMCAwIDI2MCAzNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwMCAxMDAgQzMwMCAxNDAgMjYwIDE4MCAyNjAgMTgwIEMyNjAgMTgwIDIyMCAxNDAgMjAwIDEyMCAgQzE4MCAxNDAgMTQwIDE4MCAxNDAgMTgwIEMxNDAgMTgwIDEwMCAxNDAgODAgMTIwIEM2MCAxNDAgMjAgMTgwIDIwIDE4MCBDMjAgMTgwIDAgMTQwIDAgMTAwIEMwIDQwIDEyMCAwIDE0MCAyMCBDMTYwIDAgMjgwIDQwIDMwMCAxMDAiIGZpbGw9IiNGRjAwRkYiIC8+PC9zdmc+";
+  const testPhoto = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AApEBgU3q0v0AAAAASUVORK5CYII=";
   const photo = location.state?.photo || testPhoto;
 
 
