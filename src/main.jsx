@@ -20,6 +20,7 @@ import CameraMain from './pages/cameraMain.jsx'
 import CameraPage from './pages/cameraTest.jsx'
 import CompletePage from './pages/cameraComplete.jsx'
 
+import Home from './pages/home.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -38,6 +39,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/camera-main" element={<CameraMain />} />
           <Route path="/camera" element={<CameraPage />} />
           <Route path="/complete" element={<CompletePage />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
     </BrowserRouter>
   </StrictMode>,
