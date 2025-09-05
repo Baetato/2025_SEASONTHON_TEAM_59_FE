@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import SamllLogo from "../assets/LeafUpLogo-small.png"; // 로고 이미지
-import BackArrow from "../assets/Arrow-left.png"; // 이전 페이지 화살표
+import BackArrow from "../assets/Arrow-left-b.png"; // 이전 페이지 화살표
 
 export default function LoginTopBar() {
   const navigate = useNavigate();

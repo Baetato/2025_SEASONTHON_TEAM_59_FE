@@ -22,6 +22,7 @@ export default function CameraMain() {
 
     const reader = new FileReader();
     reader.onload = (ev) => {
+      // TODO: 나중에 홈에서 챌린지 인증 버튼 누를때 /verify로 이동시키기
       navigate("/camera", { state: { photo: ev.target.result } });
     };
     reader.readAsDataURL(file);

@@ -1,3 +1,5 @@
+//..pages/verifySubmit.jsx
+// cameraTest.jsx 와 똑같이 작동 / TODO: 메인화면 완성되면 붙일 예정
 import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";

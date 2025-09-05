@@ -37,7 +37,7 @@ export default function Challenge() {
         const colorByType = {
           EASY: { background: "#7CB5A9", border: "#568269" },
           MEDIUM: { background: "#FFBF2B", border: "#B9860F" },
-          HARD: { background: "#FE4A4A", border: "#C72C2C" },
+          HARD: { background: "#FE4A4A", border: "#D03333" },
         };
 
         const formatted = list.map((item, idx) => ({
@@ -95,7 +95,7 @@ export default function Challenge() {
                   level="어려움"
                   activeLevel={selectedLevel}
                   onClick={setSelectedLevel}
-                  colors={{ top: "#FF8E8E", middle: "#FE4A4A", bottom: "#C72C2C" }}
+                  colors={{ top: "#FF8E8E", middle: "#FE4A4A", bottom: "#D03333" }}
                 />
               </ChallengeLevelContainer>
 
