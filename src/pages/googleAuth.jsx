@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import api from "../api.js";
 import styled from "styled-components";
 
 export default function GoogleAuth() {
@@ -20,8 +20,8 @@ export default function GoogleAuth() {
     const fetchToken = async () => {
       try {
 
-        const res = await axios.get(
-          `/api/v1/oauth2/callback/${provider}?code=${code}`
+        const res = await api.get(
+          `/v1/oauth2/callback/${provider}?code=${code}`
         );
 
         const { accessToken, refreshToken } = res.data.data.tokenDto;
