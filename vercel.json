@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://leafup-prod-api.duckdns.org/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
