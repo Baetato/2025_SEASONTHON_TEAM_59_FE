@@ -13,6 +13,9 @@ import LoginAuth from './pages/loginAuth.jsx'
 import LoginLocCheck from './pages/loginLocCheck.jsx'
 import LoginLocRe from './pages/loginLocRe.jsx'
 import LoginComplete from './pages/loginComplete.jsx';
+
+import Challenge from './pages/challenge.jsx';
+
 import CameraMain from './pages/cameraMain.jsx'
 import CameraPage from './pages/cameraTest.jsx'
 import CompletePage from './pages/cameraComplete.jsx'
@@ -31,6 +34,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/login/complete" element={<LoginComplete />} />
           <Route path="/auth/google/callback" element={<GoogleAuth />} />
           <Route path="/auth/kakao/callback" element={<KakaoAuth />} />
+          <Route path="/challenge" element={<Challenge />} />
           <Route path="/camera-main" element={<CameraMain />} />
           <Route path="/camera" element={<CameraPage />} />
           <Route path="/complete" element={<CompletePage />} />
