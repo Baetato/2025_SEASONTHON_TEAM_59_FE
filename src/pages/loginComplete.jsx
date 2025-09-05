@@ -19,13 +19,14 @@ export default function LoginComplete() {
 
   const [nickname, setNickname] = useState(state.nickname || "사용자");
   const [regionName, setRegionName] = useState(state.regionName || "주소 불러오기 실패");
-  const [error, setError] = useState(""); // 닉네임 공란 상태
+  const [error, setError] = useState(""); 
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   // 화면 진입 시 API 호출
-   useEffect(() => {
+  useEffect(() => {
     const fetchNickname = async () => {
       try {
-        const response = await api.patch("/api/v1/members/onboarding", {
+        const response = await api.patch("/v1/members/onboarding", {
           nickname: nickname,
           locationAgreed: true,
           cameraAccessAllowed: true,
@@ -36,21 +37,28 @@ export default function LoginComplete() {
           setNickname(response.data.data.nickname);
         }
       } catch (err) {
-        setError(err);
+        setError("온보딩 API 실패");
         console.error("온보딩 API 실패:", err);
+      } finally {
+        setLoading(false); // 요청 완료
       }
     };
 
     fetchNickname();
   }, []);
 
-
   const handleNext = () => {
+    if (loading) {
+      alert("친구 코드 생성 중입니다. 잠시만 기다려주세요.");
+      return;
+    }
+
     if (error.trim() !== "") {
       alert(error);
       return;
     }
-    // TODO: 홈 페이지 만들어지면 이동
+
+    // 로딩 끝나고 오류도 없으면 이동
     // navigate("/login/auth");
   };
 
@@ -58,32 +66,40 @@ export default function LoginComplete() {
     <Container>
       <LoginTopBar />
       <Content>
-        <WelcomeText>프로필 설정</WelcomeText>
+            <WelcomeText>프로필 설정</WelcomeText>
+            <InfoText>리프업에서 사용할 프로필을 설정해주세요.</InfoText>
 
-        <InfoText>리프업에서 사용할 프로필을 설정해주세요.</InfoText>
+            <ProfileContainer>
+              <ProfileFrameImg src={ProfileFrame} alt="Profile Frame" />
+              <ProfileExImg src={ProfileEx} alt="Profile Example" />
+              <CameraButton src={CameraBtn} alt="Camera Button" />
+            </ProfileContainer>
 
-        <ProfileContainer>
-          <ProfileFrameImg src={ProfileFrame} alt="Profile Frame" />
-          <ProfileExImg src={ProfileEx} alt="Profile Example" />
-          <CameraButton src={CameraBtn} alt="Camera Button" />
-        </ProfileContainer>
-
-        <TitleWrapper>
-          <TitleShadow size={36}>{nickname}</TitleShadow>
-          <TitleGradient size={36}>{nickname}</TitleGradient>
-        </TitleWrapper>
-        <TitleWrapper>
-          <TitleShadow size={24}>친구 코드가 생성되었어요!</TitleShadow>
-          <TitleGradient size={24}>친구 코드가 생성되었어요!</TitleGradient>
-        </TitleWrapper>
-
+            {loading ? (
+              <TitleWrapper>
+                <TitleShadow size={36}>친구코드 만드는 중</TitleShadow>
+                <TitleGradient size={36}>친구코드 만드는 중</TitleGradient>
+              </TitleWrapper>
+            ):(
+              <>
+                <TitleWrapper>
+                  <TitleShadow size={36}>{nickname}</TitleShadow>
+                  <TitleGradient size={36}>{nickname}</TitleGradient>
+                </TitleWrapper>
+                <TitleWrapper>
+                  <TitleShadow size={24}>친구 코드가 생성되었어요!</TitleShadow>
+                  <TitleGradient size={24}>친구 코드가 생성되었어요!</TitleGradient>
+                </TitleWrapper>
+              </>
+            )}
       </Content>
       <LoginNextBtnWrapper>
-        <LoginNextBtn onClick={handleNext}>완료</LoginNextBtn>
+        <LoginNextBtn onClick={handleNext} disabled={loading}>완료</LoginNextBtn>
       </LoginNextBtnWrapper>
     </Container>
   );
 }
+
 
 // Styled Components
 const Container = styled.div`
