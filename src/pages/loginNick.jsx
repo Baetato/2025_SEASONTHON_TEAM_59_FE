@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import LoginTopBar from "../components/loginTopbar";
-import LoginNextBtn from "../components/loginNextBtn";
+import LoginTopBar from "../components/loginTopBar.jsx";
+import LoginNextBtn from "../components/loginNextBtn.jsx";
 
 export default function LoginNick() {
   const navigate = useNavigate();

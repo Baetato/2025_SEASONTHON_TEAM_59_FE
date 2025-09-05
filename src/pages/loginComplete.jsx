@@ -5,8 +5,8 @@ import styled from "styled-components";
 
 import api from "../api.js";
 
-import LoginTopBar from "../components/loginTopbar";
-import LoginNextBtn from "../components/loginNextBtn";
+import LoginTopBar from "../components/loginTopBar.jsx";
+import LoginNextBtn from "../components/loginNextBtn.jsx";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
 import CameraBtn from "../assets/CameraBtn.png";
