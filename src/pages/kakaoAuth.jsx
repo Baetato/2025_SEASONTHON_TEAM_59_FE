@@ -21,7 +21,7 @@ export default function KakaoAuth() {
 
     const fetchToken = async () => {
       try {
-        const res = await api.get(
+        const res = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/v1/oauth2/callback/${provider}?code=${code}`
         );
 
