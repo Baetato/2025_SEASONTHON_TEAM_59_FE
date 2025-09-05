@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import LoginTopBar from "../components/loginTopbar";
+import LoginTopBar from "../components/loginTopBar";
 import LoginNextBtn from "../components/loginNextBtn";
 
 export default function LoginAuth() {
