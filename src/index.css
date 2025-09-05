@@ -34,6 +34,14 @@
   box-sizing: border-box;
 }
 
+/* iOS/Android safe-area 적용 */
+body, #root {
+  padding-top: env(safe-area-inset-top);   /* iOS */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  background-color: #5C4D49;
+}
+
 /* 🔹 body 전체를 flex로 중앙 정렬 */
 body {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

@@ -18,6 +18,7 @@ import Challenge from './pages/challenge.jsx';
 
 import CameraMain from './pages/cameraMain.jsx'
 import CameraPage from './pages/cameraTest.jsx'
+import VerifySubmit from './pages/verifySubmit.jsx';
 import CompletePage from './pages/cameraComplete.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -36,7 +37,9 @@ createRoot(document.getElementById('root')).render(
           <Route path="/auth/kakao/callback" element={<KakaoAuth />} />
           <Route path="/challenge" element={<Challenge />} />
           <Route path="/camera-main" element={<CameraMain />} />
+          {/* TODO: /camera 없애고 나중에 /verify 만 남기기 */}
           <Route path="/camera" element={<CameraPage />} />
+          <Route path="/verify" element={<VerifySubmit />} />
           <Route path="/complete" element={<CompletePage />} />
         </Routes>
     </BrowserRouter>
