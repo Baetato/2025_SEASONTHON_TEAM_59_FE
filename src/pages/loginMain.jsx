@@ -6,10 +6,11 @@ import GoogleLogo from "../assets/GoogleLogo.png";
 
 export default function LoginMain() {
 
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
   // 로그인 공통 함수
   const handleLogin = (provider) => {
     // axios 대신 브라우저가 직접 이동 → 백엔드가 302로 리다이렉트 처리
-    window.location.href = `/api/v1/oauth2/login?provider=${provider}`;
+    window.location.href = `${apiBaseUrl}/v1/oauth2/login?provider=${provider}`;
   };
 
 
