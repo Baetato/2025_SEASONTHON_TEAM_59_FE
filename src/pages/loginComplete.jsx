@@ -59,7 +59,7 @@ export default function LoginComplete() {
     }
 
     // 로딩 끝나고 오류도 없으면 이동
-    // navigate("/login/auth");
+    navigate("/home-stage");
   };
 
   return (

@@ -35,9 +35,7 @@ function ProtectedRoute({ children }) {
 }
 
 function PublicRoute({ children }) {
-  const token = getAccessToken();
-  if (token) return <Navigate to="/home-stage" replace />;
-  return children;
+  return children; // 로그인 여부와 상관없이 페이지 렌더링
 }
 
 createRoot(document.getElementById('root')).render(
