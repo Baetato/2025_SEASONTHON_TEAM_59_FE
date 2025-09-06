@@ -186,10 +186,11 @@ export default function HomeFarm() {
 
       <Content>
         {/* 오른쪽 고정 메뉴 (home-stage와 동일) */}
+        {/* 오른쪽 고정 메뉴 */}
         <MenuContainer>
-          <HomeMenuButton type="location" onClick={() => console.log("위치")} />
-          <HomeMenuButton type="community" onClick={() => console.log("커뮤니티")} />
-          <HomeMenuButton type="setting" onClick={() => console.log("셋팅")} />
+          <HomeMenuButton type="location" onClick={() => alert("Coming Soon..!")} />
+          <HomeMenuButton type="community" onClick={() => alert("Coming Soon..!")} />
+          <HomeMenuButton type="setting" onClick={() => alert("Coming Soon..!")} />
         </MenuContainer>
 
         {/* 필요하면 보상바도 동일 구조로 배치 가능

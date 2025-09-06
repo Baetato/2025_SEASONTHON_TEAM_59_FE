@@ -65,7 +65,7 @@ export default function HomeStage() {
 
   const closeModal = () => setModalOpen(false);
 
-  if (loading) return <Container>Loading...</Container>;
+  if (loading) return <Container><LoadingText>Loading...</LoadingText></Container>;
 
   console.log("챌린지 데이터:", challenges);
 
@@ -75,9 +75,9 @@ export default function HomeStage() {
       <Content>
         {/* 오른쪽 고정 메뉴 */}
         <MenuContainer>
-          <HomeMenuButton type="location" onClick={() => console.log("위치")} />
-          <HomeMenuButton type="community" onClick={() => console.log("커뮤니티")} />
-          <HomeMenuButton type="setting" onClick={() => console.log("셋팅")} />
+          <HomeMenuButton type="location" onClick={() => alert("Coming Soon..!")} />
+          <HomeMenuButton type="community" onClick={() => alert("Coming Soon..!")} />
+          <HomeMenuButton type="setting" onClick={() => alert("Coming Soon..!")} />
         </MenuContainer>
 
         {/* 가운데 상단 보상 바 */}
@@ -161,4 +161,30 @@ const GotoFarmButton = styled.img`
   height: auto;
   cursor: pointer;
   display: block;
+`;
+
+const LoadingText = styled.div`
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 완전 중앙 정렬 */
+
+  text-align: center;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #281900;
+  font-family: 'Maplestory OTF';
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.408px;
+
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 `;
