@@ -1,14 +1,14 @@
+import React from "react";
 import styled from "styled-components";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
 import CoinIcn from "../assets/CoinIcn.png";
 
-
-export default function Header({ points, maxPoints }) {
+const Header = React.forwardRef(({ points = 2516, maxPoints = 5000 }, ref) => {
   const progress = Math.min(points / maxPoints, 1) * 100;
 
   return (
-    <HeaderWrapper>
+    <HeaderWrapper ref={ref}>
       <HeaderBar>
         {/* 레벨 텍스트 */}
         {/* TODO: 레벨 텍스트 동적으로 변경 */}
@@ -119,7 +119,10 @@ export default function Header({ points, maxPoints }) {
       </HeaderBar>
     </HeaderWrapper>
   );
-}
+});
+
+Header.displayName = 'Header';
+export default Header;
 
 // Styled Components
 const HeaderWrapper = styled.div`

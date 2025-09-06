@@ -21,15 +21,13 @@ const Bubble = styled.div`
 `;
 
 
-export function ToastHost(){
-    const [msg, setMsg] = useState(null);
-    const api = {
-        how: (m)=>{ setMsg(m); setTimeout(()=> setMsg(null), 2200); }
-    };
-
-    return (
-        <ToastCtx.Provider value={api}>
-        <Host>{msg && <Bubble>{msg}</Bubble>}</Host>
-        </ToastCtx.Provider>
-    );
+export function ToastHost({ children }) {
+  const [msg, setMsg] = useState(null);
+  const api = { show: (m) => { setMsg(m); setTimeout(()=>setMsg(null), 2200); } };
+  return (
+    <ToastCtx.Provider value={api}>
+      {children}
+      <Host>{msg && <Bubble>{msg}</Bubble>}</Host>
+    </ToastCtx.Provider>
+  );
 }

@@ -19,8 +19,8 @@ import Challenge from './pages/challenge.jsx';
 import CameraMain from './pages/cameraMain.jsx'
 import CameraPage from './pages/cameraTest.jsx'
 import CompletePage from './pages/cameraComplete.jsx'
-
 import Home from './pages/home.jsx'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
