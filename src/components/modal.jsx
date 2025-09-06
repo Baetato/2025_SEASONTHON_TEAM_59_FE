@@ -53,9 +53,9 @@ export default function Modal({ isOpen, title, description, buttons = [] }) {
 
 // Styled Components
 const Overlay = styled.div`
+  background: rgba(0, 0, 0, 0.6); /* 어둡게 */
   position: absolute;
   inset: 0;
-  background: rgba(156, 156, 156, 0.3); /* 투명도 추가 */
   display: flex;
   justify-content: center;
   align-items: center;
