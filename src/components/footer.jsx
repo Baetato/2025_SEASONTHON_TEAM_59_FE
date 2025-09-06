@@ -55,11 +55,9 @@ export default function Footer() {
 /* ===== styled ===== */
 
 const FooterRoot = styled.footer`
-  position: relative;
-  width: 100%;
+  position: fixed;
+  width: 393px;
   height: 101px; /* footerImg 실제 높이 */
-  bottom: 0;
-  left: 0;
   z-index: 1000;
 `;
 
@@ -83,7 +81,6 @@ const Content = styled.nav`
   justify-items: center;
   padding: 0 12px 10px;
   box-sizing: border-box;
-  left: 0px;
   gap: 14px;
   /* 배경과 정확히 겹치고 싶으면 필요 시 미세 보정값 사용
      transform: translateX(-6px); */
