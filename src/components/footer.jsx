@@ -55,10 +55,10 @@ export default function Footer() {
 /* ===== styled ===== */
 
 const FooterRoot = styled.footer`
-  position: fixed;
-  width: 393px;
   height: 101px; /* footerImg 실제 높이 */
   z-index: 1000;
+  width: 100%;
+  position: relative;
 `;
 
 const Bg = styled.img`

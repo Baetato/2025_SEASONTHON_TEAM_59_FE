@@ -5,9 +5,7 @@ import Header from '../components/header.jsx';
 import BottomTabBar from '../components/footer.jsx';
 // import IconGroup from '../components/iconGroup.jsx';
 
-// 홈-스테이지
-// import HomeStage from './homeStage';
-
+import HomeStage from './homeStage';
 import HomeFarm from './homeFarm';
 
 const HomeStagePlaceholder = () => (
@@ -19,12 +17,11 @@ export default function Home() {
     const [view, setView] = useState('farm'); // 'farm' | 'stage'
 
     const Content = useMemo(() => {
-        if (view === 'farm') return <HomeFarm />;
-
-        // homeStage.jsx 구현 후 아래 한 줄로 교체:
-        // return <HomeStage />;
-        return <HomeStagePlaceholder />;
+        return view === "farm" 
+        ? <HomeFarm setView={setView} /> 
+        : <HomeStage setView={setView} />;
     }, [view]);
+
 
     return (
         <div

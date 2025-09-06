@@ -6,6 +6,7 @@ import StageScrollInfinite from '../components/stageScrollInfinite.jsx';
 import ChallengeModal from '../components/challengeModal.jsx';
 import HomeMenuButton from "../components/homeMenuBtn.jsx";
 import RewardBar from '../components/rewardBar.jsx';
+import Footer from '../components/footer.jsx';
 import api from '../api.js';
 
 export default function HomeStage() {
@@ -87,6 +88,7 @@ export default function HomeStage() {
           />
         )}
       </Content>
+      <Footer />
     </Container>
   );
 }

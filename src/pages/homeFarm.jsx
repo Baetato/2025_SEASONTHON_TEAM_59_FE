@@ -68,7 +68,7 @@ const OVERLAP_Y = 22;
 const FARM_W = 3 * TILE_W - 2 * OVERLAP_X; // 275px
 const FARM_H = 3 * TILE_H - 2 * OVERLAP_Y; // 314px
 
-export default function HomeFarm() {
+export default function HomeFarm({setView}) {
   const navigate = useNavigate();
 
   // 상태 관리
@@ -175,7 +175,7 @@ export default function HomeFarm() {
     setShowCompletionModal(true);
   };
 
-  const goStage = () => navigate("/stage");
+  const goStage = () => {setView('stage')};
   const onKey = (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -258,7 +258,7 @@ export default function HomeFarm() {
         alt="스테이지로 가기"
         role="link"
         tabIndex={0}
-        onClick={goStage}
+        onClick={() => setView("stage")}
         onKeyDown={onKey}
         draggable={false}
       />
@@ -311,7 +311,6 @@ const GuideModal = ({ onClose }) => (
   </ModalOverlay>
 );
 
-
 // 타일 정보 모달 컴포넌트
 const TileInfoModal = ({ tile, onClose }) => {
   return (
@@ -341,7 +340,6 @@ const TileInfoModal = ({ tile, onClose }) => {
     </ModalOverlay>
   );
 };
-
 
 // 주간 완료/실패 모달 컴포넌트
 const CompletionModal = ({ isSuccess, onClose }) => {
