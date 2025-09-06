@@ -14,7 +14,7 @@ export default function Footer() {
   const items = [
     { id: "store",     label: "가게",   icon: iconStore,     path: "/store" },
     { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
-    { id: "home",      label: "리프업", icon: leafUpLogo,    path: "/", isHome: true },
+    { id: "home",      label: "리프업", icon: leafUpLogo,    path: "/home-stage", isHome: true },
     { id: "ranking",   label: "랭킹",   icon: iconRanking,   path: "/ranking" },
     { id: "friend",    label: "친구",   icon: iconFriend,    path: "/friends" },
   ];

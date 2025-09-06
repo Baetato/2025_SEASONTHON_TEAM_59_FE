@@ -124,6 +124,7 @@ const ModalWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 2px;
+  margin-top: 20px;
   z-index: 9999;
 `;
 
