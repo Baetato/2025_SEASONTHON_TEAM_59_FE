@@ -45,7 +45,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="/verify" element={<VerifySubmit />} />
           <Route path="/complete" element={<CompletePage />} />
           <Route path="/home-stage" element={<HomeStage />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/home-farm" element={<Home />} />
         </Routes>
     </BrowserRouter>
   </StrictMode>,

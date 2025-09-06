@@ -1,6 +1,7 @@
 // 홈-텃밭 화면
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { GuideModal, TileInfoModal, CompletionModal } from "../components";
 import styled from "styled-components";
 
 import moveToStage from "../assets/move-to-stage.svg";
@@ -68,7 +69,7 @@ const OVERLAP_Y = 22;
 const FARM_W = 3 * TILE_W - 2 * OVERLAP_X; // 275px
 const FARM_H = 3 * TILE_H - 2 * OVERLAP_Y; // 314px
 
-export default function HomeFarm({setView}) {
+export default function HomeFarm() {
   const navigate = useNavigate();
 
   // 상태 관리
@@ -175,7 +176,7 @@ export default function HomeFarm({setView}) {
     setShowCompletionModal(true);
   };
 
-  const goStage = () => {setView('stage')};
+  const goStage = () => navigate("/home-stage");
   const onKey = (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -243,9 +244,9 @@ export default function HomeFarm({setView}) {
               }}
             />
             <Wrapper>
-                <Stroke>9월 1째주</Stroke>
-                <Fill>9월 1째주</Fill>
-                <Fill2>9월 1째주</Fill2>
+                <Stroke>9월 1주차 텃밭</Stroke>
+                <Fill>9월 1주차 텃밭</Fill>
+                <Fill2>9월 1주차 텃밭</Fill2>
             </Wrapper>
 
             {/* <InfoText aria-hidden="true">9월 1주차 텃밭</InfoText> */}
@@ -258,7 +259,7 @@ export default function HomeFarm({setView}) {
         alt="스테이지로 가기"
         role="link"
         tabIndex={0}
-        onClick={() => setView("stage")}
+        onClick={goStage}
         onKeyDown={onKey}
         draggable={false}
       />
@@ -287,94 +288,6 @@ export default function HomeFarm({setView}) {
     </Container>
   );
 }
-
-/* ===== 가이드 모달 컴포넌트 ===== */
-const GuideModal = ({ onClose }) => (
-  <ModalOverlay onClick={onClose}>
-    <ImgCard
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="farm-guide-title"
-    >
-      <GuideText id="farm-guide-title">
-        매주 서로 다른 활동 9가지를 완료하면<br />
-        텃밭이 모두 가꾸어져요.<br /><br />
-        해당 주에 텃밭을 모두 가꾸면<br />
-        추가 포인트를 받을 수 있어요.(+100p)<br /><br />
-        해당 주가 지나기 전까지<br />
-        텃밭을 모두 가꾸지 못할 경우,<br />
-        텃밭이 시들어버려요.<br /><br />
-        텃밭은 매주 월요일<br />
-        00:00(KST) 초기화돼요.
-      </GuideText>
-    </ImgCard>
-  </ModalOverlay>
-);
-
-// 타일 정보 모달 컴포넌트
-const TileInfoModal = ({ tile, onClose }) => {
-  return (
-    <ModalOverlay onClick={onClose}>
-      <TileImgCard
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="tile-modal-title"
-        onClick={onClose}   // 카드 자체 클릭 시 닫힘
-      >
-        <TileText>
-          {tile.isEmpty ? (
-            <>
-              이 텃밭은<br />
-              아직 아무 활동도<br />
-              완료되지 않았어요.
-            </>
-          ) : (
-            <>
-              이 텃밭은<br />
-              {tile.challenge?.name}를<br />
-              완료했어요.
-            </>
-          )}
-        </TileText>
-      </TileImgCard>
-    </ModalOverlay>
-  );
-};
-
-// 주간 완료/실패 모달 컴포넌트
-const CompletionModal = ({ isSuccess, onClose }) => {
-  return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={e => e.stopPropagation()}>
-        <ModalHeader>
-          <h3>{isSuccess ? '🎉 축하합니다!' : '😔 아쉬워요'}</h3>
-          <CloseButton onClick={onClose}>×</CloseButton>
-        </ModalHeader>
-        <ModalBody>
-          {isSuccess ? (
-            <>
-              <CompletionIcon>🏆</CompletionIcon>
-              <CompletionTitle>이번 주 텃밭을 모두 채웠어요!</CompletionTitle>
-              <CompletionMessage>
-                9가지 서로 다른 환경 활동을 모두 완료하셨네요!<br />
-                마스코트가 기뻐하고 있어요 😊
-              </CompletionMessage>
-            </>
-          ) : (
-            <>
-              <CompletionIcon>💧</CompletionIcon>
-              <CompletionTitle>새싹들이 시들었어요</CompletionTitle>
-              <CompletionMessage>
-                이번 주는 아쉽게 모든 활동을 완료하지 못했어요.<br />
-                다음 주에는 더 열심히 해봐요! 💪
-              </CompletionMessage>
-            </>
-          )}
-        </ModalBody>
-      </ModalContent>
-    </ModalOverlay>
-  );
-};
 
 /* ================= styled ================= */
 
@@ -544,8 +457,8 @@ const FarmLabel = styled.div`
 `;
 
 const InfoIcon = styled.img`
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   display: block;
   cursor: pointer;
 `;
@@ -798,9 +711,8 @@ const Fill2 = styled.span`
 /* ===== farm-modal.svg를 카드 배경으로 쓰는 스타일 ===== */
 const TileImgCard = styled.div`
   position: relative;
-  width: min(360px, 92vw);
-  /* 실제 farm-modal.svg 비율에 맞춰 조정하세요. 일단 가로:세로 ≈ 360:420 가정 */
-  aspect-ratio: 360 / 420;
+  width:194px;
+  height: auto;
   background: url(${farmModal}) center / contain no-repeat;
   display: grid;
   place-items: center;
