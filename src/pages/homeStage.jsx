@@ -19,9 +19,8 @@ export default function HomeStage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [challenges, setChallenges] = useState([]);
+  const [completedCount, setCompletedCount] = useState(0); // ← API에서 바로 받아옴
   const [selectedStage, setSelectedStage] = useState(null);
-
-  const displayCount = 5;
 
   const mapChallengeStatusToStage = (challengeStatus) => {
     switch(challengeStatus) {
@@ -40,14 +39,27 @@ export default function HomeStage() {
         const data = res.data.data;
 
         setCharacterStage(data.currentStage);
-        setChallenges(data.dailyChallengesResDtos);
+        setCompletedCount(data.completedCount);
 
-        const stageData = data.dailyChallengesResDtos.map(challenge => ({
-          index: challenge.dailyMemberChallengeId,
-          status: mapChallengeStatusToStage(challenge.challengeStatus),
-        }));
+        const stageData = data.dailyChallengesResDtos.map((challenge, idx) => {
+          let status = "before";
+
+          if (idx < data.completedCount) {
+            status = "approved"; // 이미 완료된 스테이지
+          } else if (idx >= data.completedCount && idx < data.currentStage) {
+            status = "waiting"; // 현재 진행중인 스테이지
+          } else {
+            status = "before"; // 아직 진행 전 스테이지
+          }
+
+          return {
+            index: challenge.dailyMemberChallengeId,
+            status,
+          };
+        });
 
         setStages(stageData);
+        setChallenges(data.dailyChallengesResDtos);
       } catch (error) {
         console.error("챌린지 조회 실패:", error);
       } finally {
@@ -67,22 +79,18 @@ export default function HomeStage() {
 
   if (loading) return <Container><LoadingText>Loading...</LoadingText></Container>;
 
-  console.log("챌린지 데이터:", challenges);
-
   return (
     <Container>
       <Header points={100} maxPoints={200} />
       <Content>
-        {/* 오른쪽 고정 메뉴 */}
         <MenuContainer>
           <HomeMenuButton type="location" onClick={() => alert("Coming Soon..!")} />
           <HomeMenuButton type="community" onClick={() => alert("Coming Soon..!")} />
           <HomeMenuButton type="setting" onClick={() => alert("Coming Soon..!")} />
         </MenuContainer>
 
-        {/* 가운데 상단 보상 바 */}
         <RewardBarContainer>
-          <RewardBar completedCount={0} />
+          <RewardBar completedCount={completedCount} /> {/* ← API에서 바로 받은 값 사용 */}
         </RewardBarContainer>
 
         <StageScroll 
@@ -90,6 +98,7 @@ export default function HomeStage() {
           characterStage={characterStage} 
           onStartClick={handleStartClick} 
         />
+
         <BtnWrapper>
           <GotoFarmButton 
             src={GotoFarmBtn} 
@@ -97,6 +106,7 @@ export default function HomeStage() {
             onClick={() => navigator("/home-farm")} 
           />
         </BtnWrapper>
+
         {modalOpen && (
           <ChallengeModal 
             challenges={challenges} 
@@ -110,6 +120,7 @@ export default function HomeStage() {
   );
 }
 
+// Styled Components 생략 (기존 코드 그대로)
 const Container = styled.div`
   display: flex;
   flex-direction: column;
