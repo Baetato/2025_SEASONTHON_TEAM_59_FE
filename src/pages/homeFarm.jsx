@@ -11,7 +11,7 @@ import api from "../api.js";
 
 // Assets
 import moveToStage from "../assets/move-to-stage.svg";
-import mascotIdle from "../assets/mascot-idle.svg";
+import mascotIdle from "../assets/mascot-idle.png";
 import mascotHappy from "../assets/mascot-happy.svg";
 import mascotEmbarrassed from "../assets/mascot-embrassed.svg";
 import farmEmpty from "../assets/farm-empty.svg";
@@ -107,7 +107,7 @@ export default function HomeFarm() {
     (async () => {
       try {
         setLoading(true);
-        const res = await api.get("/api/v1/garden/weekly"); // 인터셉터로 토큰 자동
+        const res = await api.get("/v1/garden/weekly"); // 인터셉터로 토큰 자동
         const data = res.data?.data || {};
         setCompletedChallenges(mapApiToCompleted(data.completedChallenges));
         setWeeklyMeta({
@@ -126,6 +126,21 @@ export default function HomeFarm() {
       }
     })();
   }, []);
+
+  // 주차 -> "M월 N주차" 로 변환
+  function formatToMonthWeek(year, weekOfYear) {
+    // ISO 주차를 실제 날짜로 변환 (연초에서 주차 * 7일)
+    const simple = new Date(year, 0, 1 + (weekOfYear - 1) * 7);
+    const month = simple.getMonth() + 1; // JS Date의 월은 0부터 시작 → +1 필요
+    const firstDayOfMonth = new Date(simple.getFullYear(), simple.getMonth(), 1);
+
+    // 이번 달 1일이 무슨 요일인지
+    const offset = firstDayOfMonth.getDay();
+    // 현재 날짜가 이번 달 몇 번째 주차인지
+    const weekNumberInMonth = Math.ceil((simple.getDate() + offset) / 7);
+
+    return `${month}월 ${weekNumberInMonth}주차 텃밭`;
+  }
 
   const weekProgress = getWeekProgress(completedChallenges);
 
@@ -171,10 +186,11 @@ export default function HomeFarm() {
 
       <Content>
         {/* 오른쪽 고정 메뉴 (home-stage와 동일) */}
+        {/* 오른쪽 고정 메뉴 */}
         <MenuContainer>
-          <HomeMenuButton type="location" onClick={() => console.log("위치")} />
-          <HomeMenuButton type="community" onClick={() => console.log("커뮤니티")} />
-          <HomeMenuButton type="setting" onClick={() => console.log("셋팅")} />
+          <HomeMenuButton type="location" onClick={() => alert("Coming Soon..!")} />
+          <HomeMenuButton type="community" onClick={() => alert("Coming Soon..!")} />
+          <HomeMenuButton type="setting" onClick={() => alert("Coming Soon..!")} />
         </MenuContainer>
 
         {/* 필요하면 보상바도 동일 구조로 배치 가능
@@ -243,17 +259,17 @@ export default function HomeFarm() {
               <LabelWrapper>
                 <Stroke>
                   {weeklyMeta.weekOfYear
-                    ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
+                    ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
                     : "9월 1주차 텃밭"}
                 </Stroke>
                 <Fill>
                   {weeklyMeta.weekOfYear
-                    ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
+                    ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
                     : "9월 1주차 텃밭"}
                 </Fill>
                 <Fill2>
                   {weeklyMeta.weekOfYear
-                    ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
+                    ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
                     : "9월 1주차 텃밭"}
                 </Fill2>
               </LabelWrapper>
@@ -301,7 +317,7 @@ const Container = styled.div`
 
 const Content = styled.div`
   height: calc(100vh - 97px);   /* HeaderBar 높이만큼 뺌 (home-stage와 동일) */
-  padding: 140px 7px 20px;      /* 동일한 상단 패딩 */
+  padding: 140px 20px 20px;      /* 동일한 상단 패딩 */
   box-sizing: border-box;
 
   display: flex;
@@ -331,8 +347,6 @@ const Canvas = styled.div`
 const Mascot = styled.img`
   width: 179px;
   height: 212px;
-  margin-top: 40px;
-  margin-bottom: 20px;
 `;
 
 const FarmArea = styled.div`
