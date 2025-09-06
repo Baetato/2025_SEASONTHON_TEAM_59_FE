@@ -21,6 +21,8 @@ import CameraPage from './pages/cameraTest.jsx'
 import VerifySubmit from './pages/verifySubmit.jsx';
 import CompletePage from './pages/cameraComplete.jsx'
 
+import HomeStage from './pages/homeStage.jsx';
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -41,6 +43,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/camera" element={<CameraPage />} />
           <Route path="/verify" element={<VerifySubmit />} />
           <Route path="/complete" element={<CompletePage />} />
+
+          <Route path="/home-stage" element={<HomeStage />} />
         </Routes>
     </BrowserRouter>
   </StrictMode>,
