@@ -1,258 +1,296 @@
-// 하단탭 (푸터))
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { css } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
-// Assets
-import bottomTabBg from '../assets/bottomTab.svg';
-import iconStore from '../assets/icon-store.svg';
-import iconChallenge from '../assets/icon-challenge.svg';
-import iconRanking from '../assets/icon-ranking.svg';
-import iconFriend from '../assets/icon-friend.svg';
-import leafUpLogo from '../assets/LeafUpLogo-small.png';
+import footerImg from "../assets/bottomTab.svg";
+import iconStore from "../assets/icon-store.svg";
+import iconChallenge from "../assets/icon-challenge.svg";
+import leafUpLogo from "../assets/footer-logo.svg";
+import iconRanking from "../assets/icon-ranking.svg";
+import iconFriend from "../assets/icon-friend.svg";
 
-/* ================= Animations ================ */
-const TabPress = keyframes`
-  0% { transform: scale(1) translateY(0); }
-  50% { transform: scale(0.95) translateY(2px); }
-  100% { transform: scale(1) translateY(0); }
-`;
-const IconBounce = keyframes`
-  0%,20%,50%,80%,100% { transform: translateY(0); }
-  40% { transform: translateY(-4px); }
-  60% { transform: translateY(-2px); }
-`;
-const LogoSpin = keyframes`
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(-5deg) scale(1.05); }
-  50% { transform: rotate(0deg) scale(1.1); }
-  75% { transform: rotate(5deg) scale(1.05); }
-  100% { transform: rotate(0deg) scale(1); }
-`;
-
-/* ================= Styled ==================== */
-/** 최하단 고정(공용). 뷰포트 폭 전체를 차지하고, 안쪽 프레임은 393으로 센터링 */
-const BarRoot = styled.div`
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  z-index: 100;
-  /* iOS 하단 제스처 영역 대응 */
-  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
-  background: transparent;
-`;
-
-/** 실제 393x101 프레임. 중앙 정렬 */
-const BarFrame = styled.nav`
-  position: relative;
-  margin: 0 auto;
-  width: 100%;
-  max-width: 393px;
-  height: 101px;
-`;
-
-/** 배경 일러스트 */
-const Bg = styled.div`
-  position: absolute; inset: 0;
-  background-image: url(${bottomTabBg});
-  background-size: cover;  /* 에셋이 393x101이므로 cover/contain 모두 무리 없지만 cover가 깔끔 */
-  background-position: center bottom;
-  background-repeat: no-repeat;
-`;
-
-/** 컨텐츠 레이아웃
- *  좌측 아이콘 2개 | 중앙 로고 | 우측 아이콘 2개
- *  2fr - 3fr - 2fr 비율로 로고 공간을 넉넉히 준다.
- */
-const Content = styled.div`
-  position: absolute; inset: 0;
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr;
-  align-items: center;
-  padding: 0 8px;
-`;
-
-/** 좌/우 아이콘 랙 */
-const SideCluster = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: ${p => (p.$right ? 'flex-end' : 'flex-start')};
-`;
-
-/** 공통 탭컨테이너 (button → div로 변경) */
-const TabButton = styled.div`
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center;
-  gap: 4px;
-  cursor: pointer;
-  padding: 8px 6px; 
-  border-radius: 12px;
-  transition: transform .2s ease;
-  font-family: "Maplestory OTF", sans-serif;
-  font-weight: 700;
-  user-select: none;
-  
-  &:hover { transform: translateY(-2px); }
-  &:active { animation: ${TabPress} .15s ease-out; }
-
-  ${p => p.$active && css`
-    &::before {
-      content: '';
-      position: absolute;
-      transform: translateY(-16px);
-      width: 4px; height: 4px; border-radius: 50%;
-      background: #ffd57d;
-      box-shadow: 0 0 8px rgba(255,213,125,.6);
-    }
-  `}
-`;
-
-/** 아이콘 이미지 (28px 고정, 필요시 조정) */
-const TabIcon = styled.img`
-  width: 28px; height: 28px; object-fit: contain;
-  filter: ${p => p.$active ? 'brightness(1.2) drop-shadow(0 0 6px rgba(255,213,125,.4))' : 'brightness(.85)'};
-  transition: filter .2s ease;
-  ${p => p.$active && css`animation: ${IconBounce} .6s ease-out;`}
-`;
-
-/** 라벨 */
-const TabLabel = styled.span`
-  font-family: "Maplestory OTF", sans-serif;
-  font-size: 11px; 
-  font-weight: 700;
-  color: ${p => p.$active ? '#ffd57d' : '#8b7355'};
-  text-shadow: ${p => p.$active ? '0 0 4px rgba(255,213,125,.3)' : 'none'};
-  transition: color .2s ease, text-shadow .2s ease;
-`;
-
-/** 중앙 홈 로고 컨테이너 (button → div로 변경) */
-const HomeButton = styled.div`
-  position: relative;
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center;
-  gap: 2px;
-  cursor: pointer;
-  padding: 0; 
-  border-radius: 50%;
-  transition: transform .2s ease;
-  font-family: "Maplestory OTF", sans-serif;
-  font-weight: 700;
-  user-select: none;
-
-  &:hover { transform: translateY(-3px) scale(1.03); }
-  &:active { animation: ${LogoSpin} .4s ease-out; }
-
-  ${p => p.$active && css`
-    &::before{
-      content:'';
-      position:absolute; inset:-4px; border-radius:50%;
-      background: radial-gradient(circle, rgba(255,213,125,.18) 0%, transparent 70%);
-      animation:${IconBounce} 1s ease-in-out infinite;
-    }
-  `}
-`;
-
-/** 로고 이미지 (디자인 스펙: 116.658 x 83.782) → 393×101 기준 비율 적용 */
-const HomeLogo = styled.img`
-  width: calc(116.658 / 393 * 100%);
-  max-width: 116.658px;
-  height: auto;
-  max-height: 83.782px;
-  object-fit: contain;
-  filter: ${p => p.$active ? 'brightness(1.2) drop-shadow(0 3px 0 #382C28)' : 'drop-shadow(0 3px 0 #382C28)'};
-  transform: ${p => p.$active ? 'scale(1.05)' : 'none'};
-  transition: transform .2s ease, filter .2s ease;
-`;
-
-const HomeLabel = styled.span`
-  font-family: "Maplestory OTF", sans-serif;
-  font-size: 12px; 
-  font-weight: 700;
-  color: ${p => p.$active ? '#ffd57d' : '#8b7355'};
-  text-shadow: ${p => p.$active ? '0 0 4px rgba(255,213,125,.4)' : 'none'};
-  transition: color .2s ease, text-shadow .2s ease;
-  margin-top: 2px;
-`;
-
-/* ================= Component ================= */
-export function BottomTabBar({
-  currentTab,
-  onTabChange = null,
-}) {
+export default function Footer() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const getCurrentTab = () => {
-    const path = location.pathname;
-    if (path === '/' || path === '/home') return 'home';
-    if (path.startsWith('/store')) return 'store';
-    if (path.startsWith('/challenge')) return 'challenge';
-    if (path.startsWith('/ranking')) return 'ranking';
-    if (path.startsWith('/friends')) return 'friends';
-    return currentTab || 'home';
-  };
-
-  const [activeTab, setActiveTab] = useState(getCurrentTab());
-
-  useEffect(() => {
-    setActiveTab(getCurrentTab());
-  }, [location.pathname]);
-
-  const tabs = [
-    { id: 'store',     label: '상점',    icon: iconStore,     path: '/store' },
-    { id: 'challenge', label: '챌린지',  icon: iconChallenge, path: '/challenge' },
-    { id: 'home',      label: '홈',      icon: leafUpLogo,    path: '/',       isHome: true },
-    { id: 'ranking',   label: '랭킹',    icon: iconRanking,   path: '/ranking' },
-    { id: 'friends',   label: '친구',    icon: iconFriend,    path: '/friends' },
+  const items = [
+    { id: "store",     label: "가게",   icon: iconStore,     path: "/store" },
+    { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
+    { id: "home",      label: "리프업", icon: leafUpLogo,    path: "/", isHome: true },
+    { id: "ranking",   label: "랭킹",   icon: iconRanking,   path: "/ranking" },
+    { id: "friend",    label: "친구",   icon: iconFriend,    path: "/friends" },
   ];
 
-  const handleTabClick = (tab) => {
-    if (tab.id === activeTab) return;
-    setActiveTab(tab.id);
-    if (onTabChange) onTabChange(tab.id, tab.path);
-    else navigate(tab.path);
-    };
+  const onKey = (e, path) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(path);
+    }
+  };
 
-    return (
-    <BarRoot>
-      <BarFrame aria-label="bottom navigation">
-        <Bg />
-        <Content>
-          {/* Left icons: 상점, 챌린지 */}
-          <SideCluster>
-            {[tabs[0], tabs[1]].map((t) => (
-              <TabButton key={t.id} $active={activeTab === t.id} onClick={() => handleTabClick(t)}>
-                <TabIcon src={t.icon} alt={t.label} $active={activeTab === t.id} />
-                <TabLabel $active={activeTab === t.id}>{t.label}</TabLabel>
-              </TabButton>
-            ))}
-          </SideCluster>
-
-          {/* Center: Home logo */}
-          <div style={{display:'flex', justifyContent:'center'}}>
-            <HomeButton $active={activeTab === 'home'} onClick={() => handleTabClick(tabs[2])}>
-              <HomeLogo src={tabs[2].icon} alt="LeafUp Home" $active={activeTab === 'home'} />
-              <HomeLabel $active={activeTab === 'home'}>홈</HomeLabel>
-            </HomeButton>
-          </div>
-
-          {/* Right icons: 랭킹, 친구 */}
-          <SideCluster $right>
-            {[tabs[3], tabs[4]].map((t) => (
-              <TabButton key={t.id} $active={activeTab === t.id} onClick={() => handleTabClick(t)}>
-                <TabIcon src={t.icon} alt={t.label} $active={activeTab === t.id} />
-                <TabLabel $active={activeTab === t.id}>{t.label}</TabLabel>
-              </TabButton>
-            ))}
-          </SideCluster>
-        </Content>
-      </BarFrame>
-    </BarRoot>
+  return (
+    <FooterRoot role="contentinfo" aria-label="하단 탭 바">
+      <Content>
+        {items.map((it) => (
+          <Item
+            key={it.id}
+            role="button"
+            tabIndex={0}
+            aria-label={it.label}
+            onClick={() => navigate(it.path)}
+            onKeyDown={(e) => onKey(e, it.path)}
+          >
+            {it.isHome ? (
+              <HomeLogo src={it.icon} alt={it.label} draggable={false} />
+            ) : (
+              <Icon src={it.icon} alt={it.label} draggable={false} />
+            )}
+            <Label>{it.label}</Label>
+          </Item>
+        ))}
+      </Content>
+      <Bg src={footerImg} alt="" aria-hidden="true" />
+    </FooterRoot>
   );
 }
 
-export default BottomTabBar;
+/* ===== styled ===== */
+
+const FooterRoot = styled.footer`
+  position: relative;
+  width: 100%;
+  height: 101px; /* footerImg 실제 높이 */
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+`;
+
+const Bg = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+`;
+
+const Content = styled.nav`
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: end;
+  justify-items: center;
+  padding: 0 12px 10px;
+  box-sizing: border-box;
+  left: 0px;
+  gap: 14px;
+  /* 배경과 정확히 겹치고 싶으면 필요 시 미세 보정값 사용
+     transform: translateX(-6px); */
+`;
+
+const Item = styled.div`
+  display: grid;
+  place-items: center;
+  grid-auto-rows: max-content;
+  gap: 2px;
+  align-items: center;
+  justify-items: center;
+  cursor: pointer;
+  outline: none;
+
+  /* 아이콘과 라벨이 살짝 겹치도록 */
+  & > span {
+    margin-top: -6px;
+  }
+
+  /* 호버/포커스 시 아이콘 애니메이션 */
+  &:hover img,
+  &:focus-visible img {
+    transform: translateY(-3px) scale(1.06);
+    filter: brightness(1.06) drop-shadow(0 0 6px rgba(255,213,125,.35));
+  }
+
+  /* 클릭 시 눌림 느낌 */
+  &:active img {
+    transform: translateY(0) scale(0.96);
+    filter: brightness(0.98);
+  }
+`;
+
+const baseLabel = css`
+  z-index: 2;
+  text-align: center;
+  -webkit-text-stroke-width: 0.8px;
+  -webkit-text-stroke-color: #281900;
+  font-family: "Maplestory OTF";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 110% */
+  letter-spacing: -0.408px;
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: none;
+  pointer-events: none;
+`;
+
+const Label = styled.span`
+  ${baseLabel}
+`;
+
+/* 일반 아이콘 */
+const Icon = styled.img`
+  width: 55px;
+  height: auto;
+  margin-bottom: 0px; /* 라벨과 살짝 겹치게 */
+  object-fit: contain;
+  display: block;
+  filter: brightness(.95);
+  user-select: none;
+  transition: transform .18s ease, filter .18s ease;
+`;
+
+/* 중앙 홈 로고(조금 더 큼, 개별 오프셋) */
+const HomeLogo = styled.img`
+  height: 68px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 0 #382C28);
+  user-select: none;
+  margin-bottom: 7px; /* 로고만 별도 보정 */
+  transition: transform .18s ease, filter .18s ease;
+`;
+
+// import styled, { css } from "styled-components";
+// import footerImg from "../assets/bottomTab.svg";
+// import iconStore from "../assets/icon-store.svg";
+// import iconChallenge from "../assets/icon-challenge.svg";
+// import leafUpLogo from "../assets/footer-logo.svg";
+// import iconRanking from "../assets/icon-ranking.svg";
+// import iconFriend from "../assets/icon-friend.svg";
+
+// export default function Footer() {
+//   const items = [
+//     { id: "store", label: "가게", icon: iconStore },
+//     { id: "challenge", label: "챌린지", icon: iconChallenge },
+//     { id: "home", label: "리프업", icon: leafUpLogo, isHome: true },
+//     { id: "ranking", label: "랭킹", icon: iconRanking },
+//     { id: "friend", label: "친구", icon: iconFriend },
+//   ];
+
+//   return (
+//     <FooterRoot role="contentinfo" aria-label="하단 탭 바">
+//       <Content>
+//         {items.map((it) => (
+//           <Item key={it.id} aria-label={it.label}>
+//             {it.isHome ? (
+//               <HomeLogo src={it.icon} alt={it.label} draggable={false} />
+//             ) : (
+//               <Icon src={it.icon} alt={it.label} draggable={false} />
+//             )}
+//             <Label>{it.label}</Label>
+//           </Item>
+//         ))}
+//       </Content>
+//       <Bg src={footerImg} alt="" aria-hidden="true" />
+//     </FooterRoot>
+//   );
+// }
+
+// /* ===== styled ===== */
+
+// const FooterRoot = styled.footer`
+//   position: relative;
+//   width: 100%;
+//   height: 101px; /* footerImg 실제 높이 */
+//   bottom: 0;
+//   left: 0;
+//   z-index: 1000;
+// `;
+
+// const Bg = styled.img`
+//   position: absolute;
+//   inset: 0;
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover; /* svg면 contain/cover 중 맞게 선택 */
+//   z-index: 0;
+//   pointer-events: none; /* 배경 클릭 막기 */
+// `;
+
+// const Content = styled.nav`
+//   position: relative;
+//   z-index: 1;     
+//   height: 100%;
+//   left: -6px;
+//   gap:12px;
+//   display: grid;
+//   grid-template-columns: repeat(5, 1fr);
+//   align-items: end;
+//   justify-items: center;
+//   padding: 0px 12px 10px;
+//   box-sizing: border-box;
+// `;
+
+// const Item = styled.div`
+//   display: grid;
+//   place-items: center;
+//   gap: 2px;
+//   grid-auto-rows: max-content;
+//   align-items: center;
+//   justify-items: center;
+
+//   /* 아이콘과 라벨이 살짝 겹치도록 음수 마진 */
+//   & > span {
+//     margin-top: -6px; /* ← 여기 수치로 겹침 정도 조절 */
+//   }
+// `;
+
+// const baseLabel = css`
+//   z-index: 2;
+//   text-align: center;
+//   -webkit-text-stroke-width: 0.8px;
+//   -webkit-text-stroke-color: #281900;
+//   font-family: "Maplestory OTF";
+//   font-size: 20px;
+//   font-style: normal;
+//   font-weight: 700;
+//   line-height: 22px; /* 110% */
+//   letter-spacing: -0.408px;
+//   background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+//   background-clip: text;
+//   -webkit-background-clip: text;
+//   -webkit-text-fill-color: transparent;
+//   user-select: none;
+//   pointer-events: none; /* 라벨은 클릭 없음 */
+// `;
+
+// const Label = styled.span`
+//   ${baseLabel}
+// `;
+
+// /* 일반 아이콘 */
+// const Icon = styled.img`
+//   width: 60px;
+//   height: auto;
+//   margin-bottom: -6px; /* ← 여기 수치로 겹침 정도 조절 */
+//   object-fit: contain;
+//   display: block;
+//   filter: brightness(.95);
+//   user-select: none;
+// `;
+
+// /* 중앙 홈 로고(조금 더 큼) */
+// const HomeLogo = styled.img`
+//   height: 68px; 
+//   width: auto;
+//   object-fit: contain;
+//   display: block;
+//   filter: drop-shadow(0 2px 0 #382C28);
+//   user-select: none;
+//   margin-bottom: 7px;
+// `;
