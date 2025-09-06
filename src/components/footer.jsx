@@ -1,251 +1,296 @@
-// import React, { useEffect, useState } from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import styled, { keyframes, css } from "styled-components";
+import styled, { css } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
-// import bottomTabBg from "../assets/bottomTab.svg";
+import footerImg from "../assets/bottomTab.svg";
+import iconStore from "../assets/icon-store.svg";
+import iconChallenge from "../assets/icon-challenge.svg";
+import leafUpLogo from "../assets/footer-logo.svg";
+import iconRanking from "../assets/icon-ranking.svg";
+import iconFriend from "../assets/icon-friend.svg";
+
+export default function Footer() {
+  const navigate = useNavigate();
+
+  const items = [
+    { id: "store",     label: "가게",   icon: iconStore,     path: "/store" },
+    { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
+    { id: "home",      label: "리프업", icon: leafUpLogo,    path: "/", isHome: true },
+    { id: "ranking",   label: "랭킹",   icon: iconRanking,   path: "/ranking" },
+    { id: "friend",    label: "친구",   icon: iconFriend,    path: "/friends" },
+  ];
+
+  const onKey = (e, path) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate(path);
+    }
+  };
+
+  return (
+    <FooterRoot role="contentinfo" aria-label="하단 탭 바">
+      <Content>
+        {items.map((it) => (
+          <Item
+            key={it.id}
+            role="button"
+            tabIndex={0}
+            aria-label={it.label}
+            onClick={() => navigate(it.path)}
+            onKeyDown={(e) => onKey(e, it.path)}
+          >
+            {it.isHome ? (
+              <HomeLogo src={it.icon} alt={it.label} draggable={false} />
+            ) : (
+              <Icon src={it.icon} alt={it.label} draggable={false} />
+            )}
+            <Label>{it.label}</Label>
+          </Item>
+        ))}
+      </Content>
+      <Bg src={footerImg} alt="" aria-hidden="true" />
+    </FooterRoot>
+  );
+}
+
+/* ===== styled ===== */
+
+const FooterRoot = styled.footer`
+  position: relative;
+  width: 100%;
+  height: 101px; /* footerImg 실제 높이 */
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+`;
+
+const Bg = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+`;
+
+const Content = styled.nav`
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: end;
+  justify-items: center;
+  padding: 0 12px 10px;
+  box-sizing: border-box;
+  left: 0px;
+  gap: 14px;
+  /* 배경과 정확히 겹치고 싶으면 필요 시 미세 보정값 사용
+     transform: translateX(-6px); */
+`;
+
+const Item = styled.div`
+  display: grid;
+  place-items: center;
+  grid-auto-rows: max-content;
+  gap: 2px;
+  align-items: center;
+  justify-items: center;
+  cursor: pointer;
+  outline: none;
+
+  /* 아이콘과 라벨이 살짝 겹치도록 */
+  & > span {
+    margin-top: -6px;
+  }
+
+  /* 호버/포커스 시 아이콘 애니메이션 */
+  &:hover img,
+  &:focus-visible img {
+    transform: translateY(-3px) scale(1.06);
+    filter: brightness(1.06) drop-shadow(0 0 6px rgba(255,213,125,.35));
+  }
+
+  /* 클릭 시 눌림 느낌 */
+  &:active img {
+    transform: translateY(0) scale(0.96);
+    filter: brightness(0.98);
+  }
+`;
+
+const baseLabel = css`
+  z-index: 2;
+  text-align: center;
+  -webkit-text-stroke-width: 0.8px;
+  -webkit-text-stroke-color: #281900;
+  font-family: "Maplestory OTF";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 110% */
+  letter-spacing: -0.408px;
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: none;
+  pointer-events: none;
+`;
+
+const Label = styled.span`
+  ${baseLabel}
+`;
+
+/* 일반 아이콘 */
+const Icon = styled.img`
+  width: 55px;
+  height: auto;
+  margin-bottom: 0px; /* 라벨과 살짝 겹치게 */
+  object-fit: contain;
+  display: block;
+  filter: brightness(.95);
+  user-select: none;
+  transition: transform .18s ease, filter .18s ease;
+`;
+
+/* 중앙 홈 로고(조금 더 큼, 개별 오프셋) */
+const HomeLogo = styled.img`
+  height: 68px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 0 #382C28);
+  user-select: none;
+  margin-bottom: 7px; /* 로고만 별도 보정 */
+  transition: transform .18s ease, filter .18s ease;
+`;
+
+// import styled, { css } from "styled-components";
+// import footerImg from "../assets/bottomTab.svg";
 // import iconStore from "../assets/icon-store.svg";
 // import iconChallenge from "../assets/icon-challenge.svg";
+// import leafUpLogo from "../assets/footer-logo.svg";
 // import iconRanking from "../assets/icon-ranking.svg";
 // import iconFriend from "../assets/icon-friend.svg";
-// import leafUpLogo from "../assets/footer-logo.svg";
 
-// /* ============ Animations ============ */
-// const Press = keyframes`
-//   0%   { transform: translateY(0) scale(1); }
-//   50%  { transform: translateY(2px) scale(0.96); }
-//   100% { transform: translateY(0) scale(1); }
-// `;
+// export default function Footer() {
+//   const items = [
+//     { id: "store", label: "가게", icon: iconStore },
+//     { id: "challenge", label: "챌린지", icon: iconChallenge },
+//     { id: "home", label: "리프업", icon: leafUpLogo, isHome: true },
+//     { id: "ranking", label: "랭킹", icon: iconRanking },
+//     { id: "friend", label: "친구", icon: iconFriend },
+//   ];
 
-// const IconBounce = keyframes`
-//   0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-//   40% { transform: translateY(-4px); }
-//   60% { transform: translateY(-2px); }
-// `;
+//   return (
+//     <FooterRoot role="contentinfo" aria-label="하단 탭 바">
+//       <Content>
+//         {items.map((it) => (
+//           <Item key={it.id} aria-label={it.label}>
+//             {it.isHome ? (
+//               <HomeLogo src={it.icon} alt={it.label} draggable={false} />
+//             ) : (
+//               <Icon src={it.icon} alt={it.label} draggable={false} />
+//             )}
+//             <Label>{it.label}</Label>
+//           </Item>
+//         ))}
+//       </Content>
+//       <Bg src={footerImg} alt="" aria-hidden="true" />
+//     </FooterRoot>
+//   );
+// }
 
-// /* ============ Fixed Bar (393×101) ============ */
-// const BarRoot = styled.footer`
-//   position: fixed;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   width: 100%;
-//   height: 101px;
-//   z-index: 1000;
-//   pointer-events: auto;
-//   padding-bottom: env(safe-area-inset-bottom, 0px);
-// `;
+// /* ===== styled ===== */
 
-// const BarFrame = styled.nav`
+// const FooterRoot = styled.footer`
 //   position: relative;
 //   width: 100%;
-//   height: 100%;
+//   height: 101px; /* footerImg 실제 높이 */
+//   bottom: 0;
+//   left: 0;
+//   z-index: 1000;
 // `;
 
-// const Bg = styled.div`
+// const Bg = styled.img`
 //   position: absolute;
 //   inset: 0;
-//   background: url(${bottomTabBg}) center bottom / cover no-repeat;
-//   pointer-events: none;
-//   z-index: 0;
-// `;
-
-// /* ============ Content ============ */
-// const Content = styled.div`
-//   position: absolute;
-//   inset: 0;
-//   display: grid;
-//   grid-template-rows: 1fr auto; /* 첫 행: 아이콘, 두 번째 행: 라벨 */
-//   z-index: 1;
-// `;
-
-// const Row = styled.div`
-//   display: flex;
-//   justify-content: space-around; /* 아이콘 균등 배치 */
-//   align-items: center;           /* 아이콘 세로 가운데 정렬 */
 //   width: 100%;
+//   height: 100%;
+//   object-fit: cover; /* svg면 contain/cover 중 맞게 선택 */
+//   z-index: 0;
+//   pointer-events: none; /* 배경 클릭 막기 */
 // `;
 
-// const Cell = styled.div`
-//   flex: 1;                       /* Row 안에서 5칸 자동 */
-//   display: flex;
-//   flex-direction: column;
+// const Content = styled.nav`
+//   position: relative;
+//   z-index: 1;     
+//   height: 100%;
+//   left: -6px;
+//   gap:12px;
+//   display: grid;
+//   grid-template-columns: repeat(5, 1fr);
+//   align-items: end;
+//   justify-items: center;
+//   padding: 0px 12px 10px;
+//   box-sizing: border-box;
+// `;
+
+// const Item = styled.div`
+//   display: grid;
+//   place-items: center;
+//   gap: 2px;
+//   grid-auto-rows: max-content;
 //   align-items: center;
-//   justify-content: center;
-//   cursor: pointer;
-// `;
+//   justify-items: center;
 
-// const IconImg = styled.img`
-//   width: 28px;
-//   height: 28px;
-//   object-fit: contain;
-//   cursor: pointer;
-//   filter: ${(p) =>
-//     p.$active
-//       ? "brightness(1.12) drop-shadow(0 0 6px rgba(255,213,125,.45))"
-//       : "brightness(.92)"};
-//   transition: filter 0.2s ease, transform 0.2s ease;
-
-//   &:hover {
-//     transform: translateY(-2px);
-//   }
-
-//   &:active {
-//     transform: translateY(0px) scale(0.95);
-//   }
-
-//   ${(p) =>
-//     p.$active &&
-//     css`
-//       animation: ${IconBounce} 600ms ease-out;
-//     `}
-// `;
-
-// const HomeLogo = styled.img`
-//   height: 60px;
-//   width: auto;
-//   object-fit: contain;
-//   cursor: pointer;
-//   filter: ${(p) =>
-//     p.$active
-//       ? "brightness(1.06) drop-shadow(0 3px 0 #382C28)"
-//       : "drop-shadow(0 3px 0 #382C28)"};
-//   transform: ${(p) => (p.$active ? "scale(1.03)" : "none")};
-//   transition: filter 0.2s ease, transform 0.2s ease;
-
-//   &:hover {
-//     transform: ${(p) => (p.$active ? "scale(1.06)" : "scale(1.03)")};
-//   }
-
-//   &:active {
-//     transform: ${(p) => (p.$active ? "scale(1.01)" : "scale(0.98)")};
+//   /* 아이콘과 라벨이 살짝 겹치도록 음수 마진 */
+//   & > span {
+//     margin-top: -6px; /* ← 여기 수치로 겹침 정도 조절 */
 //   }
 // `;
 
-// const Label = styled.span`
+// const baseLabel = css`
+//   z-index: 2;
 //   text-align: center;
-//   text-shadow: 0 1px 0 #281900;
-//   -webkit-text-stroke-width: 2px;
+//   -webkit-text-stroke-width: 0.8px;
 //   -webkit-text-stroke-color: #281900;
 //   font-family: "Maplestory OTF";
-//   font-size: 24px;
+//   font-size: 20px;
 //   font-style: normal;
 //   font-weight: 700;
-//   line-height: 22px; /* 91.667% */
+//   line-height: 22px; /* 110% */
 //   letter-spacing: -0.408px;
-//   background: var(--, linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%));
+//   background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
 //   background-clip: text;
 //   -webkit-background-clip: text;
 //   -webkit-text-fill-color: transparent;
 //   user-select: none;
-//   cursor: pointer;
-  
-//   /* 활성화 상태에 따른 추가 효과 */
-//   ${(p) => p.$active && css`
-//     text-shadow: 0 1px 0 #281900, 0 0 4px rgba(255,213,125,.35);
-//   `}
+//   pointer-events: none; /* 라벨은 클릭 없음 */
 // `;
 
-// /* ============ Component ============ */
-// export default function BottomTabBar({ onTabChange = null }) {
-//   const navigate = useNavigate();
-//   const location = useLocation();
+// const Label = styled.span`
+//   ${baseLabel}
+// `;
 
-//   const tabs = [
-//     { id: "store", label: "상점", icon: iconStore, path: "/store" },
-//     { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
-//     { id: "home", label: "홈", icon: leafUpLogo, path: "/" },
-//     { id: "ranking", label: "랭킹", icon: iconRanking, path: "/ranking" },
-//     { id: "friends", label: "친구", icon: iconFriend, path: "/friends" },
-//   ];
+// /* 일반 아이콘 */
+// const Icon = styled.img`
+//   width: 60px;
+//   height: auto;
+//   margin-bottom: -6px; /* ← 여기 수치로 겹침 정도 조절 */
+//   object-fit: contain;
+//   display: block;
+//   filter: brightness(.95);
+//   user-select: none;
+// `;
 
-//   const fromPath = () => {
-//     const p = location.pathname;
-//     if (p === "/" || p.startsWith("/home")) return "home";
-//     if (p.startsWith("/store")) return "store";
-//     if (p.startsWith("/challenge")) return "challenge";
-//     if (p.startsWith("/ranking")) return "ranking";
-//     if (p.startsWith("/friends")) return "friends";
-//     return "home";
-//   };
-
-//   const [active, setActive] = useState(fromPath());
-
-//   useEffect(() => {
-//     setActive(fromPath());
-//   }, [location.pathname]);
-
-//   const go = (t) => {
-//     if (t.id === active) return;
-//     setActive(t.id);
-//     onTabChange ? onTabChange(t.id, t.path) : navigate(t.path);
-//   };
-
-//   return (
-//       <BarFrame aria-label="bottom navigation">
-//         <Bg />
-//          <Content>
-//            <Row>
-//              {tabs.map((t) => (
-//                <Cell
-//                  key={`tab-${t.id}`}
-//                  $active={active === t.id}
-//                  aria-label={t.label}
-//                >
-//                  {t.id === "home" ? (
-//                    <HomeLogo
-//                      src={t.icon}
-//                      alt="LeafUp Home"
-//                      $active={active === t.id}
-//                      onClick={() => go(t)}
-//                    />
-//                  ) : (
-//                    <IconImg
-//                      src={t.icon}
-//                      alt={t.label}
-//                      $active={active === t.id}
-//                      onClick={() => go(t)}
-//                    />
-//                  )}
-//                </Cell>
-//              ))}
-//            </Row>
-//            <Row $labels>
-//              {tabs.map((t) => (
-//                <Label 
-//                  key={`lbl-${t.id}`} 
-//                  $active={active === t.id}
-//                  onClick={() => go(t)}
-//                >
-//                  {t.label}
-//                </Label>
-//              ))}
-//            </Row>
-//          </Content>
-//       </BarFrame>
-//   );
-// }
-import styled from "styled-components";
-import footerImg from "../assets/footerImg.png"; // footerImg 이미지 import
-
-export default function Footer() {
-  return (
-    <FooterContainer>
-      <FooterImage src={footerImg} alt="Footer Background" />
-    </FooterContainer>
-  );
-}
-
-const FooterContainer = styled.footer`
-  position: relative;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: auto;
-  z-index: 1000;
-`;
-
-const FooterImage = styled.img`
-  width: 100%;
-  height: auto;
-  display: block;
-`;
+// /* 중앙 홈 로고(조금 더 큼) */
+// const HomeLogo = styled.img`
+//   height: 68px; 
+//   width: auto;
+//   object-fit: contain;
+//   display: block;
+//   filter: drop-shadow(0 2px 0 #382C28);
+//   user-select: none;
+//   margin-bottom: 7px;
+// `;

@@ -1,4 +1,4 @@
-// 홈-텃밭 화면: farm grid(3x3) + 이미지형 stage 버튼 + 마스코트
+// 홈-텃밭 화면
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -8,8 +8,10 @@ import mascotIdle from "../assets/mascot-idle.svg";
 import mascotHappy from "../assets/mascot-happy.svg";
 import mascotEmbarrassed from "../assets/mascot-embrassed.svg";
 import farmEmpty from "../assets/farm-empty.svg";
+import farmGuide from "../assets/farm-guide.svg";
+import farmModal from "../assets/farm-modal.svg";
 
-// (선택) 상태별 텃밭 타일 이미지 매핑 — 추후 교체/확장
+// 상태별 텃밭 타일 이미지 매핑 — 추후 교체/확장
 import farmPlanted from "../assets/farm-beginning.svg";  
 import farmGrowing from "../assets/farm-grow.svg";
 import farmDone from "../assets/farm-muture.svg";    
@@ -17,7 +19,7 @@ import farmComplete from "../assets/farm-get.svg";
 import farmLocked from "../assets/farm-fail.svg";   
 import iconInfo from "../assets/icon-info.svg";
 
-// 상태별 이미지 매핑 (empty/growing/done/locked)
+// 상태별 이미지 매핑 (새싹이 자라나는 6단계)
 const TILE_BY_STATUS = {
   empty: farmEmpty,
   plant: farmPlanted,
@@ -68,7 +70,7 @@ const FARM_H = 3 * TILE_H - 2 * OVERLAP_Y; // 314px
 
 export default function HomeFarm() {
   const navigate = useNavigate();
-  
+
   // 상태 관리
   const [completedChallenges, setCompletedChallenges] = useState([
     // 예시 데이터 - 실제로는 API에서 가져오거나 localStorage에서 관리
@@ -76,14 +78,16 @@ export default function HomeFarm() {
     { type: 'recycling', completedAt: new Date().toISOString(), tileIndex: 1 },
     { type: 'plogging', completedAt: new Date().toISOString(), tileIndex: 2 },
   ]);
-  
+
   const [selectedTile, setSelectedTile] = useState(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [isWeekEnd, setIsWeekEnd] = useState(false); // 주말 여부
-  
+  const [isGuideOpen, setGuideOpen] = useState(false); // 가이드 모달 상태
+  const [growingTiles, setGrowingTiles] = useState(new Set()); // 성장 애니메이션 중인 타일들
+
   // 주간 진행상황 계산
   const weekProgress = getWeekProgress(completedChallenges);
-  
+
   // 마스코트 상태 결정
   const getMascotStatus = () => {
     if (isWeekEnd) {
@@ -91,16 +95,16 @@ export default function HomeFarm() {
     }
     return 'idle';
   };
-  
+
   // 텃밭 타일 상태 계산
   const getTileStatus = (index) => {
     const challenge = completedChallenges.find(c => c.tileIndex === index);
     if (challenge) {
-      return isWeekEnd && !weekProgress.isComplete ? 'locked' : 'plant';
+      return isWeekEnd && !weekProgress.isComplete ? 'locked' : 'growing';
     }
     return 'empty';
   };
-  
+
   // 타일 클릭 핸들러
   const handleTileClick = (index) => {
     const challenge = completedChallenges.find(c => c.tileIndex === index);
@@ -108,17 +112,69 @@ export default function HomeFarm() {
       setSelectedTile({
         index,
         challenge: CHALLENGE_TYPES.find(t => t.id === challenge.type),
-        completedAt: challenge.completedAt
+        completedAt: challenge.completedAt,
+        isEmpty: false
+      });
+    } else {
+      // 빈 타일 클릭 시
+      setSelectedTile({
+        index,
+        challenge: null,
+        completedAt: null,
+        isEmpty: true
       });
     }
   };
-  
+
+  // 새로운 챌린지 완료 시뮬레이션 (테스트용)
+  const addNewChallenge = () => {
+    const availableTypes = CHALLENGE_TYPES.filter(
+      type => !completedChallenges.some(c => c.type === type.id)
+    );
+    
+    if (availableTypes.length === 0) {
+      alert('모든 챌린지가 완료되었습니다!');
+      return;
+    }
+    
+    const emptyTileIndex = Array(9).fill(null).findIndex((_, i) => 
+      !completedChallenges.some(c => c.tileIndex === i)
+    );
+    
+    if (emptyTileIndex === -1) {
+      alert('빈 텃밭 칸이 없습니다!');
+      return;
+    }
+    
+    const randomType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+    const newChallenge = {
+      type: randomType.id,
+      completedAt: new Date().toISOString(),
+      tileIndex: emptyTileIndex
+    };
+    
+    // 성장 애니메이션 트리거
+    setGrowingTiles(prev => new Set([...prev, emptyTileIndex]));
+    
+    // 챌린지 추가
+    setCompletedChallenges(prev => [...prev, newChallenge]);
+    
+    // 애니메이션 완료 후 성장 상태 제거
+    setTimeout(() => {
+      setGrowingTiles(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(emptyTileIndex);
+        return newSet;
+      });
+    }, 600);
+  };
+
   // 주말 체크 (예시: 임시로 버튼으로 테스트)
   const simulateWeekEnd = () => {
     setIsWeekEnd(true);
     setShowCompletionModal(true);
   };
-  
+
   const goStage = () => navigate("/stage");
   const onKey = (e) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -132,59 +188,80 @@ export default function HomeFarm() {
       {/* 디자인 기준 393px 캔버스(가운데 고정) */}
       <Canvas>
         {/* 마스코트 (상태에 따라 변경) */}
-        <Mascot 
-          src={MASCOT_BY_STATUS[getMascotStatus()]} 
-          alt="마스코트" 
-          draggable={false} 
+        <Mascot
+          src={MASCOT_BY_STATUS[getMascotStatus()]}
+          alt="마스코트"
+          draggable={false}
         />
 
-        {/* 애니메이션 작동 방식 확인을 위한 임시 진행상황 표시 */}
+        {/* 진행상황 표시 */}
         <ProgressInfo>
           이번 주 진행상황: {weekProgress.completed}/9
+          <TestButton onClick={addNewChallenge}>새 챌린지 완료</TestButton>
           <TestButton onClick={simulateWeekEnd}>주말 시뮬레이션</TestButton>
         </ProgressInfo>
 
         {/* 겹치는 3×3 텃밭 + 라벨(바로 아래에 겹치게) */}
         <FarmArea>
-            <FarmStack aria-label="나의 텃밭 겹침 그리드">
-                {Array(9).fill(null).map((_, i) => {
-                  const r = Math.floor(i / 3);
-                  const c = i % 3;
-                  const status = getTileStatus(i);
-                  const src = TILE_BY_STATUS[status] ?? farmEmpty;
-                  const challenge = completedChallenges.find(ch => ch.tileIndex === i);
-                  
-                  return (
-                    <ClickableTile
-                      key={i}
-                      src={src}
-                      alt={challenge ? `${CHALLENGE_TYPES.find(t => t.id === challenge.type)?.name} 완료` : "빈 텃밭"}
-                      style={{ "--row": r, "--col": c }}
-                      draggable={false}
-                      onClick={() => handleTileClick(i)}
-                      $hasChallenge={!!challenge}
-                    />
-                  );
-                })}
-            </FarmStack>
+          <FarmStack aria-label="나의 텃밭 겹침 그리드">
+            {Array(9).fill(null).map((_, i) => {
+              const r = Math.floor(i / 3);
+              const c = i % 3;
+              const status = getTileStatus(i);
+              const src = TILE_BY_STATUS[status] ?? farmEmpty;
+              const challenge = completedChallenges.find(ch => ch.tileIndex === i);
+
+              return (
+                <ClickableTile
+                  key={i}
+                  src={src}
+                  alt={challenge ? `${CHALLENGE_TYPES.find(t => t.id === challenge.type)?.name} 완료` : "빈 텃밭"}
+                  style={{ "--row": r, "--col": c }}
+                  draggable={false}
+                  onClick={() => handleTileClick(i)}
+                  $hasChallenge={!!challenge}
+                  $isGrowing={growingTiles.has(i)}
+                />
+              );
+            })}
+          </FarmStack>
 
           {/* 텃밭 라벨: 컨테이너 하단에 12px 겹치게 */}
           <FarmLabel>
-                <InfoIcon src={iconInfo} alt="" />
-                <InfoText>9월 1주차 텃밭</InfoText>
-            </FarmLabel>
+            {/* ⬇ 아이콘 클릭/키보드로 가이드 모달 열기 */}
+            <InfoIcon
+              src={iconInfo}
+              alt="텃밭 가이드 열기"
+              role="button"
+              tabIndex={0}
+              onClick={() => setGuideOpen(true)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setGuideOpen(true);
+                }
+              }}
+            />
+            <Wrapper>
+                <Stroke>9월 1째주</Stroke>
+                <Fill>9월 1째주</Fill>
+                <Fill2>9월 1째주</Fill2>
+            </Wrapper>
+
+            {/* <InfoText aria-hidden="true">9월 1주차 텃밭</InfoText> */}
+          </FarmLabel>
         </FarmArea>
 
         {/* 스테이지로 가기 — 이미지형 링크 */}
         <StageButton
-            src={moveToStage}
-            alt="스테이지로 가기"
-            role="link"
-            tabIndex={0}
-            onClick={goStage}
-            onKeyDown={onKey}
-            draggable={false}
-        />
+        src={moveToStage}
+        alt="스테이지로 가기"
+        role="link"
+        tabIndex={0}
+        onClick={goStage}
+        onKeyDown={onKey}
+        draggable={false}
+      />
       </Canvas>
 
       {/* 개별 타일 정보 모달 */}
@@ -202,37 +279,69 @@ export default function HomeFarm() {
           onClose={() => setShowCompletionModal(false)}
         />
       )}
+
+      {/* 텃밭 가이드 모달 */}
+      {isGuideOpen && (
+        <GuideModal onClose={() => setGuideOpen(false)} />
+      )}
     </Container>
   );
 }
 
+/* ===== 가이드 모달 컴포넌트 ===== */
+const GuideModal = ({ onClose }) => (
+  <ModalOverlay onClick={onClose}>
+    <ImgCard
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="farm-guide-title"
+    >
+      <GuideText id="farm-guide-title">
+        매주 서로 다른 활동 9가지를 완료하면<br />
+        텃밭이 모두 가꾸어져요.<br /><br />
+        해당 주에 텃밭을 모두 가꾸면<br />
+        추가 포인트를 받을 수 있어요.(+100p)<br /><br />
+        해당 주가 지나기 전까지<br />
+        텃밭을 모두 가꾸지 못할 경우,<br />
+        텃밭이 시들어버려요.<br /><br />
+        텃밭은 매주 월요일<br />
+        00:00(KST) 초기화돼요.
+      </GuideText>
+    </ImgCard>
+  </ModalOverlay>
+);
+
+
 // 타일 정보 모달 컴포넌트
 const TileInfoModal = ({ tile, onClose }) => {
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return `${date.getMonth() + 1}월 ${date.getDate()}일`;
-  };
-
   return (
     <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={e => e.stopPropagation()}>
-        <ModalHeader>
-          <h3>🌱 새싹 정보</h3>
-          <CloseButton onClick={onClose}>×</CloseButton>
-        </ModalHeader>
-        <ModalBody>
-          <ChallengeIcon>{tile.challenge?.icon}</ChallengeIcon>
-          <ChallengeName>{tile.challenge?.name}</ChallengeName>
-          <ChallengeDate>완료일: {formatDate(tile.completedAt)}</ChallengeDate>
-          <ChallengeMessage>
-            이번 주 첫 번째 {tile.challenge?.name} 인증으로<br />
-            새싹이 자랐어요! 🌱
-          </ChallengeMessage>
-        </ModalBody>
-      </ModalContent>
+      <TileImgCard
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tile-modal-title"
+        onClick={onClose}   // 카드 자체 클릭 시 닫힘
+      >
+        <TileText>
+          {tile.isEmpty ? (
+            <>
+              이 텃밭은<br />
+              아직 아무 활동도<br />
+              완료되지 않았어요.
+            </>
+          ) : (
+            <>
+              이 텃밭은<br />
+              {tile.challenge?.name}를<br />
+              완료했어요.
+            </>
+          )}
+        </TileText>
+      </TileImgCard>
     </ModalOverlay>
   );
 };
+
 
 // 주간 완료/실패 모달 컴포넌트
 const CompletionModal = ({ isSuccess, onClose }) => {
@@ -276,14 +385,12 @@ const Container = styled.div`
   position: relative;
 `;
 
-/**
- * 캔버스 전체를 화면 중앙에 정렬하고, 내부 요소들을 중앙 기준으로 배치
- */
+/** 캔버스 전체를 화면 중앙에 정렬하고, 내부 요소들을 중앙 기준으로 배치 */
 const Canvas = styled.div`
   position: relative;
   width: 100%;
   display: flex;
-  margin-top: 100px;
+  margin-top: 5.5%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -327,7 +434,7 @@ const TestButton = styled.button`
   font-size: 12px;
   cursor: pointer;
   font-family: "Maplestory OTF", sans-serif;
-  
+
   &:hover {
     background: #6ba396;
   }
@@ -345,18 +452,18 @@ const FarmArea = styled.div`
   /* 3*타일 - 2*겹침 = 실제 그리드 박스 크기 */
   width: calc(3 * var(--tile-w) - 2 * var(--overlap-x));
   height: calc(3 * var(--tile-h) - 2 * var(--overlap-y));
-  margin-top: -5%;     /* 네가 쓰던 보정값 유지 */
+  margin-top: -5%; /* 보정값 */
   overflow: visible;
 `;
 
 /* 실제 타일이 깔리는 레이어 */
 const FarmStack = styled.div`
   position: absolute;
-  inset: 0;               /* 래퍼(FarmArea) 크기와 동일 */
-  pointer-events: none;   /* 상태 표시만 (필요 시 제거) */
+  inset: 0; /* 래퍼(FarmArea) 크기와 동일 */
+  pointer-events: auto; /* 클릭 가능하도록 변경 */
 `;
 
-/* 절대 배치 타일 */
+/* 절대 배치 타일 (상태 표시 전용) */
 const OverlapTile = styled.img`
   position: absolute;
   width: var(--tile-w);
@@ -379,15 +486,48 @@ const ClickableTile = styled.img`
   object-fit: contain;
   display: block;
   user-select: none;
-  cursor: ${props => props.$hasChallenge ? 'pointer' : 'default'};
-  transition: transform 0.2s ease;
-  
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center bottom;
+  filter: ${props => (props.$hasChallenge ? "none" : "grayscale(0.3)")};
+  z-index: ${props => (props.$hasChallenge ? "5" : "1")};
+
   &:hover {
-    transform: ${props => props.$hasChallenge ? 'scale(1.05)' : 'none'};
+    ${props => props.$hasChallenge ? `
+      transform: scale(1.08) translateY(-2px);
+      filter: brightness(1.1) saturate(1.2);
+      z-index: 10;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    ` : `
+      transform: scale(1.03) translateY(-1px);
+      filter: brightness(1.05) grayscale(0.1);
+      z-index: 5;
+    `}
   }
-  
+
   &:active {
-    transform: ${props => props.$hasChallenge ? 'scale(0.95)' : 'none'};
+    transform: scale(0.98) translateY(1px);
+    transition: all 0.1s ease;
+  }
+
+  /* 성장 애니메이션 */
+  ${props => props.$isGrowing && `
+    animation: growthAnimation 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  `}
+
+  @keyframes growthAnimation {
+    0% {
+      transform: scale(0.8) translateY(10px);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.15) translateY(-5px);
+      opacity: 0.9;
+    }
+    100% {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
   }
 `;
 
@@ -400,19 +540,33 @@ const FarmLabel = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  pointer-events: none;
+  pointer-events: auto; /* 아이콘 클릭 가능하도록 */
   z-index: 30;
   white-space: nowrap;
 `;
 
-/** 개별 타일 이미지 */
-const Tile = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* svg 비율 유지 */
+const InfoIcon = styled.img`
+  width: 18px;
+  height: 18px;
   display: block;
-  user-select: none;
-  pointer-events: none; /* 상태 표시만 — 클릭 이벤트가 필요하면 제거 */
+  cursor: pointer;
+`;
+
+const InfoText = styled.span`
+  pointer-events: none; /* 텍스트는 클릭 대상 아님 */
+  text-align: center;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #281900;
+  font-family: "Maplestory OTF";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 110% */
+  letter-spacing: -0.408px;
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 /** 스테이지로 가기 버튼 - 텃밭 아래에 배치 */
@@ -430,37 +584,12 @@ const StageButton = styled.img`
   &:active { transform: scale(0.95); }
 `;
 
-/* ===== 아래는 기존 상단/카드 스타일 ===== */
-const InfoIcon = styled.img`
-  display: block;
-`;
-
-/* 요구한 텍스트 스타일 그대로 */
-const InfoText = styled.span`
-  text-align: center;
-  -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: #281900;
-  font-family: "Maplestory OTF";
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 22px; /* 110% */
-  letter-spacing: -0.408px;
-  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-`;
-
 /* ================= 모달 스타일들 ================= */
 
 const ModalOverlay = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0,0,0,.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -470,9 +599,9 @@ const ModalOverlay = styled.div`
 const ModalContent = styled.div`
   background: white;
   border-radius: 16px;
-  max-width: 320px;
+  max-width: 360px;
   width: 90%;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0,0,0,.2);
   overflow: hidden;
 `;
 
@@ -482,7 +611,7 @@ const ModalHeader = styled.div`
   align-items: center;
   padding: 16px 20px;
   border-bottom: 1px solid #f0f0f0;
-  
+
   h3 {
     margin: 0;
     font-family: "Maplestory OTF", sans-serif;
@@ -500,18 +629,41 @@ const CloseButton = styled.button`
   padding: 0;
   width: 30px;
   height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  &:hover {
-    color: #333;
-  }
+  display: grid;
+  place-items: center;
+
+  &:hover { color: #333; }
 `;
 
 const ModalBody = styled.div`
   padding: 20px;
   text-align: center;
+  font-family: "Maplestory OTF", sans-serif;
+  color: #333;
+  line-height: 1.6;
+  font-size: 16px;
+  white-space: normal;
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 0 16px 0;
+`;
+
+const PrimaryBtn = styled.button`
+  appearance: none;
+  border: 2px solid #382C28;
+  background: #FFD57D;
+  box-shadow: 0 3px 0 #B29E99;
+  border-radius: 10px;
+  padding: 8px 18px;
+  font-family: "Maplestory OTF";
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  &:active { transform: translateY(1px); }
 `;
 
 /* 타일 정보 모달 스타일 */
@@ -563,4 +715,110 @@ const CompletionMessage = styled.p`
   color: #666;
   line-height: 1.6;
   margin: 0;
+`;
+
+/* ===== farm-guide.svg를 카드 배경으로 쓰는 스타일 ===== */
+const ImgCard = styled.div`
+  position: relative;
+  width: min(360px, 92vw);
+  aspect-ratio: 360 / 460;         /* svg 비율에 맞춰 적당히 조정 (필요시 수정) */
+  background: url(${farmGuide}) center / contain no-repeat;
+  display: grid;
+  place-items: center;
+  padding: 24px;                   /* 텍스트 안전영역 여백 */
+  box-sizing: border-box;
+`;
+
+const GuideText = styled.div`
+  text-align: center;
+  font-family: "Maplestory OTF", sans-serif;
+  color: #5C4D49;
+  line-height: 1.6;
+  font-size: 16px;
+  white-space: normal;
+  /* 필요하면 그림자/테두리 효과 */
+  text-shadow: 0 1px 0 rgba(40,25,0,.25);
+`;
+
+const GuideClose = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  color: #5C4D49;
+  cursor: pointer;
+
+  &:hover { transform: scale(1.05); }
+  &:active { transform: scale(0.95); }
+`;
+const Wrapper = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const Fill = styled.span`
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  color: #281900;
+  font-family: "Maplestory OTF";
+  font-size: 20px;
+  font-weight: 700;
+  -webkit-text-stroke: 2px #281900; 
+  z-index: 0; /* 뒤 */
+`;
+
+const Stroke = styled.span`
+  position: relative;
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: "Maplestory OTF";
+  font-size: 20px;
+  font-weight: 700;
+  z-index: 1; /* 위 */
+`;
+
+const Fill2 = styled.span`
+  position: absolute;
+  top: 2px;
+  left: 0.5px;
+  color: #281900;
+  font-family: "Maplestory OTF";
+  font-size: 20px;
+  font-weight: 700;
+  -webkit-text-stroke: 2px #281900; 
+  z-index: 0; /* 뒤 */
+`;
+
+/* ===== farm-modal.svg를 카드 배경으로 쓰는 스타일 ===== */
+const TileImgCard = styled.div`
+  position: relative;
+  width: min(360px, 92vw);
+  /* 실제 farm-modal.svg 비율에 맞춰 조정하세요. 일단 가로:세로 ≈ 360:420 가정 */
+  aspect-ratio: 360 / 420;
+  background: url(${farmModal}) center / contain no-repeat;
+  display: grid;
+  place-items: center;
+  padding: 24px;              /* 텍스트 안전영역 */
+  box-sizing: border-box;
+`;
+
+const TileText = styled.div`
+  text-align: center;
+  margin-bottom: 28%;
+  font-family: "Maplestory OTF", sans-serif;
+  color: #5C4D49;
+  line-height: 1.6;
+  font-size: 16px;
+  text-shadow: 0 1px 0 rgba(40,25,0,.2);
+  display: grid;
+  gap: 8px;
+  place-items: center;
 `;
