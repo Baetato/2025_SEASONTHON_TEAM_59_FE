@@ -244,17 +244,17 @@ export default function HomeFarm() {
                 <Stroke>
                   {weeklyMeta.weekOfYear
                     ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
-                    : "이번 주 텃밭"}
+                    : "9월 1주차 텃밭"}
                 </Stroke>
                 <Fill>
                   {weeklyMeta.weekOfYear
                     ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
-                    : "이번 주 텃밭"}
+                    : "9월 1주차 텃밭"}
                 </Fill>
                 <Fill2>
                   {weeklyMeta.weekOfYear
                     ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
-                    : "이번 주 텃밭"}
+                    : "9월 1주차 텃밭"}
                 </Fill2>
               </LabelWrapper>
             </FarmLabel>
