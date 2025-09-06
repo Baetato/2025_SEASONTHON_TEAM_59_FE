@@ -113,7 +113,7 @@ const Content = styled.div`
 
 const MenuContainer = styled.div`
   position: fixed;  /* 화면 기준으로 고정 */
-  right: 38%;      /* 오른쪽 여백 */
+  right: 10px;      /* 오른쪽 여백 */
   top:20%;
   display: flex;
   flex-direction: column;
