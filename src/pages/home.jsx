@@ -1,29 +1,4 @@
 // 홈 화면 (스테이지 & 텃밭 불러옴)
-// import { useEffect } from 'react';
-// import styled from 'styled-components';
-// import { BottomTabBar } from '.././components/bottomTabBar.jsx';
-// import { ToastHost, useToast } from '.././components/toast.jsx';
-// import { StageBoard } from '.././components/stageBoard.jsx';
-// import { DailyRewardBar } from '.././components/dailyRewardBar.jsx';
-// import { WeeklyFarm } from '.././components/weeklyFarm.jsx';
-// import { StageActionModal } from '.././components/stageActionModal.jsx';
-// import { AlertModal } from '.././components/alertModal.jsx';
-// import { FarmGuideModal } from '.././components/farmGuideModal.jsx';
-// import { HarvestModal } from '.././components/harvestModal.jsx';
-// import { FarmCellModal } from '.././components/farmCellModal.jsx';
-// import { STAGE_STATUS, pickRandomActivities } from '../utils/mockData.js';
-
-// assets
-// import mascotHappy from '.././assets/mascot-happy.svg';
-// import mascotIdle from '.././assets/mascot-idle.svg';
-// import mascotEmbrassed from '.././assets/mascot-embrassed.svg';
-// import moveToStage from '.././assets/move-to-stage.svg';
-// import moveToFarm from '.././assets/move-to-farm.svg';
-// import iconLocate from '.././assets/icon-locate.svg';
-// import iconCommunity from '.././assets/icon-community.svg';
-// import iconSetting from '.././assets/icon-setting.svg';
-// import goToStage from '.././assets/move-to-stage.svg';
-// import infoIcon from '.././assets/icon-info.svg';
 
 import React, { useState, useMemo } from 'react';
 import Header from '../components/header.jsx';
@@ -65,7 +40,7 @@ export default function Home() {
             
             <main className="flex-1 flex flex-col pb-[101px]">
                 {/* 전환 버튼 영역 */}
-                <div className="flex items-center gap-3 px-4 py-3 border-b">
+                {/* <div className="flex items-center gap-3 px-4 py-3 border-b">
                     <button
                         type="button"
                         onClick={() => setView('stage')}
@@ -103,7 +78,7 @@ export default function Home() {
                         />
                         <span className="text-sm font-medium">Farm</span>
                     </button>
-                </div>
+                </div> */}
 
                 {/* 컨텐츠 영역 */}
                 <section className="flex-1">

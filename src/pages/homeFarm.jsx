@@ -60,14 +60,14 @@ export default function HomeFarm({
 
         {/* 스테이지로 가기 — 이미지형 링크 */}
         <StageButton
-          src={moveToStage}
-          alt="스테이지로 가기"
-          role="link"
-          tabIndex={0}
-          onClick={goStage}
-          onKeyDown={onKey}
-          draggable={false}
-        />
+        src={moveToStage}
+        alt="스테이지로 가기"
+        role="link"
+        tabIndex={0}
+        onClick={goStage}
+        onKeyDown={onKey}
+        draggable={false}
+      />
       </Canvas>
     </Container>
   );
@@ -78,26 +78,26 @@ export default function HomeFarm({
 /** 페이지 루트 */
 const Container = styled.div`
   position: relative;
+  padding-bottom: 101px; /* 푸터 높이만큼 여백 확보 */
 `;
 
 /**
- * 디자인 기준 레이어(폭 393px).  
- * 이 안에서 픽셀 좌표(x:59, y:375)를 그대로 사용하므로
- * 실제 기기 폭이 달라도 레이아웃이 깨지지 않음.
+ * 캔버스 전체를 화면 중앙에 정렬하고, 내부 요소들을 중앙 기준으로 배치
  */
 const Canvas = styled.div`
   position: relative;
-  width: 393px;
-  margin: 0 auto;  /* 가운데 정렬 */
-  min-height: 900px; /* 내부 절대요소들이 들어갈 최소 높이(필요시 조정) */
+  width: 100%;
+  display: flex;
+  margin-top: 27%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
 `;
 
-/** 마스코트: 헤더 기준 176px 아래, 중앙 */
+/** 마스코트: 텃밭 위쪽에 배치 */
 const Mascot = styled.img`
-  position: absolute;
-  top: calc(var(--header-h, 97px) + 176px);
-  left: 50%;
-  transform: translateX(-50%);
   width: 179px;
   height: 212px;
   aspect-ratio: 141 / 167;
@@ -105,13 +105,12 @@ const Mascot = styled.img`
   pointer-events: none;
   user-select: none;
   z-index: 20;
+  margin-bottom: 20px;
 `;
 
-/* 겹침 배치를 위한 스택 컨테이너 */
+/* 겹침 배치를 위한 스택 컨테이너 - 중앙 정렬 */
 const FarmStack = styled.div`
-  position: absolute;
-  left: 59px;  /* x:59 */
-  top: calc(var(--header-h, 97px) + 375px); /* y:375 (헤더 보정) */
+  position: relative;
   /* 타일 크기와 겹침량을 변수로 관리 */
   --tile-w: 92px;     /* 타일 원본폭 */
   --tile-h: 104px;    /* 타일 원본높이 */
@@ -123,6 +122,7 @@ const FarmStack = styled.div`
   height: calc(3 * var(--tile-h) - 2 * var(--overlap-y));
   overflow: visible;  /* 겹친 부분 보여주기 */
   pointer-events: none; /* 상태표시만: 클릭 필요시 제거 */
+  margin-bottom: 30px;
 `;
 
 /* 각 타일: 절대 배치 + 행/열에 따른 좌표 계산 */
@@ -148,20 +148,16 @@ const Tile = styled.img`
   pointer-events: none; /* 상태 표시만 — 클릭 이벤트가 필요하면 제거 */
 `;
 
-/** 스테이지로 가기(헤더+542px) */
+/** 스테이지로 가기 버튼 - 텃밭 아래에 배치 */
 const StageButton = styled.img`
-  position: absolute;
-  top: calc(var(--header-h, 97px) + 542px);
-  left: 50%;
-  transform: translateX(-50%);
   width: 85px;
   height: 70px;
   cursor: pointer;
   user-select: none;
   z-index: 50;
   transition: transform 0.2s ease;
-  &:hover { transform: translateX(-50%) scale(1.05); }
-  &:active { transform: translateX(-50%) scale(0.95); }
+  &:hover { transform: scale(1.05); }
+  &:active { transform: scale(0.95); }
 `;
 
 /* ===== 아래는 기존 상단/카드 스타일 (필요 시 유지) ===== */
