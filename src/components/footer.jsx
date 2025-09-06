@@ -1,4 +1,4 @@
-// src/components/bottomTabBar.jsx
+// 하단탭 (푸터))
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
