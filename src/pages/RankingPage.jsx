@@ -1,6 +1,6 @@
 // src/pages/Ranking.jsx
 import React, { useEffect, useState } from "react";
-import Header from "../components/Header";
+import Header from "../components/RankingHeader";
 import Nav from "../components/Nav";
 import RankingItem from "../components/RankingItem";
 import { getMyTotalRanking } from "../api/ranking"; // 전체 누적 랭킹 함수 import
@@ -9,6 +9,7 @@ import "../styles/headerStyles.css";
 import "../styles/topNavStyles.css";
 import "../styles/rankingItemStyles.css";
 import "../styles/RankingPage.css";
+import Footer from "../components/footer";
 
 function Ranking() {
     const [totalRanking, setTotalRanking] = useState(null);
@@ -51,6 +52,7 @@ function Ranking() {
                     <RankingItem key={user.rank} rank={user.rank} nickName={user.nickName} point={user.point} />
                 ))}
             </div>
+            <Footer />
         </div>
     );
 }

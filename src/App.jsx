@@ -1,15 +1,10 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Ranking from "./pages/RankingPage";
+import { Link } from "react-router-dom";
 
 function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/ranking" element={<Ranking />} />
-            </Routes>
-        </BrowserRouter>
+        <div style={{ textAlign: "center", padding: "2rem" }}>
+            <h1>LeafUp_FE 메인 페이지</h1>
+        </div>
     );
 }
 
