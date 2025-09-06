@@ -26,6 +26,9 @@
   --color-accent: #FF4A4A;    /* 강조/필수 별표 등 */
   --color-bg: #FFF8E8;        /* 배경색 */
   --color-border: #B29E99;    /* 테두리 */
+
+  /* 카카오에서 스크롤 막힘 ->  vh를 안전하게 쓰기 위한 변수 */
+  --vh: 1vh;
 }
 
 * {
@@ -42,24 +45,25 @@ body, #root {
   background-color: #5C4D49;
 }
 
-/* 🔹 body 전체를 flex로 중앙 정렬 */
+/* body: 그냥 배경 + 스크롤 가능만 */
 body {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #f0f0f0; /* 일단 흰색으로 */
+  background-color: #f0f0f0;
+  min-height: 100vh;
+  overflow-y: auto; /* 스크롤 허용 */
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
 }
 
-/* 🔹 앱 컨테이너: 기본 모바일 스타일 */
+/* root: 실제 앱 컨테이너 */
 #root {
   width: 100%;
-  max-width: 390px; /* iPhone 14 기준 */
-  height: 100vh; /* 모바일에서는 꽉 차게 */
+  max-width: 390px;
+  min-height: calc(var(--vh, 1vh) * 100);
   background-color: #FFF8E8;
-  overflow: hidden;
-  border-radius: 0; /* 모바일은 모서리 없음 */
+  overflow-y: auto; /* ✅ 내부 스크롤 허용 */
+  display: flex;
+  flex-direction: column; /* ✅ 내부에서 중앙정렬 컨트롤 */
 }
 
 /* 🔹 PC/웹뷰용 스타일 */
