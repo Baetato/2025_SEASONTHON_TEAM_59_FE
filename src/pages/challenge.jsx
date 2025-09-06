@@ -133,7 +133,13 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  padding: 30px 7px;
+  /* 화면 전체 높이에서 Header 높이만큼 빼기 */
+  height: calc(100vh - 50px); /* HeaderBar 높이 */
+  padding: 140px 7px 10px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
 `;
 
 const ToggleContainer = styled.div`

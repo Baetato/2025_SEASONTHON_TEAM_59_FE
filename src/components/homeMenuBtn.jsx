@@ -25,8 +25,8 @@ export default function HomeMenuButton({ type, onClick }) {
 
 // StyledComponents
 const ButtonWrapper = styled.button`
-  width: 61px;
-  height: 61px;
+  width: 48px;
+  height: 50px;
   flex-shrink: 0;
   border: none;
   padding: 0;
@@ -48,6 +48,6 @@ const ButtonWrapper = styled.button`
 
 const IconImg = styled.img`
   width: 43px;
-  height: 57px;
+  height: 52px;
   pointer-events: none;
 `;

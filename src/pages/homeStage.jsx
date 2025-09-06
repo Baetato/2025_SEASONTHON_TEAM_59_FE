@@ -1,36 +1,96 @@
-//src/pages/homeStage.jsx
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Header from '../components/header.jsx';
-import HomeMenuButton from '../components/homeMenuBtn.jsx';
+import StageScroll from '../components/stageScroll.jsx';
+import StageScrollInfinite from '../components/stageScrollInfinite.jsx';
+import ChallengeModal from '../components/challengeModal.jsx';
+import HomeMenuButton from "../components/homeMenuBtn.jsx";
+import RewardBar from '../components/rewardBar.jsx';
+import api from '../api.js';
 
 export default function HomeStage() {
-  const [alert, setAlert] = useState(null);
+  const [stages, setStages] = useState([]);
+  const [characterStage, setCharacterStage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [challenges, setChallenges] = useState([]);
+  const [selectedStage, setSelectedStage] = useState(null);
+
+  const displayCount = 5;
+
+  useEffect(() => {
+    const fetchChallenges = async () => {
+      try {
+        const res = await api.get("/v1/daily-challenges/today");
+        const data = res.data.data;
+
+        setCharacterStage(data.currentStage);
+        setChallenges(data.dailyChallengesResDtos);
+
+        const stageData = Array.from({ length: displayCount }, (_, i) => ({
+          index: data.currentStage + i,
+          status: 'before',
+        }));
+        setStages(stageData);
+      } catch (error) {
+        console.error("챌린지 조회 실패:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChallenges();
+  }, []);
+
+  const handleStartClick = (stageIndex) => {
+    setSelectedStage(stageIndex);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => setModalOpen(false);
+
+  if (loading) return <Container>Loading...</Container>;
+
+  console.log("챌린지 데이터:", challenges);
 
   return (
     <Container>
       <Header points={100} maxPoints={200} />
       <Content>
-        <HomeMenuButton
-          type="location"
-          onClick={() => setAlert({ title: '안내', body: '내 주변(미구현)' })}
+        {/* 오른쪽 고정 메뉴 */}
+        <MenuContainer>
+          <HomeMenuButton type="location" onClick={() => console.log("위치")} />
+          <HomeMenuButton type="community" onClick={() => console.log("커뮤니티")} />
+          <HomeMenuButton type="setting" onClick={() => console.log("셋팅")} />
+        </MenuContainer>
+
+        {/* 가운데 상단 보상 바 */}
+        <RewardBarContainer>
+          <RewardBar completedCount={0} />
+        </RewardBarContainer>
+
+        <StageScroll 
+          stages={stages} 
+          characterStage={characterStage} 
+          onStartClick={handleStartClick} 
         />
-        <HomeMenuButton
-          type="community"
-          onClick={() => setAlert({ title: '안내', body: '메시지(미구현)' })}
-        />
-        <HomeMenuButton
-          type="setting"
-          onClick={() => setAlert({ title: '설정', body: '설정(미구현)' })}
-        />
+        {/*<StageScrollInfinite
+          initialStages={stages}
+          characterStage={characterStage}
+          onStartClick={handleStartClick}
+        />*/}
+        {modalOpen && (
+          <ChallengeModal 
+            challenges={challenges} 
+            stageIndex={selectedStage} 
+            onClose={closeModal} 
+          />
+        )}
       </Content>
     </Container>
   );
 }
 
-
-// Styled Components
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -40,5 +100,32 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  padding: 30px 7px;
+  /* 화면 전체 높이에서 Header 높이만큼 빼기 */
+  height: calc(100vh - 97px); /* HeaderBar 높이 */
+  padding: 140px 7px 20px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+`;
+
+const MenuContainer = styled.div`
+  position: fixed;  /* 화면 기준으로 고정 */
+  right: 30%;      /* 오른쪽 여백 */
+  top:20%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;    /* 헤더보다 위로 띄우기 */
+`;
+
+const RewardBarContainer = styled.div`
+  position: fixed;  /* 화면 기준으로 고정 */
+  left: 48%;      /* 오른쪽 여백 */
+  top:25%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;    /* 헤더보다 위로 띄우기 */
 `;

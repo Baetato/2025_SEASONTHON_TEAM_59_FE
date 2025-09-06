@@ -3,9 +3,9 @@ import styled from "styled-components";
 import ChoiceBtn from "../assets/ChoiceBtn.png";
 import CoinIcn from "../assets/CoinIcn.png";
 
-export default function NextBtn({ onClick, children, points }) {
+export default function NextBtn({ onClick, children, points, width, height }) {
   return (
-    <Button onClick={onClick}>
+    <Button onClick={onClick} $width={width} $height={height}>
       <Content>
         <Text>{children}</Text>
         {points !== undefined && (
@@ -21,8 +21,8 @@ export default function NextBtn({ onClick, children, points }) {
 
 // Styled Components
 const Button = styled.button`
-  width: 152px;
-  height: 52px;
+  width: ${({ $width }) => $width || "152px"};
+  height: ${({ $height }) => $height || "52px"};
   background-image: url(${ChoiceBtn});
   background-size: cover;
   border: none;
