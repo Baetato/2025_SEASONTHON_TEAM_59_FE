@@ -266,3 +266,9 @@ const LoadingOverlay = styled.div`
   align-items: center;
   z-index: 1000;
 `
+
+const LoadingText = styled.div`
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+`;
