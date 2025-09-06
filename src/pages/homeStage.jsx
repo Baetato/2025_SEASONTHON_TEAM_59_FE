@@ -6,7 +6,6 @@ import GotoFarmBtn from '../assets/GotoFarmBtn.png';
 
 import Header from '../components/header.jsx';
 import StageScroll from '../components/stageScroll.jsx';
-import StageScrollInfinite from '../components/stageScrollInfinite.jsx';
 import ChallengeModal from '../components/challengeModal.jsx';
 import HomeMenuButton from "../components/homeMenuBtn.jsx";
 import RewardBar from '../components/rewardBar.jsx';
