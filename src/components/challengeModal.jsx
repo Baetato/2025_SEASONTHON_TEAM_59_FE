@@ -1,14 +1,22 @@
 import styled from "styled-components";
 import ChallengeItem from "./challengeItem";
+import { useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
 
 const challengeColors = {
   EASY: { background: "#7CB5A9", border: "#568269" },
   MEDIUM: { background: "#FFBF2B", border: "#B9860F" },
-  HARD: { background: "#FF4A4A", border: "#A82222" }
+  HARD: { background: "#FF4A4A", border: "#A82222" },
+};
+
+const statusColors = {
+  PENDING_APPROVAL: { background: "#6c6c6c", border: "#4a4a4a" },
+  COMPLETED: { background: "#3a3a3a", border: "#1f1f1f" },
+  REJECTED: { background: "#a83232", border: "#6e1f1f" },
 };
 
 export default function ChallengeModal({ challenges, stageIndex, onClose }) {
+  const navigate = useNavigate();
   const inputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
@@ -19,10 +27,7 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
   }, []);
 
   const handleClick = (challenge) => {
-    if (!isMobile) {
-      alert("📱 카메라는 모바일에서만 사용할 수 있어요.");
-      return;
-    }
+    if (challenge.challengeStatus !== "ACTIVE") return; // 비활성화된 챌린지는 클릭 금지
     setSelectedChallenge(challenge);
     inputRef.current?.click();
   };
@@ -33,8 +38,18 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
 
     const reader = new FileReader();
     reader.onload = (ev) => {
-      console.log("챌린지:", selectedChallenge.contents);
-      console.log("사진 base64:", ev.target.result);
+      navigate("/camera", {
+        state: {
+          photo: ev.target.result,
+          challenge: {
+            id: selectedChallenge.dailyMemberChallengeId,
+            contents: selectedChallenge.contents,
+            type: selectedChallenge.challengeType,
+            points: 10, // 필요하면 조정
+          },
+          stageIndex,
+        },
+      });
     };
     reader.readAsDataURL(file);
   };
@@ -45,21 +60,34 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
         <ModalHeader>스테이지 {stageIndex} 도전</ModalHeader>
 
         <ChallengeList>
-          {challenges.map((challenge) => (
-            <ChallengeButton
-              key={challenge.dailyMemberChallengeId}
-              onClick={() => handleClick(challenge)}
-            >
-              <ChallengeItem
-                colors={challengeColors[challenge.challengeType]}
-                title={challenge.contents}
-                points={10}
-                width="191px"
-                height="49px"
-                fontSize="12px"
-              />
-            </ChallengeButton>
-          ))}
+          {challenges.map((challenge) => {
+            const isDisabled = challenge.challengeStatus !== "ACTIVE";
+            const colors =
+              challenge.challengeStatus === "ACTIVE"
+                ? challengeColors[challenge.challengeType]
+                : statusColors[challenge.challengeStatus] || { background: "#999", border: "#666" };
+
+            return (
+              <ChallengeButton
+                key={challenge.dailyMemberChallengeId}
+                onClick={() => handleClick(challenge)}
+                disabled={isDisabled}
+                $isDisabled={isDisabled}
+              >
+                <ChallengeItem
+                  colors={colors}
+                  title={challenge.contents}
+                  points={10}
+                  width="191px"
+                  height="49px"
+                  fontSize="12px"
+                />
+                {challenge.challengeStatus === "REJECTED" && (
+                  <RejectedLabel>거절됨</RejectedLabel>
+                )}
+              </ChallengeButton>
+            );
+          })}
         </ChallengeList>
 
         <HiddenInput
@@ -125,13 +153,27 @@ const ChallengeList = styled.div`
 
 const ChallengeButton = styled.button`
   all: unset;
-  cursor: pointer;
+  cursor: ${({ $isDisabled }) => ($isDisabled ? "not-allowed" : "pointer")};
   width: 100%;
+  position: relative;
+  opacity: ${({ $isDisabled }) => ($isDisabled ? 0.6 : 1)};
   &:hover {
-    transform: scale(1.02);
+    transform: ${({ $isDisabled }) => ($isDisabled ? "none" : "scale(1.02)")};
   }
 `;
 
 const HiddenInput = styled.input`
   display: none;
+`;
+
+const RejectedLabel = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ff4a4a;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 0 3px 0 3px;
 `;

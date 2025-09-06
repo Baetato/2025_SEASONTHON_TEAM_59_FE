@@ -13,10 +13,15 @@ export default function CameraPage() {
   const inputRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { photo: locationPhoto, challenge, stageIndex } = location.state || {};
+  console.log(challenge.id)
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
   // 테스트용
   const testPhoto = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjYwIiBoZWlnaHQ9IjM0MCIgdmlld0JveD0iMCAwIDI2MCAzNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwMCAxMDAgQzMwMCAxNDAgMjYwIDE4MCAyNjAgMTgwIEMyNjAgMTgwIDIyMCAxNDAgMjAwIDEyMCAgQzE4MCAxNDAgMTQwIDE4MCAxNDAgMTgwIEMxNDAgMTgwIDEwMCAxNDAgODAgMTIwIEM2MCAxNDAgMjAgMTgwIDIwIDE4MCBDMjAgMTgwIDAgMTQwIDAgMTAwIEMwIDQwIDEyMCAwIDE0MCAyMCBDMTYwIDAgMjgwIDQwIDMwMCAxMDAiIGZpbGw9IiNGRjAwRkYiIC8+PC9zdmc+";
-  const photo = location.state?.photo || testPhoto;
+  const photo = locationPhoto || testPhoto;
 
 
   const retakePhoto = () => {
@@ -53,19 +58,38 @@ export default function CameraPage() {
 
   const completePhoto = async () => {
     try {
+      setIsLoading(true); // 로딩 시작
+      setLoadingMessage("사진을 변환하는 중입니다...");
+      // 1. 이미지 업로드
       const blob = base64ToBlob(photo);
       const formData = new FormData();
-      formData.append("multipartFile", blob, "challenge.png"); // 필드명 = multipartFile
+      formData.append("multipartFile", blob, "challenge.png"); 
 
-      const res = await api.post("/v1/images/challenge/upload", formData, {
-        headers: {
-          "Content-Type": undefined, // Axios가 자동 처리
-        },
+      const uploadRes = await api.post("/v1/images/challenge/upload", formData, {
+        headers: { "Content-Type": undefined },
       });
-
-      const imageUrl = res.data?.url;
+      console.log(uploadRes.data);
+      //const imageUrl = uploadRes.data?.url;
+      const imageUrl = uploadRes.data?.data; // 여기가 실제 URL
       console.log("업로드 성공:", imageUrl);
-      navigate("/complete", { state: { imageUrl } });
+      setLoadingMessage("사진을 제출하는 중입니다...");
+
+      if (!imageUrl) {
+        alert("이미지 업로드에 실패했습니다.");
+        return;
+      }
+
+      // 2. 챌린지 제출 API 호출
+      const submitRes = await api.post(
+        `/v1/daily-challenges/${challenge.id}/submit`,
+        { imageUrl } // 바디에 변환한 URL 넣기
+      );
+
+      console.log("챌린지 제출 성공:", submitRes.data);
+
+      // 3. 제출 완료 페이지로 이동
+      navigate("/home-stage", { state: { imageUrl, challenge } });
+
     } catch (err) {
       console.error("업로드 실패:", err);
       alert("업로드 중 오류가 발생했습니다.");
@@ -89,7 +113,9 @@ export default function CameraPage() {
       {/* 뒤로가기 누르면 모달 열기 */}
       <VerifyTopBar onBack={() => setIsModalOpen(true)} />
       <Content>
-        <ChallengeText>활동: 활동명 받아와야함 from Main</ChallengeText>
+        <ChallengeText>
+          활동: {challenge?.contents || "활동명 받아와야 함"}
+        </ChallengeText>
         <SubText>인증샷이 승인될 경우 포인트가 적립됩니다 <br/>
                   이 사진으로 제출할까요?</SubText>
         <PreviewContainer>
@@ -106,7 +132,7 @@ export default function CameraPage() {
           <ChoiceBtn onClick={retakePhoto}>
             재촬영
           </ChoiceBtn>
-          <ChoiceBtn onClick={completePhoto} points={50}>
+          <ChoiceBtn onClick={completePhoto}>
             제출하기
           </ChoiceBtn>
         </ButtonRow>
@@ -137,6 +163,13 @@ export default function CameraPage() {
         capture="environment"
         onChange={handleFileChange}
       />
+
+      {/* 로딩 오버레이 */}
+      {isLoading && (
+        <LoadingOverlay>
+          <LoadingText>{loadingMessage}</LoadingText>
+        </LoadingOverlay>
+      )}
 
     </Container>
   );
@@ -249,4 +282,23 @@ const ButtonRow = styled.div`
 
 const HiddenInput = styled.input`
   display: none;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+`;
+
+const LoadingText = styled.div`
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
 `;

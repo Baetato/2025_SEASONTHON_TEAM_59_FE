@@ -19,6 +19,16 @@ export default function HomeStage() {
 
   const displayCount = 5;
 
+  const mapChallengeStatusToStage = (challengeStatus) => {
+    switch(challengeStatus) {
+      case "ACTIVE": return "before";
+      case "PENDING_APPROVAL": return "waiting";
+      case "COMPLETED": return "approved";
+      case "REJECTED": return "rejected";
+      default: return "before";
+    }
+  };
+
   useEffect(() => {
     const fetchChallenges = async () => {
       try {
@@ -28,10 +38,11 @@ export default function HomeStage() {
         setCharacterStage(data.currentStage);
         setChallenges(data.dailyChallengesResDtos);
 
-        const stageData = Array.from({ length: displayCount }, (_, i) => ({
-          index: data.currentStage + i,
-          status: 'before',
+        const stageData = data.dailyChallengesResDtos.map(challenge => ({
+          index: challenge.dailyMemberChallengeId,
+          status: mapChallengeStatusToStage(challenge.challengeStatus),
         }));
+
         setStages(stageData);
       } catch (error) {
         console.error("챌린지 조회 실패:", error);
