@@ -1,4 +1,4 @@
-// 홈 화면 (텃밭만 라우팅하기로 수정)
+// // 홈 화면 (텃밭만 라우팅하기로 수정)
 
 // import React, { useState, useMemo } from 'react';
 // import Header from '../components/header.jsx';
