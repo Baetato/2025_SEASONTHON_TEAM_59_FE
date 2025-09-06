@@ -127,6 +127,21 @@ export default function HomeFarm() {
     })();
   }, []);
 
+  // 주차 -> "M월 N주차" 로 변환
+  function formatToMonthWeek(year, weekOfYear) {
+    // ISO 주차를 실제 날짜로 변환 (연초에서 주차 * 7일)
+    const simple = new Date(year, 0, 1 + (weekOfYear - 1) * 7);
+    const month = simple.getMonth() + 1; // JS Date의 월은 0부터 시작 → +1 필요
+    const firstDayOfMonth = new Date(simple.getFullYear(), simple.getMonth(), 1);
+
+    // 이번 달 1일이 무슨 요일인지
+    const offset = firstDayOfMonth.getDay();
+    // 현재 날짜가 이번 달 몇 번째 주차인지
+    const weekNumberInMonth = Math.ceil((simple.getDate() + offset) / 7);
+
+    return `${month}월 ${weekNumberInMonth}주차 텃밭`;
+  }
+
   const weekProgress = getWeekProgress(completedChallenges);
 
   // 마스코트 상태 (비로그인이어도 기본 idle 노출)
@@ -243,17 +258,17 @@ export default function HomeFarm() {
               <LabelWrapper>
                 <Stroke>
                   {weeklyMeta.weekOfYear
-                    ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
+                    ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
                     : "9월 1주차 텃밭"}
                 </Stroke>
                 <Fill>
                   {weeklyMeta.weekOfYear
-                    ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
+                    ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
                     : "9월 1주차 텃밭"}
                 </Fill>
                 <Fill2>
                   {weeklyMeta.weekOfYear
-                    ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
+                    ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
                     : "9월 1주차 텃밭"}
                 </Fill2>
               </LabelWrapper>
