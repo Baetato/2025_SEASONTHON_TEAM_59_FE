@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api.js";
-import axios from "axios";
 import styled from "styled-components";
 
 export default function KakaoAuth() {
@@ -21,8 +20,8 @@ export default function KakaoAuth() {
 
     const fetchToken = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/v1/oauth2/callback/${provider}?code=${code}`
+        const res = await api.get(
+          `/v1/oauth2/callback/${provider}?code=${code}`
         );
 
         const { accessToken, refreshToken } = res.data.data.tokenDto;
