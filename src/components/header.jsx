@@ -123,8 +123,8 @@ export default function Header({ points, maxPoints }) {
 
 // Styled Components
 const HeaderWrapper = styled.div`
-  position: relative;
-  width: 100%;
+  position: fixed;
+  z-index:99999;  /* 최상단 */
 `;
 
 const HeaderBar = styled.div`

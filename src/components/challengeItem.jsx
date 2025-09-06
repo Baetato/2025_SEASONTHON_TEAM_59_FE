@@ -1,21 +1,22 @@
 import styled from "styled-components";
 import CoinIcn from "../assets/CoinIcn.png";
 
-export default function ChallengeItem({ colors, title, points }) {
+export default function ChallengeItem({ colors, title, points, width, height, fontSize }) {
 
   return (
-    <ItemWrapper>
+    <ItemWrapper $width={width} $height={height}>
       {/* 난이도 색 */}
       <LevelColor
         $background={colors.background}
         $border={colors.border}
+        $height={height}
       />
 
       {/* 챌린지 제목 */}
-      <Title>{title}</Title>
+      <Title $fontSize={fontSize}>{title}</Title>
 
       {/* 포인트 + 아이콘 */}
-      <PointContainer>
+      <PointContainer $fontSize={fontSize}>
         <span>{points}</span>
         <CoinIcon src={CoinIcn} alt="coin" />
       </PointContainer>
@@ -25,8 +26,8 @@ export default function ChallengeItem({ colors, title, points }) {
 
 // Styled Components
 const ItemWrapper = styled.div`
-  width: 370px;
-  height: 49px;
+  width: ${({ $width }) => $width || "370px"};
+  height: ${({ $height }) => $height || "49px"};
   flex-shrink: 0;
   border-radius: 3px;
   border: 1px solid #B29E99;
@@ -40,7 +41,7 @@ const ItemWrapper = styled.div`
 
 const LevelColor = styled.div`
   width: 23.381px;
-  height: 49px;
+  height: ${({ $height }) => $height || "49px"};
   flex-shrink: 0;
   border-radius: 3px 0 0 3px;
   border-top: 2px solid ${(props) => props.$border};
@@ -54,9 +55,9 @@ const Title = styled.div`
   margin-left: 8px;
   color: #5C4D49;
   font-family: "SUITE Variable";
-  font-size: 16px;
+  font-size: ${({ $fontSize }) => ($fontSize === "191px" ? "12px" : "16px")};
   font-weight: 800;
-  line-height: 22px;
+  line-height: ${({ $fontSize }) => ($fontSize === "191px" ? "16px" : "22px")};
   letter-spacing: -0.408px;
 `;
 
@@ -70,9 +71,9 @@ const PointContainer = styled.div`
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: #000;
   font-family: "Maplestory OTF";
-  font-size: 16px;
+  font-size: ${({ $fontSize }) => ($fontSize === "191px" ? "12px" : "16px")};
   font-weight: 700;
-  line-height: 22px;
+  line-height: ${({ $fontSize }) => ($fontSize === "191px" ? "16px" : "22px")};
   letter-spacing: -0.408px;
 `;
 
