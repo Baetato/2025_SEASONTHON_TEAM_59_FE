@@ -74,17 +74,24 @@ const getWeekProgress = (completedChallenges) => {
   };
 };
 
-// API 응답 → 내부 completedChallenges로 매핑 (타일 인덱스는 서버가 안 주므로 0~8 순서 부여)
+// API 응답 → 내부 completedChallenges로 매핑
+// - tileIndex는 서버가 안 주므로 0~8 순서 부여
+// - content가 있으면 label로 저장해 모달에서 노출(없으면 기본 매핑 이름 사용)
 function mapApiToCompleted(apiCompleted) {
   const now = new Date().toISOString();
   return (apiCompleted || [])
     .slice(0, 9)
-    .map((row, idx) => ({
-      type: CHALLENGE_ID_MAP[row.challengeId] ?? null,
-      completedAt: now,
-      tileIndex: idx,
-    }))
-    .filter((c) => !!c.type);
+    .map((row, idx) => {
+      const type = CHALLENGE_ID_MAP[row.challengeId] ?? null;
+      if (!type) return null;
+      return {
+        type,
+        completedAt: now,
+        tileIndex: idx,
+        label: row.content || null,
+      };
+    })
+    .filter(Boolean);
 }
 
 /* ===== 컴포넌트 ===== */
