@@ -8,17 +8,26 @@ import mascotIdle from "../assets/mascot-idle.svg";
 import farmEmpty from "../assets/farm-empty.svg";
 
 // (선택) 상태별 텃밭 타일 이미지 매핑 — 추후 교체/확장
-import farmGrowing from "../assets/farm-grow.svg";   // 예시
-import farmDone from "../assets/farm-muture.svg";         // 예시
-import farmLocked from "../assets/farm-fail.svg";     // 예시
+import farmGrowing from "../assets/farm-grow.svg";   
+import farmDone from "../assets/farm-muture.svg";       
+import farmLocked from "../assets/farm-fail.svg";   
+import iconInfo from "../assets/icon-info.svg";
 
-// 상태별 이미지 매핑 (예: empty/growing/done/locked)
+// 상태별 이미지 매핑 (empty/growing/done/locked)
 const TILE_BY_STATUS = {
   empty: farmEmpty,
   growing: farmGrowing,
   done: farmDone,
   locked: farmLocked,
 };
+
+const TILE_W = 92;
+const TILE_H = 104;
+const OVERLAP_X = 12;
+const OVERLAP_Y = 22;
+
+const FARM_W = 3 * TILE_W - 2 * OVERLAP_X; // 275px
+const FARM_H = 3 * TILE_H - 2 * OVERLAP_Y; // 314px
 
 export default function HomeFarm({
   // 길이 9짜리 상태 배열; 미전달 시 모두 empty
@@ -40,34 +49,42 @@ export default function HomeFarm({
         {/* 마스코트 (장식) */}
         <Mascot src={mascotIdle} alt="마스코트" draggable={false} />
 
-        {/* 겹치는 3×3 텃밭 */}
-        <FarmStack aria-label="나의 텃밭 겹침 그리드">
-        {tiles.slice(0, 9).map((status, i) => {
-            const r = Math.floor(i / 3); // 0..2
-            const c = i % 3;             // 0..2
-            const src = TILE_BY_STATUS[status] ?? farmEmpty;
-            return (
-            <OverlapTile
-                key={i}
-                src={src}
-                alt=""
-                style={{ "--row": r, "--col": c }}
-                draggable={false}
-            />
-            );
-        })}
-        </FarmStack>
+        {/* 겹치는 3×3 텃밭 + 라벨(바로 아래에 겹치게) */}
+        <FarmArea>
+            <FarmStack aria-label="나의 텃밭 겹침 그리드">
+                {tiles.slice(0, 9).map((status, i) => {
+                const r = Math.floor(i / 3);
+                const c = i % 3;
+                const src = TILE_BY_STATUS[status] ?? farmEmpty;
+                return (
+                    <OverlapTile
+                    key={i}
+                    src={src}
+                    alt=""
+                    style={{ "--row": r, "--col": c }}
+                    draggable={false}
+                    />
+                );
+                })}
+            </FarmStack>
+
+          {/* 텃밭 라벨: 컨테이너 하단에 12px 겹치게 */}
+          <FarmLabel>
+                <InfoIcon src={iconInfo} alt="" />
+                <InfoText>9월 1주차 텃밭</InfoText>
+            </FarmLabel>
+        </FarmArea>
 
         {/* 스테이지로 가기 — 이미지형 링크 */}
         <StageButton
-        src={moveToStage}
-        alt="스테이지로 가기"
-        role="link"
-        tabIndex={0}
-        onClick={goStage}
-        onKeyDown={onKey}
-        draggable={false}
-      />
+            src={moveToStage}
+            alt="스테이지로 가기"
+            role="link"
+            tabIndex={0}
+            onClick={goStage}
+            onKeyDown={onKey}
+            draggable={false}
+        />
       </Canvas>
     </Container>
   );
@@ -78,7 +95,6 @@ export default function HomeFarm({
 /** 페이지 루트 */
 const Container = styled.div`
   position: relative;
-  padding-bottom: 101px; /* 푸터 높이만큼 여백 확보 */
 `;
 
 /**
@@ -88,11 +104,11 @@ const Canvas = styled.div`
   position: relative;
   width: 100%;
   display: flex;
-  margin-top: 27%;
+  margin-top: 100px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 15px;
   box-sizing: border-box;
 `;
 
@@ -108,24 +124,30 @@ const Mascot = styled.img`
   margin-bottom: 20px;
 `;
 
-/* 겹침 배치를 위한 스택 컨테이너 - 중앙 정렬 */
-const FarmStack = styled.div`
+/* 겹침 배치를 위한 래퍼: 크기/변수의 '단일 진실 소스' */
+const FarmArea = styled.div`
   position: relative;
-  /* 타일 크기와 겹침량을 변수로 관리 */
-  --tile-w: 92px;     /* 타일 원본폭 */
-  --tile-h: 104px;    /* 타일 원본높이 */
-  --overlap-x: 24px;  /* 좌우 겹침량(픽셀) */
-  --overlap-y: 39px;  /* 상하 겹침량(픽셀) */
+  /* 타일/겹침 변수: 여기에서만 정의하면 하위가 모두 동일 값 사용 */
+  --tile-w: 98px;
+  --tile-h: 113px;
+  --overlap-x: 24px; /* 좌우 겹침 */
+  --overlap-y: 39px; /* 상하 겹침 */
 
-  /* 전체 스택의 실제 크기 = 3*타일 - 2*겹침 */
+  /* 3*타일 - 2*겹침 = 실제 그리드 박스 크기 */
   width: calc(3 * var(--tile-w) - 2 * var(--overlap-x));
   height: calc(3 * var(--tile-h) - 2 * var(--overlap-y));
-  overflow: visible;  /* 겹친 부분 보여주기 */
-  pointer-events: none; /* 상태표시만: 클릭 필요시 제거 */
-  margin-bottom: 30px;
+  margin-top: -5%;     /* 네가 쓰던 보정값 유지 */
+  overflow: visible;
 `;
 
-/* 각 타일: 절대 배치 + 행/열에 따른 좌표 계산 */
+/* 실제 타일이 깔리는 레이어 */
+const FarmStack = styled.div`
+  position: absolute;
+  inset: 0;               /* 래퍼(FarmArea) 크기와 동일 */
+  pointer-events: none;   /* 상태 표시만 (필요 시 제거) */
+`;
+
+/* 절대 배치 타일 */
 const OverlapTile = styled.img`
   position: absolute;
   width: var(--tile-w);
@@ -135,7 +157,21 @@ const OverlapTile = styled.img`
   object-fit: contain;
   display: block;
   user-select: none;
-  pointer-events: none; /* 클릭 필요시 제거 */
+  pointer-events: none;
+`;
+
+/* 라벨: 컨테이너 하단에서 12px 위로 올려 ‘겹치게’ */
+const FarmLabel = styled.div`
+  position: absolute;
+  left: 50%;
+  top: calc(100% - 12px); /* ← 핵심! 컨테이너 높이 기준 */
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  z-index: 30;
+  white-space: nowrap;
 `;
 
 /** 개별 타일 이미지 */
@@ -154,54 +190,33 @@ const StageButton = styled.img`
   height: 70px;
   cursor: pointer;
   user-select: none;
+  margin-left: 70%;
+  margin-top: -7%;
+  margin-bottom: 9%;
   z-index: 50;
   transition: transform 0.2s ease;
   &:hover { transform: scale(1.05); }
   &:active { transform: scale(0.95); }
 `;
 
-/* ===== 아래는 기존 상단/카드 스타일 (필요 시 유지) ===== */
-
-const HeaderSection = styled.div`
-  margin-top: 12px;
-  margin-bottom: 16px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+/* ===== 아래는 기존 상단/카드 스타일 ===== */
+const InfoIcon = styled.img`
+  display: block;
 `;
 
-const Title = styled.h1`
-  font-size: 1.25rem;
-  font-weight: 600;
-  font-family: "Maplestory OTF", sans-serif;
-  color: #333;
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
-const ActionButton = styled.button`
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  padding: 6px 12px;
-  font-size: 0.875rem;
-  background: #fff;
-  cursor: pointer;
-  font-family: "Maplestory OTF", sans-serif;
-  transition: background-color 0.2s ease;
-  &:hover { background-color: #f9fafb; }
-  &:focus { outline: none; box-shadow: 0 0 0 2px #000; }
-`;
-
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
-  @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+/* 요구한 텍스트 스타일 그대로 */
+const InfoText = styled.span`
+  text-align: center;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #281900;
+  font-family: "Maplestory OTF";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 110% */
+  letter-spacing: -0.408px;
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
