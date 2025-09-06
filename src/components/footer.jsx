@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 
@@ -7,48 +8,70 @@ import iconChallenge from "../assets/icon-challenge.svg";
 import leafUpLogo from "../assets/footer-logo.svg";
 import iconRanking from "../assets/icon-ranking.svg";
 import iconFriend from "../assets/icon-friend.svg";
+import farmModal from "../assets/farm-modal.svg";
 
 export default function Footer() {
   const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false); // 모달 상태 관리
+  const [modalMessage, setModalMessage] = useState(""); // 모달 메시지 관리
 
   const items = [
-    { id: "store",     label: "가게",   icon: iconStore,     path: "/store" },
+    { id: "store", label: "가게", icon: iconStore, path: "/store", comingSoon: true },
     { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
-    { id: "home",      label: "리프업", icon: leafUpLogo,    path: "/home-stage", isHome: true },
-    { id: "ranking",   label: "랭킹",   icon: iconRanking,   path: "/ranking" },
-    { id: "friend",    label: "친구",   icon: iconFriend,    path: "/friends" },
+    { id: "home", label: "리프업", icon: leafUpLogo, path: "/home-stage", isHome: true },
+    { id: "ranking", label: "랭킹", icon: iconRanking, path: "/ranking" },
+    { id: "friend", label: "친구", icon: iconFriend, path: "/friends", comingSoon: true },
   ];
 
-  const onKey = (e, path) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      navigate(path);
+  const handleItemClick = (item) => {
+    if (item.comingSoon) {
+      // Coming Soon 모달 띄우기
+      setModalMessage(`${item.label} Coming Soon..!`);
+      setModalOpen(true);
+    } else {
+      // 라우팅
+      navigate(item.path);
     }
   };
 
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   return (
-    <FooterRoot role="contentinfo" aria-label="하단 탭 바">
-      <Content>
-        {items.map((it) => (
-          <Item
-            key={it.id}
-            role="button"
-            tabIndex={0}
-            aria-label={it.label}
-            onClick={() => navigate(it.path)}
-            onKeyDown={(e) => onKey(e, it.path)}
-          >
-            {it.isHome ? (
-              <HomeLogo src={it.icon} alt={it.label} draggable={false} />
-            ) : (
-              <Icon src={it.icon} alt={it.label} draggable={false} />
-            )}
-            <Label>{it.label}</Label>
-          </Item>
-        ))}
-      </Content>
-      <Bg src={footerImg} alt="" aria-hidden="true" />
-    </FooterRoot>
+    <>
+      <FooterRoot role="contentinfo" aria-label="하단 탭 바">
+        <Content>
+          {items.map((it) => (
+            <Item
+              key={it.id}
+              role="button"
+              tabIndex={0}
+              aria-label={it.label}
+              onClick={() => handleItemClick(it)}
+            >
+              {it.isHome ? (
+                <HomeLogo src={it.icon} alt={it.label} draggable={false} />
+              ) : (
+                <Icon src={it.icon} alt={it.label} draggable={false} />
+              )}
+              <Label>{it.label}</Label>
+            </Item>
+          ))}
+        </Content>
+        <Bg src={footerImg} alt="" aria-hidden="true" />
+      </FooterRoot>
+
+      {/* 모달 */}
+      {modalOpen && (
+        <ModalOverlay onClick={closeModal}>
+          <ModalContent>
+            <ModalBackground src={farmModal} alt="Modal Background" />
+            <ModalMessage>{modalMessage}</ModalMessage>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </>
   );
 }
 
@@ -160,4 +183,45 @@ const HomeLogo = styled.img`
   user-select: none;
   margin-bottom: 7px; /* 로고만 별도 보정 */
   transition: transform .18s ease, filter .18s ease;
+`;
+
+/* ===== 모달 스타일 ===== */
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+`;
+
+const ModalContent = styled.div`
+  position: relative;
+  width: 300px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ModalBackground = styled.img`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`;
+
+const ModalMessage = styled.span`
+  position: relative;
+  z-index: 1;
+  font-family: "Maplestory OTF";
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
 `;
