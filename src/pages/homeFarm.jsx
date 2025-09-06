@@ -11,7 +11,7 @@ import api from "../api.js";
 
 // Assets
 import moveToStage from "../assets/move-to-stage.svg";
-import mascotIdle from "../assets/mascot-idle.svg";
+import mascotIdle from "../assets/mascot-idle.png";
 import mascotHappy from "../assets/mascot-happy.svg";
 import mascotEmbarrassed from "../assets/mascot-embrassed.svg";
 import farmEmpty from "../assets/farm-empty.svg";
@@ -301,7 +301,7 @@ const Container = styled.div`
 
 const Content = styled.div`
   height: calc(100vh - 97px);   /* HeaderBar 높이만큼 뺌 (home-stage와 동일) */
-  padding: 140px 7px 20px;      /* 동일한 상단 패딩 */
+  padding: 140px 20px 20px;      /* 동일한 상단 패딩 */
   box-sizing: border-box;
 
   display: flex;
@@ -331,8 +331,6 @@ const Canvas = styled.div`
 const Mascot = styled.img`
   width: 179px;
   height: 212px;
-  margin-top: 40px;
-  margin-bottom: 20px;
 `;
 
 const FarmArea = styled.div`
