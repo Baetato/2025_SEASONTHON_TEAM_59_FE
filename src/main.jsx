@@ -22,7 +22,7 @@ import VerifySubmit from './pages/verifySubmit.jsx';
 import CompletePage from './pages/cameraComplete.jsx'
 
 import HomeStage from './pages/homeStage.jsx';
-import Home from './pages/home.jsx'
+import Home from './pages/homeFarm.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
