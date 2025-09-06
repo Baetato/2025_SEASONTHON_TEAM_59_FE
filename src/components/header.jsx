@@ -1,31 +1,45 @@
 import styled from "styled-components";
+import { useEffect, useState } from "react";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
 import CoinIcn from "../assets/CoinIcn.png";
+import api from "../api.js"; // axios 인스턴스
 
+export default function Header({ maxPoints = 100 }) {
+  const [user, setUser] = useState(null);
 
-export default function Header({ points, maxPoints }) {
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/v1/members");
+        console.log("사용자 정보:", res.data);
+        setUser(res.data.data);
+      } catch (err) {
+        console.error("사용자 정보 조회 실패:", err);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
+
+  const points = user.point || 0;
+  const level = user.level || 1;
+  const nickname = user.nickname || "사용자";
   const progress = Math.min(points / maxPoints, 1) * 100;
+  const profileImg = user.picture;
 
   return (
     <HeaderWrapper>
       <HeaderBar>
         {/* 레벨 텍스트 */}
-        {/* TODO: 레벨 텍스트 동적으로 변경 */}
-        <LevelText>LV. 100</LevelText>
+        <LevelText>LV. {level}</LevelText>
 
         {/* 닉네임 표시 */}
-        {/* TODO: 닉네임 동적으로 변경 */}
-        <NicknameText>
-          샥샥이 #fdas
-        </NicknameText>
+        <NicknameText>{nickname}</NicknameText>
 
-
-        {/* 진행도 바 */}
-        {/* TODO: 진행도 바에 미세한 흰줄이 생기는 오류 수정 필요
-                  미세한 픽셀 차이로 보이는데 계속 안고쳐지면
-                  이미지로 수정할 예정                       */}
-        {/* 레벨바 + 포인트 박스 */}
+        {/* 진행도 바 + 포인트 박스 */}
         <ProgressContainer>
           <ProgressBarWrapper>
             <svg
@@ -35,9 +49,9 @@ export default function Header({ points, maxPoints }) {
               viewBox="0 0 198 24"
               fill="none"
             >
-              <g filter="url(#filter0_d)">  {/* 그룹 */}
-                <rect width="198" height="21" rx="10.5" fill="#5C4D49" />  {/* 레벨바 프레임 */}
-                <rect  // 레벨바 프레임의 stroke 요소
+              <g filter="url(#filter0_d)">
+                <rect width="198" height="21" rx="10.5" fill="#5C4D49" />
+                <rect
                   x="1.5"
                   y="1.5"
                   width="195"
@@ -47,7 +61,7 @@ export default function Header({ points, maxPoints }) {
                   strokeWidth="3"
                 />
               </g>
-              <rect x="9" y="6" width="180" height="9" rx="4.5" fill="#404040" /> {/* 전체 레벨 바 길이 */}
+              <rect x="9" y="6" width="180" height="9" rx="4.5" fill="#404040" />
               <rect
                 x="9"
                 y="6"
@@ -121,12 +135,8 @@ export default function Header({ points, maxPoints }) {
   );
 }
 
-// Styled Components
-const HeaderWrapper = styled.div`
-  position: fixed;
-  z-index:99999;  /* 최상단 */
-`;
-
+// Styled Components (기존과 동일)
+const HeaderWrapper = styled.div`position: fixed; z-index:99999;`;
 const HeaderBar = styled.div`
   width: 393px;
   height: 97px;
@@ -136,44 +146,35 @@ const HeaderBar = styled.div`
   box-shadow: 0 3px 0 0 #382c28;
   position: relative;
 `;
-
 const LevelText = styled.div`
   position: absolute;
   margin-top: 46px;
   margin-left: 82px;
   width: 70px;
   height: 22px;
-
   text-align: center;
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: #281900;
   font-family: 'Titan One';
   font-size: 20px;
-  font-style: normal;
   font-weight: 400;
   line-height: 22px;
   letter-spacing: -0.408px;
-
   background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
-  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `;
-
 const NicknameText = styled.div`
   position: absolute;
-  margin-top: 68px;   /* 레벨 텍스트 바로 밑 */
+  margin-top: 68px;
   margin-left: 95px;
   color: #FFECBF;
   text-align: center;
   font-family: "SUITE Variable";
   font-size: 16px;
-  font-style: normal;
   font-weight: 800;
   line-height: 22px;
-  letter-spacing: -0.408px;
 `;
-
 const ProgressContainer = styled.div`
   position: absolute;
   top: 100%;
@@ -183,12 +184,7 @@ const ProgressContainer = styled.div`
   margin-left: 74px;
   margin-top: 4px;
 `;
-
-const ProgressBarWrapper = styled.div`
-  width: 198px;
-  height: 24px;
-`;
-
+const ProgressBarWrapper = styled.div`width: 198px; height: 24px;`;
 const PointBox = styled.div`
   width: 114px;
   height: 21px;
@@ -199,45 +195,35 @@ const PointBox = styled.div`
   border-left: 2px solid #B29E99;
   background: #FFF8E8;
   box-shadow: 0 3px 0 0 #B29E99;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px; /* 숫자와 아이콘 간격 */
+  gap: 20px;
   margin-left: 4px;
 `;
-
 const PointText = styled.span`
   color: #5C4D49;
   font-family: "SUITE Variable";
   font-size: 12px;
   font-weight: 900;
   line-height: 22px;
-  letter-spacing: -0.408px;
 `;
-
-const CoinIcon = styled.img`
-  width: 17px;
-  height: 16px;
-`;
-
+const CoinIcon = styled.img`width: 17px; height: 16px;`;
 const ProfileWrapper = styled.div`
-  position: absolute;  // HeaderBar 기준 절대 위치
-  top: 52px;           // HeaderBar 안에서 떨어진 거리
+  position: absolute;
+  top: 52px;
   left: 0;
   width: 90px;
   height: 90px;
 `;
-
 const ProfileFrameImg = styled.img`
   width: 90px;
   height: 90px;
   stroke: #382C28;
   filter: drop-shadow(0 3px 0 #382C28);
-  border: 2px solid #382C28;  // stroke처럼 테두리
+  border: 2px solid #382C28;
   border-radius: 90px;
 `;
-
 const ProfileImg = styled.img`
   position: absolute;
   top: 50%;

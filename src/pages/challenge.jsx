@@ -4,6 +4,7 @@ import Header from "../components/header";
 import ChallengeToggle from "../components/challengeToggle";
 import ChallengeLevelBtn from "../components/challengeLevelBtn";
 import ChallengeItem from "../components/challengeItem";
+import Footer from "../components/footer";
 
 import api from "../api";
 
@@ -120,6 +121,7 @@ export default function Challenge() {
           )}
         </ChallengeContainer>
       </Content>
+      <Footer />
     </Container>
   );
 }
