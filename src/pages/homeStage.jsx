@@ -64,6 +64,9 @@ export default function HomeStage() {
   };
 
   const closeModal = () => setModalOpen(false);
+  // APPROVED 개수 계산
+  const approvedCount = challenges.filter(c => c.challengeStatus === "COMPLETED").length;
+
 
   if (loading) return <Container><LoadingText>Loading...</LoadingText></Container>;
 
@@ -82,7 +85,7 @@ export default function HomeStage() {
 
         {/* 가운데 상단 보상 바 */}
         <RewardBarContainer>
-          <RewardBar completedCount={0} />
+          <RewardBar completedCount={approvedCount} />
         </RewardBarContainer>
 
         <StageScroll 
