@@ -1,9 +1,8 @@
-// 홈 화면 (스테이지 & 텃밭 불러옴)
+// 홈 화면 (텃밭만 라우팅하기로 수정)
 
 import React, { useState, useMemo } from 'react';
 import Header from '../components/header.jsx';
 import BottomTabBar from '../components/footer.jsx';
-// import IconGroup from '../components/iconGroup.jsx';
 
 import HomeStage from './homeStage';
 import HomeFarm from './homeFarm';
@@ -31,51 +30,7 @@ export default function Home() {
             }}
         >
             <Header />
-            
-            {/* 아이콘 그룹 - 헤더로부터 17px 아래, x축 324px, y축 138px 위치 */}
-            {/* <IconGroup /> */}
-            
             <main className="flex-1 flex flex-col pb-[101px]">
-                {/* 전환 버튼 영역 */}
-                {/* <div className="flex items-center gap-3 px-4 py-3 border-b">
-                    <button
-                        type="button"
-                        onClick={() => setView('stage')}
-                        className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 border
-                        ${view === 'stage' ? 'border-black' : 'border-gray-300'}
-                        hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black`}
-                        aria-pressed={view === 'stage'}
-                        aria-label="스테이지로 이동"
-                        title="스테이지로 이동"
-                    >
-                        <img
-                            src="/assets/move-to-stage.svg"
-                            alt="스테이지로 이동"
-                            className="w-5 h-5"
-                            draggable="false"
-                        />
-                        <span className="text-sm font-medium">Stage</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() => setView('farm')}
-                        className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 border
-                        ${view === 'farm' ? 'border-black' : 'border-gray-300'}
-                        hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black`}
-                        aria-pressed={view === 'farm'}
-                        aria-label="팜으로 이동"
-                        title="팜으로 이동"
-                    >
-                        <img
-                            src="/assets/move-to-farm.svg"
-                            alt="팜으로 이동"
-                            className="w-5 h-5"
-                            draggable="false"
-                        />
-                        <span className="text-sm font-medium">Farm</span>
-                    </button>
-                </div> */}
 
                 {/* 컨텐츠 영역 */}
                 <section className="flex-1">
