@@ -55,15 +55,14 @@ body {
   justify-content: center;
 }
 
-/* root: 실제 앱 컨테이너 */
+/* 🔹 앱 컨테이너: 기본 모바일 스타일 */
 #root {
   width: 100%;
-  max-width: 390px;
-  min-height: calc(var(--vh, 1vh) * 100);
+  max-width: 390px; /* iPhone 14 기준 */
+  height: 100vh; /* 모바일에서는 꽉 차게 */
   background-color: #FFF8E8;
   overflow-y: auto; /* ✅ 내부 스크롤 허용 */
-  display: flex;
-  flex-direction: column; /* ✅ 내부에서 중앙정렬 컨트롤 */
+  border-radius: 0; /* 모바일은 모서리 없음 */
 }
 
 /* 🔹 PC/웹뷰용 스타일 */
