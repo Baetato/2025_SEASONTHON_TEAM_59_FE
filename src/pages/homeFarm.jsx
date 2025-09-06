@@ -6,7 +6,7 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import HomeMenuButton from "../components/homeMenuBtn.jsx";
 import styled from "styled-components";
-import api from "../api";   // ✅ axios 인스턴스 (인터셉터 포함)
+import api from "../api";  
 
 // Assets
 import moveToStage from "../assets/move-to-stage.svg";
@@ -14,8 +14,6 @@ import mascotIdle from "../assets/mascot-idle.svg";
 import mascotHappy from "../assets/mascot-happy.svg";
 import mascotEmbarrassed from "../assets/mascot-embrassed.svg";
 import farmEmpty from "../assets/farm-empty.svg";
-import farmGuide from "../assets/farm-guide.svg";
-import farmModal from "../assets/farm-modal.svg";
 import farmPlanted from "../assets/farm-beginning.svg";
 import farmGrowing from "../assets/farm-grow.svg";
 import farmDone from "../assets/farm-muture.svg";
@@ -23,7 +21,7 @@ import farmComplete from "../assets/farm-get.svg";
 import farmLocked from "../assets/farm-fail.svg";
 import iconInfo from "../assets/icon-info.svg";
 
-// ----- 상수 -----
+
 const TILE_BY_STATUS = {
   empty: farmEmpty,
   plant: farmPlanted,
@@ -122,7 +120,7 @@ export default function HomeFarm() {
         : "growing"
       : "empty";
 
-  // ✅ API 호출
+  // API 호출
   useEffect(() => {
     (async () => {
       try {
@@ -231,17 +229,17 @@ export default function HomeFarm() {
               />
               <Wrapper>
                 <Stroke>
-                  {weeklyMeta.weekOfYear
+                  {isAuthed && weeklyMeta.weekOfYear
                     ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
                     : "이번 주 텃밭"}
                 </Stroke>
                 <Fill>
-                  {weeklyMeta.weekOfYear
+                  {isAuthed && weeklyMeta.weekOfYear
                     ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
                     : "이번 주 텃밭"}
                 </Fill>
                 <Fill2>
-                  {weeklyMeta.weekOfYear
+                  {isAuthed && weeklyMeta.weekOfYear
                     ? `${weeklyMeta.year} ${weeklyMeta.weekOfYear}주차 텃밭`
                     : "이번 주 텃밭"}
                 </Fill2>
