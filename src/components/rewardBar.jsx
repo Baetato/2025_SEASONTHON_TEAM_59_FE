@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import RewardBarImg from "../assets/rewardBar.png";
+import RewardBarImg from "../assets/RewardBar.png";
 import FlagIcnUnfilled from "../assets/flagIcn-unfilled.png";
 import FlagIcnFilled from "../assets/FlagIcn.png";
 
