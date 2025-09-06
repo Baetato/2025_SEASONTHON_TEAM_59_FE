@@ -107,7 +107,7 @@ export default function HomeFarm() {
     (async () => {
       try {
         setLoading(true);
-        const res = await api.get("/api/v1/garden/weekly"); // 인터셉터로 토큰 자동
+        const res = await api.get("/v1/garden/weekly"); // 인터셉터로 토큰 자동
         const data = res.data?.data || {};
         setCompletedChallenges(mapApiToCompleted(data.completedChallenges));
         setWeeklyMeta({
