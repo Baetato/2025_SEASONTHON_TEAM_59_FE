@@ -220,6 +220,6 @@ const ModalMessage = styled.span`
   font-family: "Maplestory OTF";
   font-size: 18px;
   font-weight: bold;
-  color: #382C28;
+  color: #281900;
   text-align: center;
 `;
