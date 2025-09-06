@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "../styles/rankingItemStyles.css";
-import leafIcon from "../assets/icons/leaf.png";
-import ProfileImg from "../assets/icons/defaultProfile.png"; // 프로필 이미지 임포트
+import leafIcon from "../assets/leaf.png";
+import ProfileImg from "../assets/defaultProfile.png"; // 프로필 이미지 임포트
 //rankingFrame은 하위 2개를 묶어 space-between
 //userinfo => 랭킹 ~ 닉네임까지 포함 컨테이너
 //pointcontainer => 포인트랑, 풀잎 이미지
-import profileGold from "../assets/icons/gold.png";
-import profileSilver from "../assets/icons/silver.png";
-import profileBronze from "../assets/icons/bronze.png";
+import profileGold from "../assets/gold.png";
+import profileSilver from "../assets/silver.png";
+import profileBronze from "../assets/bronze.png";
 import api from "../api";
 
 function RankingItem({ rank, nickName, point }) {
