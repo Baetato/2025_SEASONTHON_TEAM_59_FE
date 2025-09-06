@@ -42,7 +42,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<PublicRoute><App /></PublicRoute>} />
+        <Route path="/" element={<PublicRoute><LoginMain /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><LoginMain /></PublicRoute>} />
         <Route path="/login/nick" element={<PublicRoute><LoginNick /></PublicRoute>} />
         <Route path="/login/auth" element={<PublicRoute><LoginAuth /></PublicRoute>} />
