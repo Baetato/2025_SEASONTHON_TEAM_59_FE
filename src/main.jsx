@@ -64,7 +64,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/verify" element={<ProtectedRoute><VerifySubmit /></ProtectedRoute>} />
         <Route path="/complete" element={<ProtectedRoute><CompletePage /></ProtectedRoute>} />
 
-        <Route path='/ranking' element={<RankingPage></RankingPage>} />
+        <Route path='/ranking' element={<ProtectedRoute><RankingPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

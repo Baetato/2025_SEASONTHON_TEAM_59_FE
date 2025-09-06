@@ -17,6 +17,7 @@ function Ranking() {
     const loadTotalRanking = async () => {
         try {
             const data = await getMyTotalRanking();
+            console.log("나의 전체 누적 포인트 랭킹 데이터:", data);
             if (data.statusCode === 0) {
                 setTotalRanking(data.data);
             } else {
