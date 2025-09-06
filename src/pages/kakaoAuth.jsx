@@ -8,6 +8,7 @@ export default function KakaoAuth() {
   const [searchParams] = useSearchParams();
   const loadingMessage = "카카오 로그인 중...";
   const navigate = useNavigate();
+  console.log(api.defaults.baseURL)
 
   useEffect(() => {
     const code = searchParams.get("code"); // URL에서 ?code=값 추출
