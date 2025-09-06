@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+
+import GotoFarmBtn from '../assets/GotoFarmBtn.png';
+
 import Header from '../components/header.jsx';
 import StageScroll from '../components/stageScroll.jsx';
 import StageScrollInfinite from '../components/stageScrollInfinite.jsx';
@@ -10,6 +14,7 @@ import Footer from '../components/footer.jsx';
 import api from '../api.js';
 
 export default function HomeStage() {
+  const navigator = useNavigate();
   const [stages, setStages] = useState([]);
   const [characterStage, setCharacterStage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -86,11 +91,13 @@ export default function HomeStage() {
           characterStage={characterStage} 
           onStartClick={handleStartClick} 
         />
-        {/*<StageScrollInfinite
-          initialStages={stages}
-          characterStage={characterStage}
-          onStartClick={handleStartClick}
-        />*/}
+        <BtnWrapper>
+          <GotoFarmButton 
+            src={GotoFarmBtn} 
+            alt="텃밭 이동" 
+            onClick={() => navigator("/home-farm")} 
+          />
+        </BtnWrapper>
         {modalOpen && (
           <ChallengeModal 
             challenges={challenges} 
@@ -141,4 +148,18 @@ const RewardBarContainer = styled.div`
   flex-direction: column;
   gap: 10px;
   z-index: 1000;    /* 헤더보다 위로 띄우기 */
+`;
+
+// 버튼 래퍼
+const BtnWrapper = styled.div`
+  margin-left: 10px;
+  z-index: 100;
+  width:100px;
+`;
+
+const GotoFarmButton = styled.img`
+  width: 90px;
+  height: auto;
+  cursor: pointer;
+  display: block;
 `;
