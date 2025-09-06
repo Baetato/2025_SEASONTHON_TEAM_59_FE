@@ -1,0 +1,149 @@
+.headerContainer {
+    width: 100%;
+    height: 80px;
+    background-color: #5c4d49;
+    max-width: 393px; /* 데스크탑에서 최대 너비 제한 */
+    box-sizing: border-box;
+    display: flex;
+}
+
+.headerBetween {
+    width: 100%;
+    background-color: #5c4d49;
+    display: flex;
+    justify-content: space-between; /* 좌우로 공간 배분 */
+    align-items: flex-end; /* 세로 아래 정렬 */
+    margin-bottom: 5px;
+}
+
+.nickNameStyle {
+    font-family: "SUITE Variable", "Maplestory OTF", system-ui, sans-serif;
+    color: var(--nick-color, #5c4d49); /* 변수 사용 시 이름을 명확히 지정하거나 fallback 사용 */
+    font-size: 16px;
+    margin-left: 40px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 137.5% */
+    letter-spacing: -0.408px;
+}
+
+.pointStyle {
+    margin-left: 20px;
+    color: #7cb29e;
+    text-align: right;
+    font-family: "Maplestory OTF", system-ui, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+}
+.myRankingBoard {
+    width: 306px;
+    height: 57px;
+    display: flex;
+    margin-left: 8px;
+    align-items: center; /* 수직 중앙 정렬 */
+    border-width: 2px 1px 1px 1px;
+    border-style: solid;
+    background-color: ivory;
+    border-radius: 3px;
+    box-sizing: border-box;
+    position: relative; /* 추가: .imgContainer의 기준 부모로 사용 */
+}
+
+.graphContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-right: 5px;
+}
+
+.imgBtn {
+    width: 65px; /* 버튼이 부모 영역 전체 차지 */
+    height: 76px;
+    border: none;
+    background-color: #5c4d49;
+    padding: 0;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+.graphImgStyle {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.gradientNumber {
+    font-family: "Maplestory OTF", system-ui, sans-serif;
+    position: absolute;
+    text-align: center;
+    text-transform: translate(50%, 50%);
+    top:18px;
+    left: 22px;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 22px;
+    /* 기본(fallback) 색상 — 그라데이션을 지원하지 않는 브라우저에서 사용 */
+    color: #ffe8b3;
+
+    /* 그라데이션 텍스트 (지원 브라우저에만 적용) */
+    background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    /* Chrome / Safari용 텍스트 투명 처리 (그라데이션 보이게 함) */
+    -webkit-text-fill-color: transparent;
+}
+
+.leftContainer {
+    background: linear-gradient(to bottom, #5b4c48, #463733);
+    position: relative; /* 자식의 절대 위치 기준 */
+    width: 76px;
+    height: 57px;
+}
+
+.imgContainer {
+    position: absolute; /* 기존 디자인 의도대로 이미지가 오버랩 되도록 */
+    left: 50px; /* 필요시 조정 (원래 계산값: 75.8 - 51/2 등) */
+    width: 57px;
+    height: 57px;
+}
+
+.imgStyle {
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+}
+
+.leafImgStyle {
+    margin-left: 8px;
+    width: 24px;
+    height: 22px;
+    object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+}
+
+.centerContainer {
+    display: flex;
+    align-items: center;
+}
+
+/* Maplestory Bold */
+@font-face {
+    font-family: "Maplestory OTF";
+    src: url("../fonts/MaplestoryOTFBold/Maplestory OTF Bold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "SUITE Variable";
+    src: url("../fonts/SUITE-Variable-ttf/SUITE-Variable.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}

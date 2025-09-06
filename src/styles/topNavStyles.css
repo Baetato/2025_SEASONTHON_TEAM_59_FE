@@ -1,0 +1,65 @@
+.topNavSection {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nonClickButton {
+    width: 122px;
+    height: 29.807px;
+    flex-shrink: 0;
+    background: #261b18;
+    border: none;
+    cursor: pointer;
+}
+
+.clickedButton {
+    width: 122px;
+    height: 29.807px;
+    flex-shrink: 0;
+    background: #8d726b;
+    border: none;
+    cursor: pointer;
+}
+
+.nonClickFont {
+    color: #b29e99;
+    font-family: "SUITE Variable", system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    cursor: pointer;
+}
+
+.clickedFont {
+    font-family: "SUITE Variable", system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    color: #fff8e8;
+}
+
+.topNavContainer {
+    width: 373px;
+    height: 31px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    background: #261b18;
+    box-shadow: 0 4px 0 0 #261b18;
+    margin: 4px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+}
+
+@font-face {
+    font-family: "SUITE Variable";
+    src: url("../fonts/SUITE-Variable-ttf/SUITE-Variable.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
