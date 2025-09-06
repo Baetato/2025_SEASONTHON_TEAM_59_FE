@@ -211,8 +211,6 @@ const ModalContent = styled.div`
 
 const ModalBackground = styled.img`
   position: absolute;
-  width: 100%;
-  height: 100%;
   object-fit: cover;
 `;
 
@@ -222,6 +220,6 @@ const ModalMessage = styled.span`
   font-family: "Maplestory OTF";
   font-size: 18px;
   font-weight: bold;
-  color: #ffffff;
+  color: #382C28;
   text-align: center;
 `;

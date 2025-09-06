@@ -426,7 +426,7 @@ const FarmLabel = styled.div`
 
 const InfoIcon = styled.img`
   width: 24px;
-  height: 24px;
+  height: auto;
   display: block;
   cursor: pointer;
 `;
