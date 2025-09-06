@@ -1,80 +1,211 @@
-// 홈-텃밭 화면
+// 홈-텃밭 화면: farm grid(3x3) + 이미지형 stage 버튼 + 마스코트
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
-export default function HomeFarm() {
+import moveToStage from "../assets/move-to-stage.svg";
+import mascotIdle from "../assets/mascot-idle.svg";
+import farmEmpty from "../assets/farm-empty.svg";
+
+// (선택) 상태별 텃밭 타일 이미지 매핑 — 추후 교체/확장
+import farmGrowing from "../assets/farm-grow.svg";   // 예시
+import farmDone from "../assets/farm-muture.svg";         // 예시
+import farmLocked from "../assets/farm-fail.svg";     // 예시
+
+// 상태별 이미지 매핑 (예: empty/growing/done/locked)
+const TILE_BY_STATUS = {
+  empty: farmEmpty,
+  growing: farmGrowing,
+  done: farmDone,
+  locked: farmLocked,
+};
+
+export default function HomeFarm({
+  // 길이 9짜리 상태 배열; 미전달 시 모두 empty
+  tiles = Array(9).fill("empty"),
+}) {
+  const navigate = useNavigate();
+  const goStage = () => navigate("/stage");
+  const onKey = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      goStage();
+    }
+  };
+
   return (
-    <div className="p-4">
-      {/* 상단 요약 영역 */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">나의 팜</h1>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
-          >
-            새로고침
-          </button>
-          <button
-            type="button"
-            className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
-          >
-            정렬
-          </button>
-        </div>
-      </div>
+    <Container>
+      {/* 디자인 기준 393px 캔버스(가운데 고정) */}
+      <Canvas>
+        {/* 마스코트 (장식) */}
+        <Mascot src={mascotIdle} alt="마스코트" draggable={false} />
 
-      {/* 팜 그리드 영역 (카드 예시) */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* 카드 예시 1 */}
-        <article className="rounded-xl border p-4 shadow-sm hover:shadow-md transition-shadow">
-          <header className="mb-2 flex items-center justify-between">
-            <h2 className="font-medium">오늘의 작물</h2>
-            <span className="text-xs text-gray-500">업데이트: 방금 전</span>
-          </header>
-          <p className="text-sm text-gray-700">
-            물 주기, 수확, 교배 등 팜 관련 액션을 여기서 보여주세요.
-          </p>
-          <div className="mt-3 flex items-center gap-2">
-            <button
-              type="button"
-              className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
-            >
-              물 주기
-            </button>
-            <button
-              type="button"
-              className="rounded-md border px-3 py-1.5 text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
-            >
-              수확
-            </button>
-          </div>
-        </article>
+        {/* 겹치는 3×3 텃밭 */}
+        <FarmStack aria-label="나의 텃밭 겹침 그리드">
+        {tiles.slice(0, 9).map((status, i) => {
+            const r = Math.floor(i / 3); // 0..2
+            const c = i % 3;             // 0..2
+            const src = TILE_BY_STATUS[status] ?? farmEmpty;
+            return (
+            <OverlapTile
+                key={i}
+                src={src}
+                alt=""
+                style={{ "--row": r, "--col": c }}
+                draggable={false}
+            />
+            );
+        })}
+        </FarmStack>
 
-        {/* 카드 예시 2 */}
-        <article className="rounded-xl border p-4 shadow-sm hover:shadow-md transition-shadow">
-          <header className="mb-2 flex items-center justify-between">
-            <h2 className="font-medium">내 재화/포인트</h2>
-            <span className="text-xs text-gray-500">동기화 완료</span>
-          </header>
-          <ul className="text-sm text-gray-700 list-disc pl-5 space-y-1">
-            <li>씨앗: 120개</li>
-            <li>물: 45병</li>
-            <li>포인트: 3,240</li>
-          </ul>
-        </article>
-
-        {/* 카드 예시 3 */}
-        <article className="rounded-xl border p-4 shadow-sm hover:shadow-md transition-shadow">
-          <header className="mb-2 flex items-center justify-between">
-            <h2 className="font-medium">진행 중 미션</h2>
-            <span className="text-xs text-gray-500">3개</span>
-          </header>
-          <ol className="text-sm text-gray-700 list-decimal pl-5 space-y-1">
-            <li>텀블러 사용 3회 인증</li>
-            <li>분리수거 5회 인증</li>
-            <li>플로깅 2회 인증</li>
-          </ol>
-        </article>
-      </div>
-    </div>
-);
+        {/* 스테이지로 가기 — 이미지형 링크 */}
+        <StageButton
+          src={moveToStage}
+          alt="스테이지로 가기"
+          role="link"
+          tabIndex={0}
+          onClick={goStage}
+          onKeyDown={onKey}
+          draggable={false}
+        />
+      </Canvas>
+    </Container>
+  );
 }
+
+/* ================= styled ================= */
+
+/** 페이지 루트 */
+const Container = styled.div`
+  position: relative;
+`;
+
+/**
+ * 디자인 기준 레이어(폭 393px).  
+ * 이 안에서 픽셀 좌표(x:59, y:375)를 그대로 사용하므로
+ * 실제 기기 폭이 달라도 레이아웃이 깨지지 않음.
+ */
+const Canvas = styled.div`
+  position: relative;
+  width: 393px;
+  margin: 0 auto;  /* 가운데 정렬 */
+  min-height: 900px; /* 내부 절대요소들이 들어갈 최소 높이(필요시 조정) */
+`;
+
+/** 마스코트: 헤더 기준 176px 아래, 중앙 */
+const Mascot = styled.img`
+  position: absolute;
+  top: calc(var(--header-h, 97px) + 176px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 179px;
+  height: 212px;
+  aspect-ratio: 141 / 167;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  z-index: 20;
+`;
+
+/* 겹침 배치를 위한 스택 컨테이너 */
+const FarmStack = styled.div`
+  position: absolute;
+  left: 59px;  /* x:59 */
+  top: calc(var(--header-h, 97px) + 375px); /* y:375 (헤더 보정) */
+  /* 타일 크기와 겹침량을 변수로 관리 */
+  --tile-w: 92px;     /* 타일 원본폭 */
+  --tile-h: 104px;    /* 타일 원본높이 */
+  --overlap-x: 24px;  /* 좌우 겹침량(픽셀) */
+  --overlap-y: 39px;  /* 상하 겹침량(픽셀) */
+
+  /* 전체 스택의 실제 크기 = 3*타일 - 2*겹침 */
+  width: calc(3 * var(--tile-w) - 2 * var(--overlap-x));
+  height: calc(3 * var(--tile-h) - 2 * var(--overlap-y));
+  overflow: visible;  /* 겹친 부분 보여주기 */
+  pointer-events: none; /* 상태표시만: 클릭 필요시 제거 */
+`;
+
+/* 각 타일: 절대 배치 + 행/열에 따른 좌표 계산 */
+const OverlapTile = styled.img`
+  position: absolute;
+  width: var(--tile-w);
+  height: var(--tile-h);
+  left: calc(var(--col) * (var(--tile-w) - var(--overlap-x)));
+  top:  calc(var(--row) * (var(--tile-h) - var(--overlap-y)));
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  pointer-events: none; /* 클릭 필요시 제거 */
+`;
+
+/** 개별 타일 이미지 */
+const Tile = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* svg 비율 유지 */
+  display: block;
+  user-select: none;
+  pointer-events: none; /* 상태 표시만 — 클릭 이벤트가 필요하면 제거 */
+`;
+
+/** 스테이지로 가기(헤더+542px) */
+const StageButton = styled.img`
+  position: absolute;
+  top: calc(var(--header-h, 97px) + 542px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85px;
+  height: 70px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 50;
+  transition: transform 0.2s ease;
+  &:hover { transform: translateX(-50%) scale(1.05); }
+  &:active { transform: translateX(-50%) scale(0.95); }
+`;
+
+/* ===== 아래는 기존 상단/카드 스타일 (필요 시 유지) ===== */
+
+const HeaderSection = styled.div`
+  margin-top: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+`;
+
+const Title = styled.h1`
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-family: "Maplestory OTF", sans-serif;
+  color: #333;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const ActionButton = styled.button`
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  background: #fff;
+  cursor: pointer;
+  font-family: "Maplestory OTF", sans-serif;
+  transition: background-color 0.2s ease;
+  &:hover { background-color: #f9fafb; }
+  &:focus { outline: none; box-shadow: 0 0 0 2px #000; }
+`;
+
+const GridContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  @media (min-width: 640px) { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+`;
