@@ -22,15 +22,6 @@ export default function HomeStage() {
   const [completedCount, setCompletedCount] = useState(0); // ← API에서 바로 받아옴
   const [selectedStage, setSelectedStage] = useState(null);
 
-  const mapChallengeStatusToStage = (challengeStatus) => {
-    switch(challengeStatus) {
-      case "ACTIVE": return "before";
-      case "PENDING_APPROVAL": return "waiting";
-      case "COMPLETED": return "approved";
-      case "REJECTED": return "rejected";
-      default: return "before";
-    }
-  };
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -41,6 +32,25 @@ export default function HomeStage() {
         setCharacterStage(data.currentStage);
         setCompletedCount(data.completedCount);
 
+        // 스테이지는 무조건 10개씩 보여주기(확정)
+        const totalStages = 10;
+
+        // 스테이지 상태는 백엔드에서 별도 배열로 내려준다고 가정
+        // 여기서는 임시로 before/approved/waiting 랜덤 예시
+        const stageData = Array.from({ length: totalStages }, (_, idx) => {
+          let status = "before";
+          if (idx < data.completedCount) status = "approved";
+          else if (idx === data.currentStage - 1) status = "waiting";
+
+          return {
+            index: idx + 1, // 스테이지 번호
+            status,
+          };
+        });
+
+
+        /* 옛날 API 로직
+        // TODO: 백엔드 수정되면 위 로직 수정하고 지울 예정
         const stageData = data.dailyChallengesResDtos.map((challenge, idx) => {
           let status = "before";
 
@@ -56,7 +66,7 @@ export default function HomeStage() {
             index: challenge.dailyMemberChallengeId,
             status,
           };
-        });
+        });*/
 
         setStages(stageData);
         setChallenges(data.dailyChallengesResDtos);
@@ -83,11 +93,6 @@ export default function HomeStage() {
     <Container>
       <Header points={100} maxPoints={200} />
       <Content>
-        <MenuContainer>
-          <HomeMenuButton type="location" onClick={() => alert("Coming Soon..!")} />
-          <HomeMenuButton type="community" onClick={() => alert("Coming Soon..!")} />
-          <HomeMenuButton type="setting" onClick={() => alert("Coming Soon..!")} />
-        </MenuContainer>
 
         <RewardBarContainer>
           <RewardBar completedCount={completedCount} /> {/* ← API에서 바로 받은 값 사용 */}
@@ -125,18 +130,25 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   background: linear-gradient(180deg, #43714F 0%, #92C39D 100%);
 `;
 
 const Content = styled.div`
-  /* 화면 전체 높이에서 Header 높이만큼 빼기 */
-  height: calc(100vh - 97px); /* HeaderBar 높이 */
-  padding: 140px 7px 20px;
-  box-sizing: border-box;
-
+  padding-top: 250px;
+  padding-bottom: 150px; // 스테이지 둘 공간 마련
+  margin-top: 90px;
+  margin-bottom: 40px;
   display: flex;
   flex-direction: column;
+
+  overflow-y: auto;   // 여기서 세로 스크롤 넣기
+
+  /* 스크롤바 커스텀: 배경 변하는 효과 제거 */
+  &::-webkit-scrollbar {
+    width: 8px;
+    background: transparent; /* 흰색 배경 대신 투명 */
+  }
 `;
 
 const MenuContainer = styled.div`
@@ -151,7 +163,7 @@ const MenuContainer = styled.div`
 
 const RewardBarContainer = styled.div`
   position: fixed;  /* 화면 기준으로 고정 */
-  left: 48%;      /* 오른쪽 여백 */
+  left: 50%;      /* 오른쪽 여백 */
   top:25%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -165,13 +177,23 @@ const BtnWrapper = styled.div`
   margin-left: 10px;
   z-index: 100;
   width:100px;
+
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  /* 호버/포커스 시 아이콘 애니메이션 */
+  &:hover img,
+  &:focus-visible img {
+    transform: translateY(-3px) scale(1.06);
+  }
 `;
 
 const GotoFarmButton = styled.img`
   width: 90px;
   height: auto;
   cursor: pointer;
-  display: block;
+  position: fixed;
+  bottom: 15%;
 `;
 
 const LoadingText = styled.div`

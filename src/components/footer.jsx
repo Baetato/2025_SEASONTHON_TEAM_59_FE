@@ -69,13 +69,9 @@ export default function Footer() {
 const FooterRoot = styled.footer`
   height: 101px;
   z-index: 1000;
-  width: 100%; /* 100%로 변경: 화면 전체 채우기 */
   max-width: 393px; /* .appContainer와 맞춤: 최대 너비 제한 */
   position: fixed;
   bottom: 0;
-  left: 50%; /* 중앙 정렬: left: 0; -> 50% */
-  transform: translateX(-50%); /* 중앙 정렬 보정 */
-  margin: 0 auto; /* 추가 중앙 정렬 */
 `;
 
 

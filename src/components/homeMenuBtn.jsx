@@ -1,4 +1,6 @@
 // components/homeMenuBtn.jsx
+// 😂 UI 변경으로 현재 사용 안함
+
 import styled from "styled-components";
 import Location from "../assets/LocationIcn.png";
 import Community from "../assets/CommunityIcn.png";
