@@ -32,6 +32,15 @@ const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  /* 호버/포커스 시 커지기 */
+  &:hover,
+  &:focus-visible {
+    transform: scale(1.06);
+  }
 `;
 
 const Content = styled.div`

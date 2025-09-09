@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
 import CoinIcn from "../assets/CoinIcn.png";
+import SettingIcn from "../assets/SettingIcn.png";
 import api from "../api.js"; // axios 인스턴스
 
 export default function Header({ maxPoints = 100 }) {
@@ -38,6 +39,9 @@ export default function Header({ maxPoints = 100 }) {
 
         {/* 닉네임 표시 */}
         <NicknameText>{nickname}</NicknameText>
+
+        {/* 설정 아이콘 표시 */}
+        <SettingIcon src={SettingIcn} alt="setting" />
 
         {/* 진행도 바 + 포인트 박스 */}
         <ProgressContainer>
@@ -174,6 +178,23 @@ const NicknameText = styled.div`
   font-size: 16px;
   font-weight: 800;
   line-height: 22px;
+`;
+const SettingIcon = styled.img`
+  position: absolute;
+  margin-top: 52px;
+  margin-left: 350px;
+  cursor: pointer;
+  width: 29.855px;
+  height: 33.464px;
+
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  /* 호버/포커스 시 커지기 */
+  &:hover,
+  &:focus-visible {
+    transform: scale(1.06);
+  }
 `;
 const ProgressContainer = styled.div`
   position: absolute;
