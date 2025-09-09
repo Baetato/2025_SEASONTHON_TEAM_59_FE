@@ -1,42 +1,56 @@
 // src/components/CompletionModal.jsx
 import React from "react";
 import styled from "styled-components";
-import farmModal from "../assets/farm-modal.svg";
+import farmModal from "../assets/farm-modal.png";
 
 export default function CompletionModal({ isSuccess, onClose }) {
+  const onCardClick = (e) => {
+    // 모달 내부 클릭 시 오버레이 닫힘 방지
+    e.stopPropagation();
+  };
+
   return (
     <ModalOverlay onClick={onClose}>
       <TileImgCard
         role="dialog"
         aria-modal="true"
         aria-labelledby="completion-modal-title"
-        onClick={onClose} // 카드 클릭으로 닫힘
+        onClick={onCardClick}
       >
         <TileText id="completion-modal-title">
           {isSuccess ? (
             <>
-              축하해요!<br />
-              이번주 텃밭을<br />
+              축하해요!
+              <br />
+              이번주 텃밭을
+              <br />
               모두 가꾸었어요.
             </>
           ) : (
             <>
-              아쉬워요...<br />
-              이번주 텃밭이<br />
+              아쉬워요...
+              <br />
+              이번주 텃밭이
+              <br />
               모두 시들었어요.
             </>
           )}
         </TileText>
+
+        {/* 확인 텍스트 버튼 */}
+        <ConfirmTextButton type="button" onClick={onClose}>
+          확인
+        </ConfirmTextButton>
       </TileImgCard>
     </ModalOverlay>
   );
 }
 
-/* styled */
+/* styled-components */
 const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,18 +66,48 @@ const TileImgCard = styled.div`
   place-items: center;
   padding: 24px;
   box-sizing: border-box;
-  cursor: pointer;
 `;
 
 const TileText = styled.div`
   text-align: center;
   margin-bottom: 28%;
   font-family: "Maplestory OTF", sans-serif;
-  color: #5C4D49;
+  color: #5c4d49;
   line-height: 1.6;
   font-size: 16px;
-  text-shadow: 0 1px 0 rgba(40,25,0,.2);
+  text-shadow: 0 1px 0 rgba(40, 25, 0, 0.2);
   display: grid;
   gap: 8px;
   place-items: center;
+`;
+
+const ConfirmTextButton = styled.button`
+  position: absolute;
+  top: 142px; /* farm-modal.png 기준 배치 */
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  text-align: center;
+  text-shadow: 0 1px 0 #281900;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: #281900;
+  font-family: "Maplestory OTF", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 137.5% */
+  letter-spacing: -0.408px;
+
+  background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  &:active {
+    transform: translateX(-50%) scale(0.98);
+  }
 `;
