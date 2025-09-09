@@ -8,7 +8,7 @@ import iconChallenge from "../assets/icon-challenge.svg";
 import leafUpLogo from "../assets/footer-logo.svg";
 import iconRanking from "../assets/icon-ranking.svg";
 import iconFriend from "../assets/icon-friend.svg";
-import farmModal from "../assets/farm-modal.svg";
+import farmModal from "../assets/farm-modal.png";
 
 export default function Footer() {
   const navigate = useNavigate();
@@ -16,26 +16,16 @@ export default function Footer() {
   const [modalMessage, setModalMessage] = useState(""); // 모달 메시지 관리
 
   const items = [
-    { id: "store", label: "가게", icon: iconStore, path: "/store", comingSoon: true },
+    { id: "store", label: "가게", icon: iconStore, path: "/store" },
     { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
-    { id: "home", label: "리프업", icon: leafUpLogo, path: "/home-stage", isHome: true },
+    { id: "home", label: "홈", icon: leafUpLogo, path: "/home-stage", isHome: true },
     { id: "ranking", label: "랭킹", icon: iconRanking, path: "/ranking" },
-    { id: "friend", label: "친구", icon: iconFriend, path: "/friends", comingSoon: true },
+    { id: "friend", label: "커뮤니티", icon: iconFriend, path: "/community" },
   ];
 
   const handleItemClick = (item) => {
-    if (item.comingSoon) {
-      // Coming Soon 모달 띄우기
-      setModalMessage(`${item.label} Coming Soon..!`);
-      setModalOpen(true);
-    } else {
       // 라우팅
       navigate(item.path);
-    }
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
   };
 
   return (
@@ -107,9 +97,10 @@ const Content = styled.nav`
   grid-template-columns: repeat(5, 1fr);
   align-items: end;
   justify-items: center;
-  padding: 0 12px 10px;
+  margin-bottom: 2%;
   box-sizing: border-box;
-  gap: 14px;
+  gap: 2px;
+  padding-bottom: 6px;
   /* 배경과 정확히 겹치고 싶으면 필요 시 미세 보정값 사용
      transform: translateX(-6px); */
 `;
@@ -168,7 +159,7 @@ const Label = styled.span`
 
 /* 일반 아이콘 */
 const Icon = styled.img`
-  width: 55px;
+  width: 67px;
   height: auto;
   margin-bottom: 0px; /* 라벨과 살짝 겹치게 */
   object-fit: contain;
@@ -225,6 +216,6 @@ const ModalMessage = styled.span`
   font-family: "Maplestory OTF";
   font-size: 18px;
   font-weight: bold;
-  color: #382C28;
+  color: #281900;
   text-align: center;
 `;

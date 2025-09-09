@@ -1,3 +1,4 @@
+// src/pages/homeFarm.jsx
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -74,6 +75,16 @@ const getWeekProgress = (completedChallenges) => {
   };
 };
 
+// 로컬스토리지에서 사용자명 추정 (팀에서 사용하는 키에 맞춰 필요 시 조정)
+function getStoredUsername() {
+  const candidates = ["username", "userName", "name", "nickName"];
+  for (const k of candidates) {
+    const v = localStorage.getItem(k);
+    if (v && typeof v === "string") return v;
+  }
+  return null;
+}
+
 // API 응답 → 내부 completedChallenges로 매핑
 // - tileIndex는 서버가 안 주므로 0~8 순서 부여
 // - content가 있으면 label로 저장해 모달에서 노출(없으면 기본 매핑 이름 사용)
@@ -94,12 +105,24 @@ function mapApiToCompleted(apiCompleted) {
     .filter(Boolean);
 }
 
+// 주차 → "M월 N주차 텃밭"
+function formatToMonthWeek(year, weekOfYear) {
+  // ISO 주차 기준으로 대략적인 날짜 추정
+  const approx = new Date(year, 0, 1 + (weekOfYear - 1) * 7);
+  const month = approx.getMonth() + 1;
+  const firstDayOfMonth = new Date(approx.getFullYear(), approx.getMonth(), 1);
+  const offset = firstDayOfMonth.getDay(); // 0(일) ~ 6(토)
+  const weekNumberInMonth = Math.ceil((approx.getDate() + offset) / 7);
+  return `${month}월 ${weekNumberInMonth}주차 텃밭`;
+}
+
 /* ===== 컴포넌트 ===== */
 export default function HomeFarm() {
   const navigate = useNavigate();
 
   const [completedChallenges, setCompletedChallenges] = useState([]);
   const [weeklyMeta, setWeeklyMeta] = useState({ year: null, weekOfYear: null });
+  const [username, setUsername] = useState(getStoredUsername());
 
   const [selectedTile, setSelectedTile] = useState(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -121,11 +144,16 @@ export default function HomeFarm() {
           year: data.year ?? null,
           weekOfYear: data.weekOfYear ?? null,
         });
+        // API에 사용자명이 없다면 로컬스토리지 사용
+        setUsername(data.username ?? getStoredUsername());
         setIsAuthed(true);
       } catch (err) {
+        // 401 등 비로그인 → 기본 노출
         if (err?.response?.status === 401) {
-          // 비로그인: 기본 마스코트/빈 텃밭 유지
           setIsAuthed(false);
+          setCompletedChallenges([]);
+          setWeeklyMeta({ year: null, weekOfYear: null });
+          setUsername(null);
         }
         console.error("주간 텃밭 현황 조회 실패:", err);
       } finally {
@@ -133,21 +161,6 @@ export default function HomeFarm() {
       }
     })();
   }, []);
-
-  // 주차 -> "M월 N주차" 로 변환
-  function formatToMonthWeek(year, weekOfYear) {
-    // ISO 주차를 실제 날짜로 변환 (연초에서 주차 * 7일)
-    const simple = new Date(year, 0, 1 + (weekOfYear - 1) * 7);
-    const month = simple.getMonth() + 1; // JS Date의 월은 0부터 시작 → +1 필요
-    const firstDayOfMonth = new Date(simple.getFullYear(), simple.getMonth(), 1);
-
-    // 이번 달 1일이 무슨 요일인지
-    const offset = firstDayOfMonth.getDay();
-    // 현재 날짜가 이번 달 몇 번째 주차인지
-    const weekNumberInMonth = Math.ceil((simple.getDate() + offset) / 7);
-
-    return `${month}월 ${weekNumberInMonth}주차 텃밭`;
-  }
 
   const weekProgress = getWeekProgress(completedChallenges);
 
@@ -163,19 +176,27 @@ export default function HomeFarm() {
         : "growing"
       : "empty";
 
-  // 타일 클릭 → 카드 모달
+  // 타일 클릭 → 카드 모달 (어떤 챌린지인지 표시)
   const handleTileClick = (index) => {
     const challenge = completedChallenges.find((c) => c.tileIndex === index);
-    setSelectedTile(
-      challenge
-        ? {
-            index,
-            challenge: CHALLENGE_TYPES.find((t) => t.id === challenge.type),
-            completedAt: challenge.completedAt,
-            isEmpty: false,
-          }
-        : { index, challenge: null, completedAt: null, isEmpty: true }
-    );
+    if (!challenge) {
+      setSelectedTile({ index, challenge: null, completedAt: null, isEmpty: true });
+      return;
+    }
+    const defaultMeta = CHALLENGE_TYPES.find((t) => t.id === challenge.type);
+    setSelectedTile({
+      index,
+      challenge: {
+        id: challenge.type,
+        // 서버 content가 있으면 우선 사용 (예: "분리수거")
+        name: challenge.label || defaultMeta?.name || "완료한 활동",
+        icon:
+          defaultMeta?.icon ||
+          "🌱",
+      },
+      completedAt: challenge.completedAt,
+      isEmpty: false,
+    });
   };
 
   const goStage = () => navigate("/home-stage");
@@ -189,10 +210,13 @@ export default function HomeFarm() {
   /* ===== 렌더 ===== */
   return (
     <Container>
-      <Header points={100} maxPoints={200} />
+      <Header
+        points={100}
+        maxPoints={200}
+        username={isAuthed ? username || "" : "로그인을 해주세요"}
+      />
 
       <Content>
-        {/* 오른쪽 고정 메뉴 (home-stage와 동일) */}
         {/* 오른쪽 고정 메뉴 */}
         <MenuContainer>
           <HomeMenuButton type="location" onClick={() => alert("Coming Soon..!")} />
@@ -200,12 +224,6 @@ export default function HomeFarm() {
           <HomeMenuButton type="setting" onClick={() => alert("Coming Soon..!")} />
         </MenuContainer>
 
-        {/* 필요하면 보상바도 동일 구조로 배치 가능
-        <RewardBarContainer>
-          <RewardBar completedCount={weekProgress.completed} />
-        </RewardBarContainer> */}
-
-        {/* 본문 컨텐츠 */}
         <Canvas>
           <Mascot
             src={MASCOT_BY_STATUS[getMascotStatus()]}
@@ -222,9 +240,7 @@ export default function HomeFarm() {
                   const c = i % 3;
                   const status = getTileStatus(i);
                   const src = TILE_BY_STATUS[status] ?? farmEmpty;
-                  const challenge = completedChallenges.find(
-                    (ch) => ch.tileIndex === i
-                  );
+                  const challenge = completedChallenges.find((ch) => ch.tileIndex === i);
                   return (
                     <ClickableTile
                       key={i}
@@ -232,9 +248,9 @@ export default function HomeFarm() {
                       alt={
                         challenge
                           ? `${
-                              CHALLENGE_TYPES.find(
-                                (t) => t.id === challenge.type
-                              )?.name
+                              CHALLENGE_TYPES.find((t) => t.id === challenge.type)?.name ||
+                              challenge.label ||
+                              "완료한 활동"
                             } 완료`
                           : "빈 텃밭"
                       }
@@ -242,7 +258,7 @@ export default function HomeFarm() {
                       draggable={false}
                       onClick={() => handleTileClick(i)}
                       $hasChallenge={!!challenge}
-                      $isGrowing={growingTiles.has(i)}
+                      $isGrowing={false}
                     />
                   );
                 })}
@@ -267,17 +283,17 @@ export default function HomeFarm() {
                 <Stroke>
                   {weeklyMeta.weekOfYear
                     ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
-                    : "9월 1주차 텃밭"}
+                    : "이번 주 텃밭"}
                 </Stroke>
                 <Fill>
                   {weeklyMeta.weekOfYear
                     ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
-                    : "9월 1주차 텃밭"}
+                    : "이번 주 텃밭"}
                 </Fill>
                 <Fill2>
                   {weeklyMeta.weekOfYear
                     ? formatToMonthWeek(weeklyMeta.year, weeklyMeta.weekOfYear)
-                    : "9월 1주차 텃밭"}
+                    : "이번 주 텃밭"}
                 </Fill2>
               </LabelWrapper>
             </FarmLabel>
@@ -297,7 +313,10 @@ export default function HomeFarm() {
 
         {/* 모달들 */}
         {selectedTile && (
-          <TileInfoModal tile={selectedTile} onClose={() => setSelectedTile(null)} />
+          <TileInfoModal
+            tile={selectedTile}
+            onClose={() => setSelectedTile(null)}
+          />
         )}
         {showCompletionModal && (
           <CompletionModal
@@ -324,9 +343,8 @@ const Container = styled.div`
 
 const Content = styled.div`
   height: calc(100vh - 97px);   /* HeaderBar 높이만큼 뺌 (home-stage와 동일) */
-  padding: 140px 20px 20px;      /* 동일한 상단 패딩 */
+  padding: 140px 20px 20px;     /* 동일한 상단 패딩 */
   box-sizing: border-box;
-
   display: flex;
   flex-direction: column;
   overflow: hidden;             /* 스크롤 방지 */
@@ -426,7 +444,7 @@ const FarmLabel = styled.div`
 
 const InfoIcon = styled.img`
   width: 24px;
-  height: auto;
+  height: 24px;
   display: block;
   cursor: pointer;
 `;
