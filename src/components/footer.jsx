@@ -16,26 +16,16 @@ export default function Footer() {
   const [modalMessage, setModalMessage] = useState(""); // 모달 메시지 관리
 
   const items = [
-    { id: "store", label: "가게", icon: iconStore, path: "/store", comingSoon: true },
+    { id: "store", label: "가게", icon: iconStore, path: "/store" },
     { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
     { id: "home", label: "리프업", icon: leafUpLogo, path: "/home-stage", isHome: true },
     { id: "ranking", label: "랭킹", icon: iconRanking, path: "/ranking" },
-    { id: "friend", label: "친구", icon: iconFriend, path: "/friends", comingSoon: true },
+    { id: "friend", label: "커뮤니티", icon: iconFriend, path: "/community" },
   ];
 
   const handleItemClick = (item) => {
-    if (item.comingSoon) {
-      // Coming Soon 모달 띄우기
-      setModalMessage(`${item.label} Coming Soon..!`);
-      setModalOpen(true);
-    } else {
       // 라우팅
       navigate(item.path);
-    }
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
   };
 
   return (
