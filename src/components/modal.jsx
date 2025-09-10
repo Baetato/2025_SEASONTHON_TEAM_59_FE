@@ -19,21 +19,26 @@ import ModalBtn from "../assets/ModalBtn.png";
       />
 */}
 
-export default function Modal({ isOpen, title, description, buttons = [] }) {
+export default function Modal({ isOpen, title, description, icon, score, buttons = [] }) {
   if (!isOpen) return null;
 
   return (
     <Overlay>
       <ModalWrapper>
-        {/* 기본 모달 컨테이너 */}
         <ModalContainer>
-          {/* 흰색 내용 영역 */}
           <ContentBox>
             {title && <Title>{title}</Title>}
             {description && <Description>{description}</Description>}
+
+            {/* 아이콘 + 점수 영역 */}
+            {(icon || score) && (
+              <IconScoreWrapper>
+                {score !== undefined && <ScoreText>{score}</ScoreText>}
+                {icon && <img src={icon} alt="modal-icon" />}
+              </IconScoreWrapper>
+            )}
           </ContentBox>
 
-          {/* 버튼 영역 */}
           <ButtonRow count={buttons.length}>
             {buttons.map((btn, idx) => (
               <ModalButton
@@ -121,11 +126,38 @@ const Description = styled.p`
   letter-spacing: -0.408px;
 `;
 
+const IconScoreWrapper = styled.div`
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  img {
+    width: 17px;
+  height: 16px;
+  }
+`;
+
+const ScoreText = styled.span`
+  color: #7CB29E;
+  text-align: right;
+  text-shadow: 0 2px 0  #382C28;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #000;
+  font-family: "Maplestory OTF";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 137.5% */
+  letter-spacing: -0.408px;
+`;
+
 const ButtonRow = styled.div`
   display: flex;
   justify-content: center;
   gap: ${({ count }) => (count === 2 ? "5px" : "0")};
   margin-top: 4px;
+  margin-bottom: 4px;
 `;
 
 const ModalButton = styled.button`

@@ -101,7 +101,7 @@ export default function CameraPage() {
       <VerifyTopBar onBack={() => setIsModalOpen(true)} />
       <Content>
         <ChallengeText>
-          활동: {challenge?.contents || "활동명 받아와야 함"}
+          활동: {challenge?.contents || "활동명 로딩 중"}
         </ChallengeText>
         <SubText>
           인증샷이 승인될 경우 포인트가 적립됩니다 <br/>
@@ -126,8 +126,12 @@ export default function CameraPage() {
 
       <Modal
         isOpen={isModalOpen}
-        title="뒤로 가시겠습니까?"
-        description="작성 중인 사진은 저장되지 않습니다."
+        title={
+          <>
+            홈으로 <br /> 돌아가시겠습니까?
+          </>
+        }
+        description="촬영한 사진은 저장되지 않습니다."
         buttons={[
           { label: "돌아가기", onClick: () => navigate(-1) },
           { label: "이어가기", onClick: () => setIsModalOpen(false) },
