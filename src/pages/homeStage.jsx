@@ -3,24 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import GotoFarmBtn from '../assets/GotoFarmBtn.png';
+import CoinIcn from '../assets/CoinIcn.png';
 
 import Header from '../components/header.jsx';
 import StageScroll from '../components/stageScroll.jsx';
 import ChallengeModal from '../components/challengeModal.jsx';
 import HomeMenuButton from "../components/homeMenuBtn.jsx";
+import Modal from '../components/modal.jsx';
 import RewardBar from '../components/rewardBar.jsx';
 import Footer from '../components/footer.jsx';
 import api from '../api.js';
 
 export default function HomeStage() {
   const navigator = useNavigate();
-  const [stages, setStages] = useState([]);
-  const [characterStage, setCharacterStage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [challenges, setChallenges] = useState([]);
-  const [completedCount, setCompletedCount] = useState(0); // ← API에서 바로 받아옴
-  const [selectedStage, setSelectedStage] = useState(null);
+
+  const [stages, setStages] = useState([]); // 스테이지 상태 관리용
+  const [characterStage, setCharacterStage] = useState(1); // 현재 캐릭터의 스테이지 위치
+  const [completedCount, setCompletedCount] = useState(0); // 승인된 챌린지 개수
+  const [challenges, setChallenges] = useState([]); 
+  const [selectedStage, setSelectedStage] = useState(null);  // 현재 시작한 스테이지(TODO: 꼭 필요한지 점검)
+
+  const [loading, setLoading] = useState(true);  // 로딩 여부
+  const [challengeModalOpen, setChallengeModalOpen] = useState(false); // 챌린지 모달
+  const [completeModalOpen, setCompleteModalOpen] = useState(true); // 완료 모달
 
 
   useEffect(() => {
@@ -82,10 +87,10 @@ export default function HomeStage() {
 
   const handleStartClick = (stageIndex) => {
     setSelectedStage(stageIndex);
-    setModalOpen(true);
+    setChallengeModalOpen(true);
   };
 
-  const closeModal = () => setModalOpen(false);
+  const closeModal = () => setChallengeModalOpen(false);
 
   if (loading) return <Container><LoadingText>Loading...</LoadingText></Container>;
 
@@ -112,13 +117,28 @@ export default function HomeStage() {
           />
         </BtnWrapper>
 
-        {modalOpen && (
+        {challengeModalOpen && (
           <ChallengeModal 
             challenges={challenges} 
             stageIndex={selectedStage} 
             onClose={closeModal} 
           />
         )}
+
+        {completeModalOpen && <Modal
+          isOpen={completeModalOpen}
+          title={
+          <>
+            오늘의 챌린지<br /> 완주!
+          </>
+          }
+          icon = {CoinIcn}
+          score="+20"
+          buttons={[
+            { label: "확인", onClick: () => setCompleteModalOpen(false) },
+          ]}
+        />}
+
       </Content>
       <Footer />
     </Container>

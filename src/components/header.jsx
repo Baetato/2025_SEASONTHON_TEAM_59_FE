@@ -4,6 +4,7 @@ import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
 import CoinIcn from "../assets/CoinIcn.png";
 import SettingIcn from "../assets/SettingIcn.png";
+import ProfileIcn from "../assets/ProfileIcn.png";
 import api from "../api.js"; // axios 인스턴스
 
 export default function Header({ maxPoints = 100 }) {
@@ -134,6 +135,9 @@ export default function Header({ maxPoints = 100 }) {
           <ProfileFrameImg src={ProfileFrame} alt="frame" />
           <ProfileImg src={ProfileEx} alt="profile" />
         </ProfileWrapper>
+
+        {/* 프로필 아이콘 */}
+        <ProfileIcon src={ProfileIcn} alt="profile icon" onClick={() => console.log("마이페이지 띄워야함")} />
       </HeaderBar>
     </HeaderWrapper>
   );
@@ -255,4 +259,22 @@ const ProfileImg = styled.img`
   border-radius: 50%;
   transform: translate(-50%, -50%);
   object-fit: cover;
+`;
+const ProfileIcon = styled.img`
+  position: absolute;
+  top: 125%;
+  left: 17%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  /* 호버/포커스 시 커지기 */
+  &:hover,
+  &:focus-visible {
+    transform: scale(1.06);
+  }
+  
 `;

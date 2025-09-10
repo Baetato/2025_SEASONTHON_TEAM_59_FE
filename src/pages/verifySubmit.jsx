@@ -15,11 +15,13 @@ export default function CameraPage() {
   const inputRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  // 테스트용
-  const testPhoto = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AApEBgU3q0v0AAAAASUVORK5CYII=";
-  const photo = location.state?.photo || testPhoto;
+  const { photo: locationPhoto, challenge, stageIndex } = location.state || {};
 
+  const [photo, setPhoto] = useState(locationPhoto || "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjYwIiBoZWlnaHQ9IjM0MCIgdmlld0JveD0iMCAwIDI2MCAzNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTMwMCAxMDAgQzMwMCAxNDAgMjYwIDE4MCAyNjAgMTgwIEMyNjAgMTgwIDIyMCAxNDAgMjAwIDEyMCAgQzE4MCAxNDAgMTQwIDE4MCAxNDAgMTgwIEMxNDAgMTgwIDEwMCAxNDAgODAgMTIwIEM2MCAxNDAgMjAgMTgwIDIwIDE4MCBDMjAgMTgwIDAgMTQwIDAgMTAwIEMwIDQwIDEyMCAwIDE0MCAyMCBDMTYwIDAgMjgwIDQwIDMwMCAxMDAiIGZpbGw9IiNGRjAwRkYiIC8+PC9zdmc+"); // 🔹 수정: state로 photo 관리
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const retakePhoto = () => {
     inputRef.current?.click(); // 카메라 바로 실행
@@ -31,12 +33,11 @@ export default function CameraPage() {
 
     const reader = new FileReader();
     reader.onload = (ev) => {
-      // 새 사진으로 교체
-      navigate("/camera", { state: { photo: ev.target.result } });
+      // 🔹 수정: navigate 대신 state만 업데이트
+      setPhoto(ev.target.result);
     };
     reader.readAsDataURL(file);
   };
-
 
   // Base64 → Blob 변환
   const base64ToBlob = (base64) => {
@@ -55,19 +56,31 @@ export default function CameraPage() {
 
   const completePhoto = async () => {
     try {
+      setIsLoading(true);
+      setLoadingMessage("사진을 변환하는 중입니다...");
+
       const blob = base64ToBlob(photo);
       const formData = new FormData();
-      formData.append("multipartFile", blob, "challenge.png"); // 필드명 = multipartFile
+      formData.append("multipartFile", blob, "challenge.png"); 
 
-      const res = await api.post("/v1/images/challenge/upload", formData, {
-        headers: {
-          "Content-Type": undefined, // Axios가 자동 처리
-        },
+      const uploadRes = await api.post("/v1/images/challenge/upload", formData, {
+        headers: { "Content-Type": undefined },
       });
+      const imageUrl = uploadRes.data?.data;
+      setLoadingMessage("사진을 제출하는 중입니다...");
 
-      const imageUrl = res.data?.url;
-      console.log("업로드 성공:", imageUrl);
-      navigate("/complete", { state: { imageUrl } });
+      if (!imageUrl) {
+        alert("이미지 업로드에 실패했습니다.");
+        return;
+      }
+
+      await api.post(
+        `/v1/daily-challenges/${challenge.id}/submit`,
+        { imageUrl }
+      );
+
+      navigate("/home-stage", { state: { imageUrl, challenge } });
+
     } catch (err) {
       console.error("업로드 실패:", err);
       alert("업로드 중 오류가 발생했습니다.");
@@ -77,7 +90,6 @@ export default function CameraPage() {
   if (!photo) {
     return (
       <Container>
-        {/* 뒤로가기 누르면 모달 열기 */}
         <VerifyTopBar onBack={() => setIsModalOpen(true)} />
         <Content>
           <Message>❌ 사진이 없습니다. 다시 시도해주세요.</Message>
@@ -88,50 +100,42 @@ export default function CameraPage() {
 
   return (
     <Container>
-      {/* 뒤로가기 누르면 모달 열기 */}
       <VerifyTopBar onBack={() => setIsModalOpen(true)} />
       <Content>
-        <ChallengeText>활동: 활동명 받아와야함 from Main</ChallengeText>
-        <SubText>인증샷이 승인될 경우 포인트가 적립됩니다 <br/>
-                  이 사진으로 제출할까요?</SubText>
+        <ChallengeText>
+          활동: {challenge?.contents || "활동명 받아와야 함"}
+        </ChallengeText>
+        <SubText>
+          인증샷이 승인될 경우 포인트가 적립됩니다 <br/>
+          이 사진으로 제출할까요?
+        </SubText>
         <PreviewContainer>
           <PhotoWrapper>
             <PreviewImage src={photo} />
           </PhotoWrapper>
-          {/* 오른쪽 위 아이콘 */}
           <IconFlag src={FlagIcn} alt="flag" />
-
-          {/* 왼쪽 아래 아이콘 */}
           <IconBox src={BoxIcn} alt="box" />
         </PreviewContainer>
         <ButtonRow>
           <ChoiceBtn onClick={retakePhoto}>
             재촬영
           </ChoiceBtn>
-          <ChoiceBtn onClick={completePhoto} points={50}>
+          <ChoiceBtn onClick={completePhoto}>
             제출하기
           </ChoiceBtn>
         </ButtonRow>
       </Content>
 
-      {/* 모달 */}
       <Modal
         isOpen={isModalOpen}
         title="뒤로 가시겠습니까?"
         description="작성 중인 사진은 저장되지 않습니다."
         buttons={[
-          {
-            label: "돌아가기",
-            onClick: () => navigate(-1),
-          },
-          {
-            label: "이어가기",
-            onClick: () => setIsModalOpen(false),
-          },
+          { label: "돌아가기", onClick: () => navigate(-1) },
+          { label: "이어가기", onClick: () => setIsModalOpen(false) },
         ]}
       />
 
-      {/* 숨겨진 카메라 input */}
       <HiddenInput
         ref={inputRef}
         type="file"
@@ -140,16 +144,20 @@ export default function CameraPage() {
         onChange={handleFileChange}
       />
 
+      {isLoading && (
+        <LoadingOverlay>
+          <LoadingText>{loadingMessage}</LoadingText>
+        </LoadingOverlay>
+      )}
     </Container>
   );
 }
 
-// Styled Components
+// Styled Components (변경 없음)
 const Container = styled.div`
   width: 100%;
   min-height: 100vh;
   background-color: #382C28;
-
   display: flex;
   flex-direction: column;
 `;
@@ -199,14 +207,11 @@ const ChallengeText = styled.span`
   font-weight: 700;
   line-height: 22px;
   letter-spacing: -0.408px;
-
   background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: #281900;
-
   margin-bottom: 17px;
 `;
 
@@ -214,18 +219,16 @@ const SubText = styled.div`
   width: 262px;
   font-family: "SUITE Variable";
   font-size: 16px;
-  font-style: normal;
   font-weight: 600;
   color: #FFF8E8;
-  line-height: 150%; /* 24px */
-
+  line-height: 150%;
   margin-bottom: 60px;
-`
+`;
 
 const IconFlag = styled.img`
   position: absolute;
-  top: 10px;           /* 위쪽 경계에서 약간 아래 */
-  right: -10px;         /* 오른쪽 경계에서 약간 안쪽 */
+  top: 10px;
+  right: -10px;
   width: 86px;
   height: 98px;
   z-index: 2;
@@ -233,8 +236,8 @@ const IconFlag = styled.img`
 
 const IconBox = styled.img`
   position: absolute;
-  bottom: 10px;        /* 아래쪽 경계에서 약간 위 */
-  left: -10px;          /* 왼쪽 경계에서 약간 안쪽 */
+  bottom: 10px;
+  left: -10px;
   width: 107px;
   height: 82px;
   transform: rotate(-7.263deg);
@@ -251,4 +254,23 @@ const ButtonRow = styled.div`
 
 const HiddenInput = styled.input`
   display: none;
+`;
+
+const LoadingOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`
+
+const LoadingText = styled.div`
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
 `;
