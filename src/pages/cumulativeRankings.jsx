@@ -7,7 +7,7 @@ import { getMyTotalRanking } from "../api/ranking"; // 전체 누적 랭킹 함�
 import "../styles/headerStyles.css";
 import "../styles/topNavStyles.css";
 import "../styles/rankingItemStyles.css";
-import "../styles/rankingPage.css";
+import "../styles/rankPage.css";
 import Footer from "../components/footer";
 
 function Ranking() {
