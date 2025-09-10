@@ -24,7 +24,10 @@ import CompletePage from './pages/cameraComplete.jsx'
 import HomeStage from './pages/homeStage.jsx';
 import Home from './pages/homeFarm.jsx'
 
-import RankingPage from "./pages/RankingPage.jsx"
+import CumulativeRankingPage from './pages/cumulativeRanking.jsx'
+import RegionalRankingPage from './pages/regionalRanking.jsx'
+import StreakRankingPage from './pages/streakRanking.jsx'
+import CarbonDashBoard from './pages/carbonDashBoard.jsx'
 
 const getAccessToken = () => localStorage.getItem('accessToken');
 
@@ -62,7 +65,11 @@ createRoot(document.getElementById('root')).render(
         <Route path="/verify" element={<ProtectedRoute><VerifySubmit /></ProtectedRoute>} />
         <Route path="/complete" element={<ProtectedRoute><CompletePage /></ProtectedRoute>} />
 
-        <Route path='/ranking' element={<ProtectedRoute><RankingPage /></ProtectedRoute>} />
+        <Route path='/cumulative-ranking' element={<CumulativeRankingPage/>} />
+        <Route path='/regional-ranking' element = {<RegionalRankingPage/>} />
+        <Route path='/streak-ranking' element = {<StreakRankingPage/>} />
+        <Route path='/carbon-dashboard' element = {<CarbonDashBoard/>} />
+
       </Routes>
     </BrowserRouter>
   </StrictMode>,

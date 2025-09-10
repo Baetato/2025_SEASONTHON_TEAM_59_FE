@@ -1,14 +1,14 @@
 // src/pages/Ranking.jsx
 import React, { useEffect, useState } from "react";
-import Header from "../components/RankingHeader";
-import Nav from "../components/Nav";
-import RankingItem from "../components/RankingItem";
+import Header from "../components/rankingHeader";
+import Nav from "../components/nav";
+import RankingItem from "../components/rankingItem";
 import { getMyTotalRanking } from "../api/ranking"; // 전체 누적 랭킹 함수 import
 
 import "../styles/headerStyles.css";
 import "../styles/topNavStyles.css";
 import "../styles/rankingItemStyles.css";
-import "../styles/RankingPage.css";
+import "../styles/rankingPage.css";
 import Footer from "../components/footer";
 
 function Ranking() {
@@ -36,7 +36,7 @@ function Ranking() {
     // totalRanking에 랭킹 목록이 배열이라면 리스트 렌더링도 수정 필요
     const mockData = Array.from({ length: 30 }, (_, i) => ({
         rank: 1 + i,
-        nickName: `테스트유저${i + 1}`,
+        nickName: `지역랭킹유저${i + 1}`,
         point: `${1000 - i * 10}P`,
     }));
 

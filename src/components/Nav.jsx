@@ -1,18 +1,42 @@
-import React from "react";
+import React, {useState} from "react";
 import "../styles/topNavStyles.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function NavSection() {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const getActiveButton = () => {
+        if (location.pathname === "/regional-ranking") return "regional";
+        if (location.pathname === "/cumulative-ranking") return "cumulative";
+        if (location.pathname === "/streak-ranking") return "streak";
+        return "cumulative"; // 기본값
+    };
+
+    const activeButton = getActiveButton();
+    const handleClick = (path) =>{
+        navigate(path);
+    };
+
+
+
     return (
         <div className="topNavSection">
             <div className="topNavContainer">
-                <button className="nonClickButton">
-                    <span className="nonClickFont">월간 지역 랭킹</span>
+                <button className={activeButton === "regional" ? "clickedButton" : "nonClickButton"} onClick={()=> handleClick('/regional-ranking')}>
+                    <span className={activeButton === "regional" ? "clickedFont" : "nonClickFont"}>
+                        월간 지역 랭킹
+                    </span>
                 </button>
-                <button className="clickedButton">
-                    <span className="clickedFont">누적 전체 랭킹</span>
+                <button className={activeButton === "cumulative" ? "clickedButton" : "nonClickButton"} onClick ={()=>handleClick('/cumulative-ranking')}>
+                   <span className={activeButton === "cumulative" ? "clickedFont" : "nonClickFont"}>
+                        누적 전체 랭킹
+                    </span>
                 </button>
-                <button className="nonClickButton">
-                    <span className="nonClickFont">스트릭 전체 랭킹</span>
+                <button className={activeButton=== "streak" ? "clickedButton" : "nonClickButton" } onClick={() => handleClick('/streak-ranking')}>
+                      <span className={activeButton === "streak" ? "clickedFont" : "nonClickFont"}>
+                        스트릭 전체 랭킹
+                    </span>
                 </button>
             </div>
         </div>
