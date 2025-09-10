@@ -29,6 +29,7 @@ import RegionalRankingPage from "./pages/regionalRanking.jsx"
 import StreakRankingPage from "./pages/streakRanking.jsx"
 import CarbonDashBoard from './pages/carbonDashBoard.jsx';
 
+
 const getAccessToken = () => localStorage.getItem('accessToken');
 
 function ProtectedRoute({ children }) {
