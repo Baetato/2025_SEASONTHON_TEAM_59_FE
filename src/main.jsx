@@ -3,6 +3,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { registerSW } from "virtual:pwa-register";
 import './index.css'
 import App from './App.jsx'
 import GoogleAuth from './pages/googleAuth.jsx'
@@ -29,6 +30,8 @@ import RegionalRankingPage from "./pages/regionalRanking.jsx"
 import StreakRankingPage from "./pages/streakRanking.jsx"
 import CarbonDashBoard from './pages/carbonDashBoard.jsx';
 
+// ✅ 서비스워커 등록 (렌더 전에 실행)
+registerSW({ immediate: true });
 
 const getAccessToken = () => localStorage.getItem('accessToken');
 
