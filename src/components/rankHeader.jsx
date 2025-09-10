@@ -3,9 +3,13 @@ import "../styles/headerStyles.css";
 import leafIcon from "../assets/leaf.png";
 import ProfilImg from "../assets/defaultProfile.png"; // 프로필 이미지 임포트
 import GraphImg from "../assets/graph.png"; // 그래프 이미지 임포트
+import { useNavigate } from "react-router-dom";
 
 function Header({ rank, nickName, point }) {
+
+    const navigate = useNavigate();
     /*profileImg 나중에 추가하기 */
+
     return (
         <div className="headerContainer">
             <div className="headerBetween">
@@ -23,7 +27,7 @@ function Header({ rank, nickName, point }) {
                     </div>
                 </div>
                 <div className="graphContainer">
-                    <button className="imgBtn">
+                    <button className="imgBtn" onClick={() => navigate ('/carbon-dashboard')}>
                         <img src={GraphImg} alt="그래프이미지" className="graphImgStyle" />
                     </button>
                 </div>

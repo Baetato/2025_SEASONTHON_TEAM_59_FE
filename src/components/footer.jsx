@@ -19,7 +19,7 @@ export default function Footer() {
     { id: "store", label: "가게", icon: iconStore, path: "/store" },
     { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
     { id: "home", label: "홈", icon: leafUpLogo, path: "/home-stage", isHome: true },
-    { id: "ranking", label: "랭킹", icon: iconRanking, path: "/ranking" },
+    { id: "ranking", label: "랭킹", icon: iconRanking, path: "/cumulative-ranking" },
     { id: "friend", label: "커뮤니티", icon: iconFriend, path: "/community" },
   ];
 
