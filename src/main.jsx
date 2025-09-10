@@ -24,7 +24,7 @@ import CompletePage from './pages/cameraComplete.jsx'
 import HomeStage from './pages/homeStage.jsx';
 import Home from './pages/homeFarm.jsx'
 
-import RankingPage from "./pages/RankingPage.jsx"
+import RankingPage from './pages/rankingPage.jsx'
 
 const getAccessToken = () => localStorage.getItem('accessToken');
 
@@ -62,7 +62,9 @@ createRoot(document.getElementById('root')).render(
         <Route path="/verify" element={<ProtectedRoute><VerifySubmit /></ProtectedRoute>} />
         <Route path="/complete" element={<ProtectedRoute><CompletePage /></ProtectedRoute>} />
 
-        <Route path='/ranking' element={<ProtectedRoute><RankingPage /></ProtectedRoute>} />
+        <Route path='/ranking' element={<RankingPage />} />
+        <Route path='/regional-ranking' element = {<RegionalRankingPage/>} />
+        <Route path='/streak-ranking' element = {<StreakRankingPage/>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

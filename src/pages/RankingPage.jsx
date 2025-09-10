@@ -1,14 +1,14 @@
 // src/pages/Ranking.jsx
 import React, { useEffect, useState } from "react";
-import Header from "../components/RankingHeader";
-import Nav from "../components/Nav";
-import RankingItem from "../components/RankingItem";
+import Header from "../components/rankingHeader";
+import Nav from "../components/nav";
+import RankingItem from "../components/rankingItem";
 import { getMyTotalRanking } from "../api/ranking"; // 전체 누적 랭킹 함수 import
 
 import "../styles/headerStyles.css";
 import "../styles/topNavStyles.css";
 import "../styles/rankingItemStyles.css";
-import "../styles/RankingPage.css";
+import "../styles/rankingPage.css";
 import Footer from "../components/footer";
 
 function Ranking() {
