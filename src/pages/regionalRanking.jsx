@@ -1,8 +1,8 @@
 // src/pages/Ranking.jsx
 import React, { useEffect, useState } from "react";
-import Header from "../components/rankingHeader";
-import Nav from "../components/nav";
-import RankingItem from "../components/rankingItem";
+import Header from "../components/rankHeader";
+import Nav from "../components/rankNav";
+import RankingItem from "../components/rankItem";
 import { getMyTotalRanking } from "../api/ranking"; // 전체 누적 랭킹 함수 import
 
 import "../styles/headerStyles.css";
