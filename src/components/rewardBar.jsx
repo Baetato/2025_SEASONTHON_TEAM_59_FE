@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import RewardBarImg from "../assets/RewardBar.png";
 import FlagIcnUnfilled from "../assets/flagIcn-unfilled.png";
-import FlagIcnFilled from "../assets/FlagIcn.png";
+import FlagIcnFilled from "../assets/flagIcn.png";
 
 export default function RewardBar({ completedCount = 0 }) {
   const totalFlags = 3;

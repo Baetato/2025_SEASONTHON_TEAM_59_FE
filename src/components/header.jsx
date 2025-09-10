@@ -5,7 +5,7 @@ import ProfileEx from "../assets/ProfileEx.png";
 import CoinIcn from "../assets/CoinIcn.png";
 import SettingIcn from "../assets/SettingIcn.png";
 import ProfileIcn from "../assets/ProfileIcn.png";
-import api from "../api.js"; // axios 인스턴스
+import api from "../api/api.js"; // axios 인스턴스
 
 export default function Header({ maxPoints = 100 }) {
   const [user, setUser] = useState(null);

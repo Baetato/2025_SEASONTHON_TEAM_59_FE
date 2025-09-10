@@ -12,7 +12,7 @@ import HomeMenuButton from "../components/homeMenuBtn.jsx";
 import Modal from '../components/modal.jsx';
 import RewardBar from '../components/rewardBar.jsx';
 import Footer from '../components/footer.jsx';
-import api from '../api.js';
+import api from '../api/api.js';
 
 export default function HomeStage() {
   const navigator = useNavigate();

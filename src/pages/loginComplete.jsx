@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-import api from "../api.js";
+import api from "../api/api.js";
 
 import LoginTopBar from "../components/loginTopBar.jsx";
 import LoginNextBtn from "../components/loginNextBtn.jsx";
