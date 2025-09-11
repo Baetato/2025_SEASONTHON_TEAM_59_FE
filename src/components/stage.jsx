@@ -1,13 +1,13 @@
 // components/Stage.jsx
 import styled from "styled-components";
 import WaitingImg from "../assets/stage-waiting.png"; // 대기
-import RejectedImg from "../assets/stage-refuse.svg"; // 거절
-import ApprovedImg from "../assets/stage-complete.svg"; // 승인
+import RejectedImg from "../assets/stage-refuse.png"; // 거절
+import ApprovedImg from "../assets/stage-complete.png"; // 승인
 import BeforeImg from "../assets/stage-idle.png"; // 도전 전
 
-import MasCotEmbrassed from "../assets/mascot-embrassed.png";
+// import MasCotEmbrassed from "../assets/mascot-embrassed.png";
 import MasCotIdle from "../assets/mascot-idle.png";  // 마스코트 기본 표정
-import MasCotHappy from "../assets/mascot-happy.png";
+// import MasCotHappy from "../assets/mascot-happy.png";
 
 import ChoiceBtn from "./choiceBtn.jsx"; // Start 버튼
 

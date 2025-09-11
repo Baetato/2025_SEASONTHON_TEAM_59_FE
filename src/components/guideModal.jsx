@@ -1,7 +1,7 @@
 // src/components/GuideModal.jsx
 import React from "react";
 import styled from "styled-components";
-import farmGuide from "../assets/farm-guide.svg";
+import farmGuide from "../assets/farm-guide.png";
 
 export default function GuideModal({ onClose }) {
   return (

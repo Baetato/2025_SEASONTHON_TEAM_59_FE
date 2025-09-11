@@ -11,17 +11,17 @@ import { GuideModal, TileInfoModal, CompletionModal } from "../components";
 import api from "../api.js";
 
 // Assets
-import moveToStage from "../assets/move-to-stage.svg";
+import moveToStage from "../assets/move-to-stage.png";
 import mascotIdle from "../assets/mascot-idle.png";
-import mascotHappy from "../assets/mascot-happy.svg";
-import mascotEmbarrassed from "../assets/mascot-embrassed.svg";
-import farmEmpty from "../assets/farm-empty.svg";
-import farmPlanted from "../assets/farm-beginning.svg";
-import farmGrowing from "../assets/farm-grow.svg";
-import farmDone from "../assets/farm-muture.svg";
-import farmComplete from "../assets/farm-get.svg";
-import farmLocked from "../assets/farm-fail.svg";
-import iconInfo from "../assets/icon-info.svg";
+import mascotHappy from "../assets/mascot-happy.png";
+import mascotEmbarrassed from "../assets/mascot-embrassed.png";
+import farmEmpty from "../assets/farm-empty.png";
+import farmPlanted from "../assets/farm-beginning.png";
+import farmGrowing from "../assets/farm-grow.png";
+import farmDone from "../assets/farm-muture.png";
+import farmComplete from "../assets/farm-get.png";
+import farmLocked from "../assets/farm-fail.png";
+import iconInfo from "../assets/icon-info.png";
 
 /* ===== 상수/맵 ===== */
 const TILE_BY_STATUS = {

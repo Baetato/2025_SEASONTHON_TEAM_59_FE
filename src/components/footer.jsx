@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-import footerImg from "../assets/bottomTab.svg";
-import iconStore from "../assets/icon-store.svg";
-import iconChallenge from "../assets/icon-challenge.svg";
-import leafUpLogo from "../assets/footer-logo.svg";
-import iconRanking from "../assets/icon-ranking.svg";
-import iconFriend from "../assets/icon-friend.svg";
+import footerImg from "../assets/bottomTab.png";
+import iconStore from "../assets/icon-store.png";
+import iconChallenge from "../assets/icon-challenge.png";
+import leafUpLogo from "../assets/footer-logo.png";
+import iconRanking from "../assets/icon-ranking.png";
+import iconFriend from "../assets/icon-friend.png";
 import farmModal from "../assets/farm-modal.png";
 
 export default function Footer() {
