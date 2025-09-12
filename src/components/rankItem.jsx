@@ -8,7 +8,7 @@ import ProfileImg from "../assets/defaultProfile.png"; // 프로필 이미지 �
 import profileGold from "../assets/gold.png";
 import profileSilver from "../assets/silver.png";
 import profileBronze from "../assets/bronze.png";
-import api from "../api";
+import api from "../api/api";
 
 function RankingItem({ rank, nickName, point }) {
     const rankClassName = rank === 1 ? "rankStyleGold" : rank === 2 ? "rankStyleSilver" : rank === 3 ? "rankStyleBronze" : "rankStyle";

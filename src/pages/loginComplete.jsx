@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-import api from "../api.js";
+import api from "../api/api.js";
 
 import LoginTopBar from "../components/loginTopBar.jsx";
 import LoginNextBtn from "../components/loginNextBtn.jsx";
@@ -35,6 +35,7 @@ export default function LoginComplete() {
 
         if (response.data?.data?.nickname) {
           setNickname(response.data.data.nickname);
+          localStorage.setItem("nickname", response.data.data.nickname);
         }
       } catch (err) {
         setError("온보딩 API 실패");

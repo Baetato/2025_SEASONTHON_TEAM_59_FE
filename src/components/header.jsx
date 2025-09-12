@@ -1,36 +1,59 @@
+//import { useRecoilState, useRecoilValue } from 'recoil'; // 전역 상태관리
+//import { userState } from '../states/userState.js'; // 전역 상태관리
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
 import CoinIcn from "../assets/CoinIcn.png";
 import SettingIcn from "../assets/SettingIcn.png";
 import ProfileIcn from "../assets/ProfileIcn.png";
-import api from "../api.js"; // axios 인스턴스
+import api from "../api/api.js";
 
-export default function Header({ maxPoints = 100 }) {
+const Header = forwardRef(function Header(_, ref) {
+  //console.log(userState)
+  //const [user, setUser] = useRecoilState(userState);  TODO: 상태관리 Recoil 에러 해결
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await api.get("/v1/members");
-        console.log("사용자 정보:", res.data);
-        setUser(res.data.data);
-      } catch (err) {
-        console.error("사용자 정보 조회 실패:", err);
-      }
-    };
+  const fetchUser = async () => {
+    try {
+      const res = await api.get("/v1/members");
+      console.log("사용자 정보:", res.data.data);
+      setUser(res.data.data);
+    } catch (err) {
+      console.error("사용자 정보 조회 실패:", err);
+    }
+  };
 
+  // ✅ 컴포넌트가 처음 마운트될 때 실행
+  useEffect(() => {
     fetchUser();
   }, []);
 
+  // ✅ 부모에서 ref.current.fetchUser() 호출 가능
+  useImperativeHandle(ref, () => ({
+    refreshUser: fetchUser,
+  }));
+
+
   if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
 
-  const points = user.point || 0;
-  const level = user.level || 1;
-  const nickname = user.nickname || "사용자";
-  const progress = Math.min(points / maxPoints, 1) * 100;
-  const profileImg = user.picture;
+  //  사용자 관련 정보 추출
+  const points = user?.point ?? 0;
+  const level = user?.level ?? 1;
+  const nickname = user?.nickname ?? "사용자";
+  const profileImg = user?.picture ?? ProfileEx;
+  
+  // 레벨업에 필요한 XP 계산
+  const getRequiredXP = (level) => {
+    if (level === 1) return 10;
+    return Math.round(10 + 1.6 * (level - 1));
+  };
+
+  // 레벨 바 계산용
+  const currentXP = points;
+  const nextLevelXP = getRequiredXP(level); // 다음 레벨까지 필요한 XP
+  const progressPercent = Math.min((currentXP / nextLevelXP) * 100, 100);
+
 
   return (
     <HeaderWrapper>
@@ -70,7 +93,7 @@ export default function Header({ maxPoints = 100 }) {
               <rect
                 x="9"
                 y="6"
-                width={(180 * points) / maxPoints}
+                width={(180 * progressPercent) / 100}
                 height="9"
                 rx="4.5"
                 fill="url(#paint0_linear)"
@@ -141,7 +164,8 @@ export default function Header({ maxPoints = 100 }) {
       </HeaderBar>
     </HeaderWrapper>
   );
-}
+});
+export default Header;
 
 // Styled Components (기존과 동일)
 const HeaderWrapper = styled.div`position: fixed; z-index:99999;`;

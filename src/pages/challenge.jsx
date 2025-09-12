@@ -6,7 +6,7 @@ import ChallengeLevelBtn from "../components/challengeLevelBtn";
 import ChallengeItem from "../components/challengeItem";
 import Footer from "../components/footer";
 
-import api from "../api";
+import api from "../api/api";
 
 export default function Challenge() {
   const [activeBtn, setActiveBtn] = useState("all");

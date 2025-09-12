@@ -9,7 +9,7 @@ import ChoiceBtn from "../components/choiceBtn.jsx";
 import Modal from "../components/modal.jsx";
 import BoxIcn from "../assets/BoxIcn.png";
 import FlagIcn from "../assets/FlagIcn.png";
-import api from "../api.js";
+import api from "../api/api.js";
 
 export default function CameraPage() {
   const inputRef = useRef(null);
