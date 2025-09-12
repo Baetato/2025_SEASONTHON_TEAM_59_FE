@@ -35,6 +35,7 @@ export default function LoginComplete() {
 
         if (response.data?.data?.nickname) {
           setNickname(response.data.data.nickname);
+          localStorage.setItem("nickname", response.data.data.nickname);
         }
       } catch (err) {
         setError("온보딩 API 실패");

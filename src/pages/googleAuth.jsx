@@ -31,7 +31,7 @@ export default function GoogleAuth() {
         // TODO: 어디에 저장할지 확정
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("memberInfo", JSON.stringify(memberInfo));
+        localStorage.setItem("nickname", memberInfo.nickname);
 
         // 닉네임 페이지로 이동
         navigate("/login/nick");

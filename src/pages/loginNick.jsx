@@ -6,6 +6,7 @@ import LoginTopBar from "../components/loginTopBar.jsx";
 import LoginNextBtn from "../components/loginNextBtn.jsx";
 
 export default function LoginNick() {
+  console.log("LoginNick 렌더링");
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
   const [error, setError] = useState(false); // 닉네임 공란 상태

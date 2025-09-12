@@ -55,10 +55,11 @@ const Title = styled.div`
   margin-left: 8px;
   color: #5C4D49;
   font-family: "SUITE Variable";
-  font-size: ${({ $fontSize }) => ($fontSize === "191px" ? "12px" : "16px")};
+  font-size: ${({ $fontSize }) => ($fontSize === "10px" ? "12px" : "16px")};
   font-weight: 800;
-  line-height: ${({ $fontSize }) => ($fontSize === "191px" ? "16px" : "22px")};
+  line-height: ${({ $fontSize }) => ($fontSize === "10px" ? "16px" : "22px")};
   letter-spacing: -0.408px;
+  overflow: hidden;
 `;
 
 const PointContainer = styled.div`

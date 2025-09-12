@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -16,6 +16,7 @@ import api from '../api/api.js';
 
 export default function HomeStage() {
   const navigator = useNavigate();
+  const headerRef = useRef();
 
   const [stages, setStages] = useState([]); // 스테이지 상태 관리용
   const [characterStage, setCharacterStage] = useState(1); // 현재 캐릭터의 스테이지 위치
@@ -23,9 +24,11 @@ export default function HomeStage() {
   const [challenges, setChallenges] = useState([]); 
   const [selectedStage, setSelectedStage] = useState(null);  // 현재 시작한 스테이지(TODO: 꼭 필요한지 점검)
 
+  const [rewardPoints, setRewardPoints] = useState(20); // 일일 보상바 포인트
+
   const [loading, setLoading] = useState(true);  // 로딩 여부
   const [challengeModalOpen, setChallengeModalOpen] = useState(false); // 챌린지 모달
-  const [completeModalOpen, setCompleteModalOpen] = useState(true); // 완료 모달
+  const [rewardModalOpen, setRewardModalOpen] = useState(false); // 보상 모달
 
 
   useEffect(() => {
@@ -36,45 +39,42 @@ export default function HomeStage() {
 
         setCharacterStage(data.currentStage);
         setCompletedCount(data.completedCount);
-
-        // 스테이지는 무조건 10개씩 보여주기(확정)
-        const totalStages = 10;
+        setChallenges(data.dailyChallengesResDtos);
 
         // 스테이지 상태는 백엔드에서 별도 배열로 내려준다고 가정
-        // 여기서는 임시로 before/approved/waiting 랜덤 예시
+        const mapBackendStatus = (backendStatus) => {
+          switch (backendStatus) {
+            case "pending": return "waiting";
+            case "active": return "before";
+            case "approved": return "approved";
+            case "rejected": return "rejected";
+            default: return "before";
+          }
+        };
+
+        // 오늘 시작할 스테이지 기준으로 앞으로 10개 만들기
+        const activeCount = data.stageStatus.filter(s => s === "active").length;
+        const startStage = data.currentStage - (5-activeCount);
+
+        const totalStages = 10;
         const stageData = Array.from({ length: totalStages }, (_, idx) => {
-          let status = "before";
-          if (idx < data.completedCount) status = "approved";
-          else if (idx === data.currentStage - 1) status = "waiting";
+          const backendIdx = idx; // 오늘 백엔드에서 오는 stageStatus는 5개
+          let status;
+
+          if (backendIdx < data.stageStatus.length) {
+            status = mapBackendStatus(data.stageStatus[backendIdx]);
+          } else {
+            // 나머지 스테이지는 아직 제출 안 한 것으로 가정 → before
+            status = "before";
+          }
 
           return {
-            index: idx + 1, // 스테이지 번호
+            index: startStage + idx, // 실제 스테이지 번호
             status,
           };
         });
 
-
-        /* 옛날 API 로직
-        // TODO: 백엔드 수정되면 위 로직 수정하고 지울 예정
-        const stageData = data.dailyChallengesResDtos.map((challenge, idx) => {
-          let status = "before";
-
-          if (idx < data.completedCount) {
-            status = "approved"; // 이미 완료된 스테이지
-          } else if (idx >= data.completedCount && idx < data.currentStage) {
-            status = "waiting"; // 현재 진행중인 스테이지
-          } else {
-            status = "before"; // 아직 진행 전 스테이지
-          }
-
-          return {
-            index: challenge.dailyMemberChallengeId,
-            status,
-          };
-        });*/
-
         setStages(stageData);
-        setChallenges(data.dailyChallengesResDtos);
       } catch (error) {
         console.error("챌린지 조회 실패:", error);
       } finally {
@@ -90,17 +90,43 @@ export default function HomeStage() {
     setChallengeModalOpen(true);
   };
 
+  {/* 일일 챌린지 보상 바 클릭 */}
+  const handleRewardStarClick = async () => {
+    try {
+      await api.post("/v1/members/daily-bonus");
+
+      setRewardModalOpen(true); // 일일 챌린지 완주 모달 열기
+      headerRef.current?.refreshUser();  // 보상 성공 → Header한테 api 갱신 명령
+    } catch (err) {
+      alert(err.response?.data?.detail || "보상 실패!");
+    }
+  };
+
+  {/* 챌린지 리셋 버튼 클릭 */}
+  const handleReset = async () => {
+    try {
+      const res = await api.post("/v1/daily-challenges/today/reset");
+      const data = res.data.data;
+
+      setChallenges(data.dailyChallengesResDtos);
+    } catch (err) {
+      alert("챌린지 리셋 실패!");
+    }
+  };
+
+
   const closeModal = () => setChallengeModalOpen(false);
 
   if (loading) return <Container><LoadingText>Loading...</LoadingText></Container>;
 
   return (
     <Container>
-      <Header points={100} maxPoints={200} />
+      <Header ref={headerRef} />
       <Content>
 
         <RewardBarContainer>
-          <RewardBar completedCount={completedCount} /> {/* ← API에서 바로 받은 값 사용 */}
+          {/*<RewardBar completedCount={completedCount}  onStarClick={handleRewardStarClick}/>  ← API에서 바로 받은 값 사용 */}
+          <RewardBar completedCount={3} onStarClick={handleRewardStarClick}/>
         </RewardBarContainer>
 
         <StageScroll 
@@ -122,11 +148,12 @@ export default function HomeStage() {
             challenges={challenges} 
             stageIndex={selectedStage} 
             onClose={closeModal} 
+            onReset={handleReset}
           />
         )}
 
-        {completeModalOpen && <Modal
-          isOpen={completeModalOpen}
+        {rewardModalOpen && <Modal
+          isOpen={rewardModalOpen}
           title={
           <>
             오늘의 챌린지<br /> 완주!
@@ -135,7 +162,7 @@ export default function HomeStage() {
           icon = {CoinIcn}
           score="+20"
           buttons={[
-            { label: "확인", onClick: () => setCompleteModalOpen(false) },
+            { label: "확인", onClick: () => setRewardModalOpen(false) },
           ]}
         />}
 
