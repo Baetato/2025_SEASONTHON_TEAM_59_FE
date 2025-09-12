@@ -116,17 +116,46 @@ const Item = styled.div`
     margin-top: -6px;
   }
 
-  /* 호버/포커스 시 아이콘 애니메이션 */
+  /* 호버/포커스 시 아이콘 그라데이션 섀도우 */
   &:hover img,
   &:focus-visible img {
     transform: translateY(-3px) scale(1.06);
-    filter: brightness(1.06) drop-shadow(0 0 6px rgba(255,213,125,.35));
+    filter: drop-shadow(0 0 30px #FFECBF) drop-shadow(0 3px 0 #382C28);
   }
 
   /* 클릭 시 눌림 느낌 */
   &:active img {
     transform: translateY(0) scale(0.96);
-    filter: brightness(0.98);
+    filter: drop-shadow(0 0 30px #FFECBF) drop-shadow(0 3px 0 #382C28);
+  }
+
+  /* 호버/포커스 시 텍스트 색상 변경 */
+  &:hover span,
+  &:focus-visible span {
+    text-align: center;
+    font-family: "Maplestory OTF";
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    background: linear-gradient(180deg, #FFBF2B 0%, #FFBE29 0.01%, #FF9D00 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* 클릭 시 텍스트 색상 변경 */
+  &:active span {
+    text-align: center;
+    font-family: "Maplestory OTF";
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    background: linear-gradient(180deg, #FFBF2B 0%, #FFBE29 0.01%, #FF9D00 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 `;
 
@@ -151,6 +180,7 @@ const baseLabel = css`
 
 const Label = styled.span`
   ${baseLabel}
+  transition: all 0.3s ease;
 `;
 
 /* 일반 아이콘 */
