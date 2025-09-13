@@ -36,7 +36,7 @@ function Ranking() {
     // totalRanking에 랭킹 목록이 배열이라면 리스트 렌더링도 수정 필요
     const mockData = Array.from({ length: 30 }, (_, i) => ({
         rank: 1 + i,
-        nickName: `스트릭랭킹유저${i + 1}`,
+        nickName: `스트릭유저${i + 1}`,
         point: `${1000 - i * 10}P`,
     }));
 

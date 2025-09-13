@@ -25,10 +25,19 @@
     font-weight: 700;
     line-height: 22px; /* 137.5% */
     letter-spacing: -0.408px;
+    white-space: nowrap;
+}
+
+.starStyle{
+    margin-top: 90%;
+    position: absolute;
+    width:36px;
+    height: 19px;
 }
 
 .pointStyle {
-    margin-left: 20px;
+    position: absolute;
+    right : 0px;
     color: #7cb29e;
     text-align: right;
     font-family: "Maplestory OTF", system-ui, sans-serif;
@@ -38,6 +47,7 @@
     line-height: 22px;
     letter-spacing: -0.408px;
 }
+
 .myRankingBoard {
     width: 306px;
     height: 57px;
@@ -57,6 +67,7 @@
     align-items: center;
     justify-content: flex-end;
     margin-right: 5px;
+    height: 90%;
 }
 
 .imgBtn {
@@ -78,39 +89,41 @@
 }
 
 .gradientNumber {
+    text-align: right;
     font-family: "Maplestory OTF", system-ui, sans-serif;
     position: absolute;
-    text-align: center;
-    text-transform: translate(50%, 50%);
-    top:18px;
-    left: 22px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 0;
     font-weight: 700;
     font-size: 24px;
-    line-height: 22px;
     /* 기본(fallback) 색상 — 그라데이션을 지원하지 않는 브라우저에서 사용 */
     color: #ffe8b3;
-
-    /* 그라데이션 텍스트 (지원 브라우저에만 적용) */
-    background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
+    /* Chrome / Safari용 텍스트 투명 처리 (그라데이션 보이게 함) */
     -webkit-background-clip: text;
     background-clip: text;
-
-    /* Chrome / Safari용 텍스트 투명 처리 (그라데이션 보이게 함) */
     -webkit-text-fill-color: transparent;
+    /* 그라데이션 텍스트 (지원 브라우저에만 적용) */
+    background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
 }
 
 .leftContainer {
     background: linear-gradient(to bottom, #5b4c48, #463733);
-    position: relative; /* 자식의 절대 위치 기준 */
     width: 76px;
     height: 57px;
+    flex: 0 0 76px;
 }
 
 .imgContainer {
-    position: absolute; /* 기존 디자인 의도대로 이미지가 오버랩 되도록 */
-    left: 50px; /* 필요시 조정 (원래 계산값: 75.8 - 51/2 등) */
-    width: 57px;
-    height: 57px;
+    display: flex;
+    left: 50px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
 }
 
 .imgStyle {
@@ -120,15 +133,30 @@
 }
 
 .leafImgStyle {
-    margin-left: 8px;
     width: 24px;
     height: 22px;
     object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+    position: absolute;
+    flex-shrink: 0; 
+    right: 5px;
+
 }
 
 .centerContainer {
+    width: 230px;
     display: flex;
     align-items: center;
+    min-width: 0;
+    gap: 10px; 
+    position: relative;
+}
+
+.point-margin{
+    padding-left: 10px;
+}
+
+.leaf-margin{
+    padding-left: 5px;
 }
 
 /* Maplestory Bold */

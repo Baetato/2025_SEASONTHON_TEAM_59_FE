@@ -50,7 +50,6 @@ body {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   background-color: #f0f0f0;
   min-height: 100vh;
-  overflow-y: auto; /* 스크롤 허용 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -61,10 +60,10 @@ body {
   width: 100%;
   max-width: 390px; /* iPhone 14 기준 */
   height: 100vh; /* 모바일에서는 꽉 차게 */
-  background-color: #FFF8E8;
-  overflow-y: auto; /* ✅ 내부 스크롤 허용 */
+  background-color: #433531;
   border-radius: 0; /* 모바일은 모서리 없음 */
 }
+
 
 /* 🔹 PC/웹뷰용 스타일 */
 @media (min-width: 768px) {
