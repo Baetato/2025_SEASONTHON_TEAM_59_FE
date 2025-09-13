@@ -3,7 +3,7 @@ import { useState } from "react"
 import RewardBarImg from "../assets/Stage-RewardBar.png";
 import RewardStar from "../assets/Stage-RewardStar.png";
 import FlagIcnUnfilled from "../assets/flagIcn-unfilled.png";
-import FlagIcnFilled from "../assets/FlagIcn.png";
+import FlagIcnFilled from "../assets/flagIcn.png";
 
 export default function RewardBar({ completedCount = 0, onStarClick}) {
   const totalFlags = 3;
