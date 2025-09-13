@@ -9,6 +9,9 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       devOptions:{enabled: true}, // vite dev 로 돌려도 PWA 까지 볼 수 있게끔 주는 옵션
+      workbox: {
+        navigateFallbackDenylist: [/^\/auth\/google\/assets/], // CSS/JS 등 정적 파일 제외
+      },
       manifest: {
         name: "LeafUp",
         short_name: "LeafUp",
