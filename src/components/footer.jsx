@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import footerImg from "../assets/bottomTab.png";
 import iconStore from "../assets/icon-store.png";
@@ -12,6 +12,7 @@ import farmModal from "../assets/farm-modal.png";
 
 export default function Footer() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [modalOpen, setModalOpen] = useState(false); // 모달 상태 관리
   const [modalMessage, setModalMessage] = useState(""); // 모달 메시지 관리
 
@@ -39,6 +40,7 @@ export default function Footer() {
               tabIndex={0}
               aria-label={it.label}
               onClick={() => handleItemClick(it)}
+              className={location.pathname === it.path ? "active" : ""} // 현재 경로면 active 클래스
             >
               {it.isHome ? (
                 <HomeLogo src={it.icon} alt={it.label} draggable={false} />
@@ -122,6 +124,10 @@ const Item = styled.div`
     transform: translateY(-3px) scale(1.06);
     filter: drop-shadow(0 0 30px #FFECBF) drop-shadow(0 3px 0 #382C28);
   }
+  &.active img {   /* 현재 경로일 때 아이콘 효과 */
+    transform: translateY(-3px) scale(1.06);
+    filter: drop-shadow(0 0 30px #FFECBF) drop-shadow(0 3px 0 #382C28);
+  }
 
   /* 클릭 시 눌림 느낌 */
   &:active img {
@@ -132,6 +138,18 @@ const Item = styled.div`
   /* 호버/포커스 시 텍스트 색상 변경 */
   &:hover span,
   &:focus-visible span {
+    text-align: center;
+    font-family: "Maplestory OTF";
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    background: linear-gradient(180deg, #FFBF2B 0%, #FFBE29 0.01%, #FF9D00 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  &.active span {   /* 현재 경로일 때 텍스트 색상 유지 */
     text-align: center;
     font-family: "Maplestory OTF";
     font-style: normal;

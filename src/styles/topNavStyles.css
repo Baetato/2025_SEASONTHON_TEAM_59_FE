@@ -12,6 +12,9 @@
     background: #261b18;
     border: none;
     cursor: pointer;
+    display: flex;                /* flex 박스 활성화 */
+    justify-content: center;      /* 가로 가운데 */
+    align-items: center;          /* 세로 가운데 */
 }
 
 .buttonContainer{
@@ -26,10 +29,14 @@
     width: 115px;
     height: 26px;
     flex-shrink: 0;
+    border: none;
     background-image: url(../assets/nav-button.png);
     background-size: cover;
     background-position: center;
     cursor: pointer;
+    display: flex;                /* flex 박스 활성화 */
+    justify-content: center;      /* 가로 가운데 */
+    align-items: center;          /* 세로 가운데 */
 }
 
 .nonClickFont {

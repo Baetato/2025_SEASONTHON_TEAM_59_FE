@@ -103,6 +103,8 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    -webkit-text-stroke-width: 1.5px;
+    -webkit-text-stroke-color: #281900;
     /* 그라데이션 텍스트 (지원 브라우저에만 적용) */
     background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
 }
