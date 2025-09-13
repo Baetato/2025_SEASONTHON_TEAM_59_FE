@@ -18,6 +18,7 @@ import LoginLocRe from './pages/loginLocRe.jsx'
 import LoginComplete from './pages/loginComplete.jsx';
 
 import Challenge from './pages/challenge.jsx';
+import MyPage from './pages/myPage.jsx';
 
 import CameraMain from './pages/cameraMain.jsx'
 import CameraPage from './pages/cameraTest.jsx'
@@ -84,6 +85,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/home-stage" element={<ProtectedRoute><HomeStage /></ProtectedRoute>} />
           <Route path="/home-farm" element={<ProtectedRoute><Home /></ProtectedRoute>} />
 
+          {/* 마이 페이지 */}
+          <Route path="/my-page" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
 
           {/* 기타 페이지 */}
           <Route path="/challenge" element={<ProtectedRoute><Challenge /></ProtectedRoute>} />

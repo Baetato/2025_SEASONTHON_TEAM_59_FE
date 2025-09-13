@@ -2,6 +2,7 @@
 //import { userState } from '../states/userState.js'; // 전역 상태관리
 import styled from "styled-components";
 import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { useNavigate } from "react-router-dom";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
 import CoinIcn from "../assets/CoinIcn.png";
@@ -12,6 +13,7 @@ import api from "../api/api.js";
 const Header = forwardRef(function Header(_, ref) {
   //console.log(userState)
   //const [user, setUser] = useRecoilState(userState);  TODO: 상태관리 Recoil 에러 해결
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [animatedPoints, setAnimatedPoints] = useState(0); // 포인트 애니메이션 값
 
@@ -196,7 +198,7 @@ const Header = forwardRef(function Header(_, ref) {
         </ProfileWrapper>
 
         {/* 프로필 아이콘 */}
-        <ProfileIcon src={ProfileIcn} alt="profile icon" onClick={() => console.log("마이페이지 띄워야함")} />
+        <ProfileIcon src={ProfileIcn} alt="profile icon" onClick={() => navigate("/my-page")} />
       </HeaderBar>
     </HeaderWrapper>
   );
