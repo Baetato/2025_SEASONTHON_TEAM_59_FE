@@ -13,6 +13,7 @@ const Header = forwardRef(function Header(_, ref) {
   //console.log(userState)
   //const [user, setUser] = useRecoilState(userState);  TODO: 상태관리 Recoil 에러 해결
   const [user, setUser] = useState(null);
+  const [animatedPoints, setAnimatedPoints] = useState(0); // 포인트 애니메이션 값
 
   const fetchUser = async () => {
     try {
@@ -34,11 +35,35 @@ const Header = forwardRef(function Header(_, ref) {
     refreshUser: fetchUser,
   }));
 
+  // 🔥 포인트 애니메이션 처리
+  useEffect(() => {
+    if (!user) return;
+    let start = animatedPoints;
+    let end = user.point ?? 0;
+    if (start === end) return;
+
+    let startTime = null;
+    const duration = 800; // 애니메이션 시간(ms)
+
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const currentValue = Math.floor(start + (end - start) * progress);
+      setAnimatedPoints(currentValue);
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  }, [user]);
 
   if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
 
   //  사용자 관련 정보 추출
-  const points = user?.point ?? 0;
+  //const points = user?.point ?? 0;
+  const points = animatedPoints; // ← 여기서 애니메이션된 값 사용
   const level = user?.level ?? 1;
   const nickname = user?.nickname ?? "사용자";
   const profileImg = user?.picture ?? ProfileEx;
@@ -58,6 +83,17 @@ const Header = forwardRef(function Header(_, ref) {
   return (
     <HeaderWrapper>
       <HeaderBar>
+        {/* TODO: 애니메이션 테스트코드.. 나중에 진짜 API로 잘되는지 확인한 후 삭제할것
+        <button
+          onClick={() =>
+            setUser((prev) => ({
+              ...prev,
+              point: (prev?.point ?? 0) + 100,
+            }))
+          }
+        >
+          포인트 +100 테스트
+        </button>*/}
         {/* 레벨 텍스트 */}
         <LevelText>LV. {level}</LevelText>
 

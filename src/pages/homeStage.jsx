@@ -24,11 +24,10 @@ export default function HomeStage() {
   const [challenges, setChallenges] = useState([]); 
   const [selectedStage, setSelectedStage] = useState(null);  // 현재 시작한 스테이지(TODO: 꼭 필요한지 점검)
 
-  const [rewardPoints, setRewardPoints] = useState(20); // 일일 보상바 포인트
-
   const [loading, setLoading] = useState(true);  // 로딩 여부
   const [challengeModalOpen, setChallengeModalOpen] = useState(false); // 챌린지 모달
-  const [rewardModalOpen, setRewardModalOpen] = useState(false); // 보상 모달
+  const [rewardModalOpen, setRewardModalOpen] = useState(false); // 일일 3회 보상 모달
+  const [doneModalOpen, setDoneModalOpen] = useState(false); // 오늘의 스테이지 모두 완료 모달
 
 
   useEffect(() => {
@@ -75,6 +74,11 @@ export default function HomeStage() {
         });
 
         setStages(stageData);
+
+        // 오늘 모든 스테이지 도전 완료 체크
+        if (activeCount === 0) {
+          setDoneModalOpen(true);
+        }
       } catch (error) {
         console.error("챌린지 조회 실패:", error);
       } finally {
@@ -165,6 +169,22 @@ export default function HomeStage() {
             { label: "확인", onClick: () => setRewardModalOpen(false) },
           ]}
         />}
+
+        {doneModalOpen && (
+          <Modal
+            isOpen={doneModalOpen}
+            title={
+              <>
+                오늘 하루도 고생 많았어요. <br />
+                푹 쉬고 내일도 환경을 <br />
+                보호하러 와주세요!
+              </>
+            }
+            buttons={[
+              { label: "확인", onClick: () => setDoneModalOpen(false) },
+            ]}
+          />
+        )}
 
       </Content>
       <Footer />
