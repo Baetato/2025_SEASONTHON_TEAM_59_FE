@@ -11,7 +11,7 @@ import profileBronze from "../assets/bronze.png";
 import rank1Star from "../assets/rank1-star.png"
 import rank2Star from "../assets/rank2-star.png"
 import rank3Star from "../assets/rank3-star.png"
-import api from "../api";
+import api from "../api/api";
 
 function RankingItem({ rank, nickName, point }) {
     const rankClassName = rank === 1 ? "rankStyleGold" : rank === 2 ? "rankStyleSilver" : rank === 3 ? "rankStyleBronze" : "rankStyle";

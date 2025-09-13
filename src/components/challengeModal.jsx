@@ -15,7 +15,7 @@ const statusColors = {
   REJECTED: { background: "#a83232", border: "#6e1f1f" },
 };
 
-export default function ChallengeModal({ challenges, stageIndex, onClose }) {
+export default function ChallengeModal({ challenges, stageIndex, onClose, onReset }) {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -57,7 +57,10 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
   return (
     <Overlay onClick={onClose}>
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>스테이지 {stageIndex} 도전</ModalHeader>
+        <ModalHeaderContainer>
+          <ModalHeader>스테이지 {stageIndex} 도전</ModalHeader>
+          <ResetContainer onClick={onReset}>&</ResetContainer>
+        </ModalHeaderContainer>
 
         <ChallengeList>
           {challenges.map((challenge) => {
@@ -66,6 +69,10 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
               challenge.challengeStatus === "ACTIVE"
                 ? challengeColors[challenge.challengeType]
                 : statusColors[challenge.challengeStatus] || { background: "#999", border: "#666" };
+            
+            // 타입별 포인트 설정
+            const pointsMap = { EASY: 6, MEDIUM: 15, HARD: 50 };
+            const points = pointsMap[challenge.challengeType] ?? 0;    
 
             return (
               <ChallengeButton
@@ -77,10 +84,10 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
                 <ChallengeItem
                   colors={colors}
                   title={challenge.contents}
-                  points={10}
+                  points={points}
                   width="191px"
                   height="49px"
-                  fontSize="12px"
+                  fontSize="10px"
                 />
                 {challenge.challengeStatus === "REJECTED" && (
                   <RejectedLabel>거절됨</RejectedLabel>
@@ -127,20 +134,40 @@ const ModalWrapper = styled.div`
   margin-top: 20px;
   z-index: 9999;
 `;
-
+const ModalHeaderContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+`
 const ModalHeader = styled.div`
-  width: 197px;
+  width: 138px;
   height: 41.887px;
   border-radius: 3px;
   background: linear-gradient(180deg, #5C4D49 0%, #463733 100%);
   color: #FFECBF;
   font-family: "SUITE Variable";
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 3px;
+`;
+
+const ResetContainer = styled.div`
+  width: 48px;
+  height: 41.887px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #5C4D49 0%, #463733 100%);
+  color: #FFECBF;
+  font-family: "SUITE Variable";
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3px;
+  cursor: pointer;
 `;
 
 const ChallengeList = styled.div`

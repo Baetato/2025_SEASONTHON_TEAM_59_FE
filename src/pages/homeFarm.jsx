@@ -8,7 +8,7 @@ import Footer from "../components/footer.jsx";
 import HomeMenuButton from "../components/homeMenuBtn.jsx";
 import { GuideModal, TileInfoModal, CompletionModal } from "../components";
 
-import api from "../api.js";
+import api from "../api/api.js";
 
 // Assets
 import moveToStage from "../assets/move-to-stage.png";

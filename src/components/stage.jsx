@@ -31,7 +31,7 @@ export default function Stage({ index, status, hasCharacter, onStartClick }) {
         <>
           <Character src={MasCotIdle} alt="character" />
           <StartBtnWrapper>
-            <ChoiceBtn onClick={() => onStartClick(index)} width="92px" height="29px">START</ChoiceBtn>
+            <ChoiceBtn onClick={() => onStartClick(index)} width="92px" height="29px">Start</ChoiceBtn>
           </StartBtnWrapper>
         </>
       )}

@@ -1,10 +1,20 @@
-import styled from "styled-components";
-import RewardBarImg from "../assets/RewardBar.png";
+import styled, { keyframes, css } from "styled-components";
+import { useState } from "react"
+import RewardBarImg from "../assets/Stage-RewardBar.png";
+import RewardStar from "../assets/Stage-RewardStar.png";
 import FlagIcnUnfilled from "../assets/flagIcn-unfilled.png";
 import FlagIcnFilled from "../assets/FlagIcn.png";
 
-export default function RewardBar({ completedCount = 0 }) {
+export default function RewardBar({ completedCount = 0, onStarClick}) {
   const totalFlags = 3;
+  const [starClaimed, setStarClaimed] = useState(false);
+
+  const handleStarClick = () => {
+    if (completedCount === totalFlags && !starClaimed) {
+      onStarClick?.();
+      setStarClaimed(true); // 애니메이션 멈추게 하기
+    }
+  };
 
   return (
     <RewardBarWrapper>
@@ -18,6 +28,12 @@ export default function RewardBar({ completedCount = 0 }) {
           />
         ))}
       </FlagContainer>
+      <RewardStarIcon
+        src={RewardStar}
+        alt="Reward Star"
+        $animate={completedCount === totalFlags && !starClaimed} // ✅ 클릭 후 false로
+        onClick={handleStarClick}
+      />
     </RewardBarWrapper>
   );
 }
@@ -39,14 +55,36 @@ const RewardBarBackground = styled.img`
 
 const FlagContainer = styled.div`
   position: absolute;
-  top: 50%;
-  left: 42%;
+  top: 35%;
+  left: 41%;
   display: flex;
-  gap: 7px;
+  gap: 4px;
   transform: translate(-50%, -50%);
 `;
 
 const FlagIcon = styled.img`
   width: 47px;
   height: 53px;
+`;
+
+// ✨ 애니메이션 정의
+const pulse = keyframes`
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.1); filter: brightness(1.3); }
+  100% { transform: scale(1); filter: brightness(1); }
+`;
+
+const RewardStarIcon = styled.img`
+  position: absolute;
+  top: -12%;
+  left: 77%;
+  width: 44px;
+  height: 44px;
+
+  ${({ $animate }) =>
+    $animate &&
+    css`
+      animation: ${pulse} 1s infinite ease-in-out;
+      cursor: pointer;   // ✅ 커서 포인터 추가
+    `}
 `;
