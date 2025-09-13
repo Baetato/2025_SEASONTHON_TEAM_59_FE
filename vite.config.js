@@ -3,12 +3,18 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  base: './',
+  base: '/',
   plugins: [
     react(),
     VitePWA({
       registerType: "autoUpdate",
       devOptions:{enabled: true}, // vite dev 로 돌려도 PWA 까지 볼 수 있게끔 주는 옵션
+      navigateFallbackDenylist: [
+        /^\/auth\/kakao\/callback/, // 콜백 URL 제외
+        /^\/auth\/google\/callback/, // 콜백 URL 제외
+        /^\/api\//,                // API 요청 제외
+        /^\/assets\//              // 정적 파일 제외
+      ],
       workbox: {
         navigateFallbackDenylist: [/^\/auth\/google\/assets/], // CSS/JS 등 정적 파일 제외
       },
