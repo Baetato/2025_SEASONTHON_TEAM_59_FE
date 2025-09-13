@@ -1,22 +1,20 @@
 import styled from "styled-components";
 import ChallengeBtn from "../assets/ChallengeBtn.png";
 
-export default function EnvProtectEffect() {
+export default function EnvProtectEffect({ effects }) {
   return (
     <EffectContainer>
-      <EffectItem>
-        <EffectBox src={ChallengeBtn} alt="챌린지 버튼" />
-        <EffectTextMain>13,636,364그루</EffectTextMain>
-        <EffectTextSub>나무 심기와 동일한 효과</EffectTextSub>
-      </EffectItem>
-      <EffectItem>
-        <EffectBox src={ChallengeBtn} alt="챌린지 버튼" />
-        <EffectTextMain>13,636,364그루</EffectTextMain>
-        <EffectTextSub>나무 심기와 동일한 효과</EffectTextSub>
-      </EffectItem>
+      {effects.map((effect, index) => (
+        <EffectItem key={index}>
+          <EffectBox src={ChallengeBtn} alt="챌린지 버튼" />
+          <EffectTextMain>{effect.title}</EffectTextMain>
+          <EffectTextSub>{effect.content}</EffectTextSub>
+        </EffectItem>
+      ))}
     </EffectContainer>
   );
 }
+
 
 const EffectContainer = styled.div`
   width: 373px;

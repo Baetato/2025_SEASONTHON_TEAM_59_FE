@@ -74,7 +74,7 @@ export default function MyPage() {
           </ContainerBackGround>
 
           {/* 업적 섹션 */}
-          <ContainerBackGround $height="165px">
+          <ContainerBackGround $height="200px">
             {/* 업적들을 여기에 나열할건데 한줄에 5씩 보여주고 총 2줄로 보여줄 예정 */}
             <Title $top={"-19px"} $left={"14px"}>내가 달성한 업적</Title>
             <Grid>
@@ -88,7 +88,12 @@ export default function MyPage() {
             </Grid>
           </ContainerBackGround>
           <CarbonText>대단해요! 지금까지 ___ kgCO₂eq 절약했어요!</CarbonText>
-          <EnvProtectEffect />
+          <EnvProtectEffect
+            effects={[
+              { title: "13,636,364그루", content: "나무 심기와 동일한 효과" },
+              { title: "65,217대", content: "자동차 1년간 운행 저감 효과" },
+            ]}
+          />
         </Content>
       </Container>
     );
@@ -194,6 +199,13 @@ const CameraButton = styled.img`
   height: 22px;
   display: flex;
   cursor: pointer;
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-3px) scale(1.06);
+  }
 `;
 
 const NicknameContainer = styled.div`
@@ -224,6 +236,13 @@ const ProfileAction = styled.div`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+
+  transition: color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: #8C7A75; /* 조금 더 진한 색상 */
+  }
 `;
 
 const ProfileInfo = styled.div`
