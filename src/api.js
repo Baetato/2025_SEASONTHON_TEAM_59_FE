@@ -6,7 +6,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-  },
+  },  
 });
 
 // 요청 인터셉터

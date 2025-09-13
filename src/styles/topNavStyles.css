@@ -6,20 +6,29 @@
 }
 
 .nonClickButton {
-    width: 122px;
-    height: 29.807px;
+    width: 115px;
+    height: 29px;
     flex-shrink: 0;
     background: #261b18;
     border: none;
     cursor: pointer;
 }
 
+.buttonContainer{
+    margin: 2px;
+    width: 119px;
+    height: 27px;
+    justify-content: center;
+    align-items: center;
+}
+
 .clickedButton {
-    width: 122px;
-    height: 29.807px;
+    width: 115px;
+    height: 26px;
     flex-shrink: 0;
-    background: #8d726b;
-    border: none;
+    background-image: url(../assets/nav-button.png);
+    background-size: cover;
+    background-position: center;
     cursor: pointer;
 }
 
@@ -43,17 +52,16 @@
 }
 
 .topNavContainer {
-    width: 373px;
+    width: 365px;
     height: 31px;
     flex-shrink: 0;
     border-radius: 5px;
-    background: #261b18;
-    box-shadow: 0 4px 0 0 #261b18;
+    background: #261B18;
     margin: 4px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 8px;
+    
 }
 
 @font-face {

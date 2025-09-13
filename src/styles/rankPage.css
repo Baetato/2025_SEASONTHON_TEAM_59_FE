@@ -1,4 +1,5 @@
 .appContainer {
+    min-height: 100vh; 
     width: 100%;
     max-width: 393px;
     height: 100vh;
@@ -10,6 +11,7 @@
     flex: 1; /* 남은 공간 다 차지 */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 101px;
 }
 
 /* 스크롤바 전체(트랙) 배경색 */

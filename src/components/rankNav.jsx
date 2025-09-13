@@ -23,21 +23,27 @@ function NavSection() {
     return (
         <div className="topNavSection">
             <div className="topNavContainer">
-                <button className={activeButton === "regional" ? "clickedButton" : "nonClickButton"} onClick={()=> handleClick('/regional-ranking')}>
-                    <span className={activeButton === "regional" ? "clickedFont" : "nonClickFont"}>
-                        월간 지역 랭킹
-                    </span>
-                </button>
-                <button className={activeButton === "cumulative" ? "clickedButton" : "nonClickButton"} onClick ={()=>handleClick('/cumulative-ranking')}>
-                   <span className={activeButton === "cumulative" ? "clickedFont" : "nonClickFont"}>
-                        누적 전체 랭킹
-                    </span>
-                </button>
-                <button className={activeButton=== "streak" ? "clickedButton" : "nonClickButton" } onClick={() => handleClick('/streak-ranking')}>
-                      <span className={activeButton === "streak" ? "clickedFont" : "nonClickFont"}>
-                        스트릭 전체 랭킹
-                    </span>
-                </button>
+                <div className="buttonContainer">
+                    <button className={activeButton === "regional" ? "clickedButton" : "nonClickButton"} onClick={()=> handleClick('/regional-ranking')}>
+                        <span className={activeButton === "regional" ? "clickedFont" : "nonClickFont"}>
+                            월간 지역 랭킹
+                        </span>
+                    </button>
+                </div>
+                <div className="buttonContainer">
+                    <button className={activeButton === "cumulative" ? "clickedButton" : "nonClickButton"} onClick ={()=>handleClick('/cumulative-ranking')}>
+                        <span className={activeButton === "cumulative" ? "clickedFont" : "nonClickFont"}>
+                            누적 전체 랭킹
+                        </span>
+                    </button>
+                </div>
+                <div className="buttonContainer">
+                    <button className={activeButton=== "streak" ? "clickedButton" : "nonClickButton" } onClick={() => handleClick('/streak-ranking')}>
+                        <span className={activeButton === "streak" ? "clickedFont" : "nonClickFont"}>
+                            스트릭 전체 랭킹
+                        </span>
+                    </button>
+                </div>
             </div>
         </div>
     );
