@@ -1,9 +1,9 @@
-// src/pages/Ranking.jsx
+// src/pages/streakRanking.jsx
 import React, { useEffect, useState } from "react";
-import Header from "../components/rankHeader";
+import Header from "../components/rankStreakHeader";
 import Nav from "../components/rankNav";
-import RankingItem from "../components/rankItem";
-import { getMyTotalRanking } from "../api/ranking"; // 전체 누적 랭킹 함수 import
+import RankingItem from "../components/streakRankItem";
+import { getStreakRanking, getMyStreakRanking } from "../api/api";
 
 import "../styles/headerStyles.css";
 import "../styles/topNavStyles.css";
@@ -11,17 +11,40 @@ import "../styles/rankingItemStyles.css";
 import "../styles/rankPage.css";
 import Footer from "../components/footer";
 
-function Ranking() {
-    const [totalRanking, setTotalRanking] = useState(null);
+function StreakRanking() {
+    const [streakRankings, setStreakRankings] = useState([]);
+    const [myRanking, setMyRanking] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const loadTotalRanking = async () => {
+    // 스트릭 랭킹 데이터 가져오기
+    const loadStreakRanking = async () => {
         try {
-            const data = await getMyTotalRanking();
-            console.log("나의 전체 누적 포인트 랭킹 데이터:", data);
-            if (data.statusCode === 0) {
-                setTotalRanking(data.data);
+            setLoading(true); 
+            const data = await getStreakRanking();
+            console.log("스트릭 랭킹 데이터:", data);
+            if (data.statusCode === 200) {
+                setStreakRankings(data.data.rankings); 
             } else {
-                console.error("API error:", data.message);
+                setError(data.message || "랭킹 데이터를 불러오지 못했습니다.");
+            }
+        } catch (error) {
+            console.error("Fetch error:", error); 
+            setError("서버 오류가 발생했습니다.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 내 스트릭 랭킹 데이터 가져오기 (Header용)
+    const loadMyStreakRanking = async () => {
+        try {
+            const data = await getMyStreakRanking();
+            console.log("나의 스트릭 랭킹 데이터:", data);
+            if (data.statusCode === 200) {
+                setMyRanking(data.data);
+            } else {
+                console.error("API error:", data.message); 
             }
         } catch (error) {
             console.error("Fetch error:", error);
@@ -29,28 +52,31 @@ function Ranking() {
     };
 
     useEffect(() => {
-        loadTotalRanking();
+        loadStreakRanking();
+        loadMyStreakRanking();
     }, []);
 
-    // 예시로 단일 내 랭킹이 있을 경우 Header에 표시, 없으면 기본값 사용
-    // totalRanking에 랭킹 목록이 배열이라면 리스트 렌더링도 수정 필요
-    const mockData = Array.from({ length: 30 }, (_, i) => ({
-        rank: 1 + i,
-        nickName: `스트릭유저${i + 1}`,
-        point: `${1000 - i * 10}P`,
-    }));
+    // 로딩 및 에러 UI
+    if (loading) return <div className="appContainer">로딩 중...</div>; 
+    if (error) return <div className="appContainer">에러: {error}</div>; 
 
     return (
         <div className="appContainer">
             <Header
-                rank={totalRanking?.rank ?? mockData[0].rank}
-                nickName={totalRanking?.nickname ?? mockData[0].nickName}
-                point={totalRanking?.score ? `${totalRanking.score}P` : mockData[0].point}
+                rank={myRanking?.rank ?? "-"}
+                nickName={myRanking?.nickname ?? "게스트"} // Fixed: nickName instead of nickName
+                score={myRanking?.streakDay ? `${myRanking.streakDay}일` : "0일"} // Adjusted default to "0일"
             />
             <Nav />
             <div className="rankingList scrollGap">
-                {mockData.map((user) => (
-                    <RankingItem key={user.rank} rank={user.rank} nickName={user.nickName} point={user.point} />
+                {streakRankings.map((user) => (
+                    <RankingItem
+                        key={user.rank}
+                        rank={user.rank}
+                        nickName={user.nickname}
+                        score={`${user.score}일`} // score로 변경
+                        profileImageUrl={user.profileImageUrl}
+                    />
                 ))}
             </div>
             <Footer />
@@ -58,4 +84,4 @@ function Ranking() {
     );
 }
 
-export default Ranking;
+export default StreakRanking;

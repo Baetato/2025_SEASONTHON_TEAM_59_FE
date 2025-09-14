@@ -92,10 +92,10 @@ createRoot(document.getElementById('root')).render(
           <Route path="/verify" element={<ProtectedRoute><VerifySubmit /></ProtectedRoute>} />
           <Route path="/complete" element={<ProtectedRoute><CompletePage /></ProtectedRoute>} />
 
-          <Route path='/cumulative-ranking' element={<ProtectedRoute><CumulativeRankingPage/></ProtectedRoute>} />
-          <Route path='/regional-ranking' element={<ProtectedRoute><RegionalRankingPage/></ProtectedRoute>} />
-          <Route path='/streak-ranking' element={<ProtectedRoute><StreakRankingPage/></ProtectedRoute>} />
-          <Route path='/carbon-dashboard' element={<ProtectedRoute><CarbonDashBoard/></ProtectedRoute>} />
+          <Route path='/cumulative-ranking' element={<CumulativeRankingPage/>} />
+          <Route path='/regional-ranking' element={<RegionalRankingPage/>} />
+          <Route path='/streak-ranking' element={<StreakRankingPage/>} />
+          <Route path='/carbon-dashboard' element={<CarbonDashBoard/>} />
 
         </Routes>
       </BrowserRouter>

@@ -5,9 +5,13 @@ import ProfileImg from "../assets/defaultProfile.png"; // 프로필 이미지 �
 //rankingFrame은 하위 2개를 묶어 space-between
 //userinfo => 랭킹 ~ 닉네임까지 포함 컨테이너
 //pointcontainer => 포인트랑, 풀잎 이미지
-import profileGold from "../assets/gold.png";
-import profileSilver from "../assets/silver.png";
-import profileBronze from "../assets/bronze.png";
+import rank1 from "../assets/rank1.png";
+import rank2 from "../assets/rank2.png";
+import rank3 from "../assets/rank3.png";
+import rank1Star from "../assets/rank1-star.png";
+import rank2Star from "../assets/rank2-star.png";
+import rank3Star from "../assets/rank3-star.png";
+
 import api from "../api";
 
 function RankingItem({ rank, nickName, consecutivedays }) {
