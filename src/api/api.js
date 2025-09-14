@@ -15,16 +15,10 @@ const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
     if (!refreshToken) throw new Error("리프레시 토큰 없음");
 
-    // 👉 baseURL 기준으로 호출 (개발모드일땐 프록시 적용됨)
-    const response = await api.post(
-      "/v1/oauth2/token/access",
-      {}, // body 없으면 비워둠
-      {
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-        },
-      }
-    );
+    // 👉 body에 담아서 요청
+    const response = await api.post("/v1/oauth2/token/access", {
+      refreshToken,
+    });
 
     const newAccessToken = response.data.accessToken;
     localStorage.setItem("accessToken", newAccessToken);
