@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useUser } from "../states/userContext";
 
 import VerifyTopBar from "../components/verifyTopBar";
 import EnvProtectEffect from "../components/envProtectEffect";
@@ -19,8 +20,12 @@ import FenceIcn from "../assets/fence.png";
 import trophyIcon from "../assets/rank1-star.png";
 import leafIcon from "../assets/rank2-star.png";
 
+import uploadProfileImage from "../api/uploadProfileImg.js";
+
 export default function MyPage() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const { user, fetchUser } = useUser();
   const MAX_ACHIEVEMENTS = 10;
 
   // 실제 사용자 업적 데이터 예시
@@ -34,6 +39,26 @@ export default function MyPage() {
     ...Array(MAX_ACHIEVEMENTS - apiResponse.length).fill(null),
   ];
 
+  const handleCameraClick = () => {
+    fileInputRef.current.click();
+  };
+
+  {/* 프로필 이미지 변경 핸들러 */}
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const result = await uploadProfileImage(file);
+      console.log("업로드 성공!", result);
+
+      // Context에서 유저 정보 갱신
+      fetchUser(); 
+    } catch (err) {
+      alert("업로드 실패!");
+    }
+  };
+
   return (
       <Container>
         <VerifyTopBar title={"마이 페이지"} onBack={() => navigate("/home-stage")} />
@@ -44,13 +69,20 @@ export default function MyPage() {
               <Title>프로필</Title>
               <ProfileImgContainer>
                 <ProfileFrameImg src={ProfileFrame} alt="프로필 프레임" />
-                <ProfileExImg src={ProfileEx} alt="프로필 예시" />
-                <CameraButton src={CameraBtn} alt="카메라 버튼" />
+                <ProfileExImg src={user?.picture || ProfileEx} alt="프로필 예시" />
+                <CameraButton src={CameraBtn} alt="카메라 버튼" onClick={handleCameraClick}/>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
 
                 <NicknameContainer>
-                  <Nickname>닉네임</Nickname>
+                  <Nickname>{user?.nickname || "닉네임"}</Nickname>
                   <ProfileAction>수정</ProfileAction>
-                  <ProfileInfo>안녕하세요 샥샥이입니다. 샥샥거려서 샥샥이입니다 프로필 소개</ProfileInfo>
+                  <ProfileInfo>{user?.introduction || "안녕하세요! 소개글을 입력해주세요."}</ProfileInfo>
                 </NicknameContainer>
               </ProfileImgContainer>
             </ProfileContainer>

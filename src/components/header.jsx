@@ -1,7 +1,7 @@
-//import { useRecoilState, useRecoilValue } from 'recoil'; // 전역 상태관리
-//import { userState } from '../states/userState.js'; // 전역 상태관리
+// header.jsx
+import { useUser } from "../states/userContext";
 import styled from "styled-components";
-import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
@@ -11,21 +11,11 @@ import ProfileIcn from "../assets/ProfileIcn.png";
 import api from "../api/api.js";
 
 const Header = forwardRef(function Header(_, ref) {
-  //console.log(userState)
-  //const [user, setUser] = useRecoilState(userState);  TODO: 상태관리 Recoil 에러 해결
+  const { user, fetchUser } = useUser(); // Context에서 가져오기
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [animatedPoints, setAnimatedPoints] = useState(0); // 포인트 애니메이션 값
 
-  const fetchUser = async () => {
-    try {
-      const res = await api.get("/v1/members");
-      console.log("사용자 정보:", res.data.data);
-      setUser(res.data.data);
-    } catch (err) {
-      console.error("사용자 정보 조회 실패:", err);
-    }
-  };
+  const [animatedPoints, setAnimatedPoints] = useState(0); // 포인트 애니메이션 값
+  const prevPointsRef = useRef(0); // 포인트 변화 추적용 ref
 
   // ✅ 컴포넌트가 처음 마운트될 때 실행
   useEffect(() => {
@@ -37,35 +27,47 @@ const Header = forwardRef(function Header(_, ref) {
     refreshUser: fetchUser,
   }));
 
-  // 🔥 포인트 애니메이션 처리
   useEffect(() => {
     if (!user) return;
-    let start = animatedPoints;
-    let end = user.point ?? 0;
-    if (start === end) return;
+    // 초기 포인트 세팅
+    setAnimatedPoints(user.point ?? 0);
+    prevPointsRef.current = user.point ?? 0;
+  }, [user?.point]);
 
+
+  useEffect(() => {
+    if (!user) return;
+
+    const prevPoints = prevPointsRef.current;
+    const newPoints = user.point ?? 0;
+
+    // 포인트 증가가 없으면 애니메이션 X, 바로 찍기
+    if (newPoints <= prevPoints) {
+      setAnimatedPoints(newPoints);
+      prevPointsRef.current = newPoints;
+      return;
+    }
+
+    // 포인트 증가가 있으면 애니메이션
     let startTime = null;
-    const duration = 800; // 애니메이션 시간(ms)
-
+    const duration = 800; // ms
     const step = (timestamp) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      const currentValue = Math.floor(start + (end - start) * progress);
+      const currentValue = Math.floor(prevPoints + (newPoints - prevPoints) * progress);
       setAnimatedPoints(currentValue);
-
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
+      if (progress < 1) requestAnimationFrame(step);
     };
 
     requestAnimationFrame(step);
-  }, [user]);
+    prevPointsRef.current = newPoints; // 다음 업데이트를 위해 저장
+  }, [user?.point]);
 
   if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
 
   //  사용자 관련 정보 추출
-  //const points = user?.point ?? 0;
-  const points = animatedPoints; // ← 여기서 애니메이션된 값 사용
+
+  const points = animatedPoints;
   const level = user?.level ?? 1;
   const nickname = user?.nickname ?? "사용자";
   const profileImg = user?.picture ?? ProfileEx;
@@ -81,7 +83,6 @@ const Header = forwardRef(function Header(_, ref) {
   const nextLevelXP = getRequiredXP(level); // 다음 레벨까지 필요한 XP
   const progressPercent = Math.min((currentXP / nextLevelXP) * 100, 100);
   console.log(`레벨: ${level}, 현재 XP: ${currentXP}, 다음 레벨까지 XP: ${nextLevelXP}, 진행도: ${progressPercent}%`);
-
 
   return (
     <HeaderWrapper>
@@ -102,7 +103,6 @@ const Header = forwardRef(function Header(_, ref) {
 
         {/* 닉네임 표시 */}
         <NicknameText>{nickname}</NicknameText>
-
 
         {/* 설정 아이콘 표시 */}
         <SettingIcon src={SettingIcn} alt="setting" />
@@ -196,7 +196,7 @@ const Header = forwardRef(function Header(_, ref) {
         {/* 프로필 (프레임 + 이미지) */}
         <ProfileWrapper>
           <ProfileFrameImg src={ProfileFrame} alt="frame" />
-          <ProfileImg src={ProfileEx} alt="profile" />
+          <ProfileImg src={profileImg || ProfileEx} alt="profile" />
         </ProfileWrapper>
 
         {/* 프로필 아이콘 */}

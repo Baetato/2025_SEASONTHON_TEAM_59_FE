@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import api from "../api/api.js";
+import { useUser } from "../states/userContext";
 
 import LoginTopBar from "../components/loginTopBar.jsx";
 import LoginNextBtn from "../components/loginNextBtn.jsx";
@@ -16,6 +17,7 @@ export default function LoginComplete() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state || {};
+  const { updateUser } = useUser();
 
   const [nickname, setNickname] = useState(state.nickname || "사용자");
   const [regionName, setRegionName] = useState(state.regionName || "주소 불러오기 실패");
@@ -34,8 +36,8 @@ export default function LoginComplete() {
         });
 
         if (response.data?.data?.nickname) {
-          setNickname(response.data.data.nickname);
-          localStorage.setItem("nickname", response.data.data.nickname);
+          // Context에 업데이트
+          updateUser({ nickname: response.data.data.nickname });
         }
       } catch (err) {
         setError("온보딩 API 실패");
