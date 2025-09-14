@@ -1,9 +1,11 @@
-// src/pages/Ranking.jsx
+// src/pages/RegionalRanking.jsx
 import React, { useEffect, useState } from "react";
 import Header from "../components/rankHeader";
 import Nav from "../components/rankNav";
 import RankingItem from "../components/rankItem";
-import { getMyTotalRanking } from "../api/ranking"; // 전체 누적 랭킹 함수 import
+import { getMonthlyRegionalRanking, getMyMonthlyRegionalRanking } from "../api/api";
+import ProfileImg from "../assets/defaultProfile.png";
+import PropTypes from "prop-types";
 
 import "../styles/headerStyles.css";
 import "../styles/topNavStyles.css";
@@ -11,51 +13,96 @@ import "../styles/rankingItemStyles.css";
 import "../styles/rankPage.css";
 import Footer from "../components/footer";
 
-function Ranking() {
-    const [totalRanking, setTotalRanking] = useState(null);
+function RegionalRanking({ year, month } = {}) {
+    const [regionalRankings, setRegionalRankings] = useState([]);
+    const [myRanking, setMyRanking] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const loadTotalRanking = async () => {
+    // year와 month가 prop으로 제공되지 않으면 현재 날짜 사용
+    const currentYear = year || new Date().getFullYear();
+    const currentMonth = month || new Date().getMonth() + 1; // JavaScript 월은 0부터 시작
+
+    // 월간 지역 랭킹 데이터 가져오기
+    const loadRegionalRanking = async () => {
         try {
-            const data = await getMyTotalRanking();
-            console.log("나의 전체 누적 포인트 랭킹 데이터:", data);
-            if (data.statusCode === 0) {
-                setTotalRanking(data.data);
+            setLoading(true);
+            const data = await getMonthlyRegionalRanking(currentYear, currentMonth);
+            if (process.env.NODE_ENV !== "production") {
+                console.log("월간 지역 랭킹 데이터:", data);
+            }
+            if (data.statusCode === 200) {
+                setRegionalRankings(data.data.rankings || []);
             } else {
-                console.error("API error:", data.message);
+                setError(data.message || "랭킹 데이터를 불러오지 못했습니다.");
             }
         } catch (error) {
-            console.error("Fetch error:", error);
+            console.error("Fetch error:", error.message || error);
+            setError(error.message || "서버 오류가 발생했습니다.");
+        }
+    };
+
+    // 나의 월간 지역 랭킹 데이터 가져오기
+    const loadMyRegionalRanking = async () => {
+        try {
+            const data = await getMyMonthlyRegionalRanking(currentYear, currentMonth);
+            if (process.env.NODE_ENV !== "production") {
+                console.log("나의 월간 지역 랭킹 데이터:", data);
+            }
+            if (data.statusCode === 200) {
+                setMyRanking(data.data);
+            } else {
+                setError(data.message || "내 랭킹 데이터를 불러오지 못했습니다.");
+            }
+        } catch (error) {
+            console.error("Fetch error:", error.message || error);
+            setError(error.message || "서버 오류가 발생했습니다.");
         }
     };
 
     useEffect(() => {
-        loadTotalRanking();
-    }, []);
+        Promise.all([loadRegionalRanking(), loadMyRegionalRanking()]).finally(() => {
+            setLoading(false);
+        });
+    }, [currentYear, currentMonth]);
 
-    // 예시로 단일 내 랭킹이 있을 경우 Header에 표시, 없으면 기본값 사용
-    // totalRanking에 랭킹 목록이 배열이라면 리스트 렌더링도 수정 필요
-    const mockData = Array.from({ length: 30 }, (_, i) => ({
-        rank: 1 + i,
-        nickName: `지역랭킹유저${i + 1}`,
-        point: `${1000 - i * 10}P`,
-    }));
+    // 로딩 및 에러 UI
+    if (loading) return <div className="appContainer">로딩 중...</div>;
+    if (error) return <div className="appContainer">에러: {error}</div>;
 
     return (
         <div className="appContainer">
             <Header
-                rank={totalRanking?.rank ?? mockData[0].rank}
-                nickName={totalRanking?.nickname ?? mockData[0].nickName}
-                point={totalRanking?.score ? `${totalRanking.score}P` : mockData[0].point}
+                rank={myRanking?.rank ?? "-"}
+                nickName={myRanking?.nickname ?? "게스트"}
+                point={myRanking?.score ? `${myRanking.score}P` : "0P"}
+                profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
+                
             />
             <Nav />
             <div className="rankingList scrollGap">
-                {mockData.map((user) => (
-                    <RankingItem key={user.rank} rank={user.rank} nickName={user.nickName} point={user.point} />
-                ))}
+                {regionalRankings.length > 0 ? (
+                    regionalRankings.map((user) => (
+                        <RankingItem
+                            key={user.rank} // rank가 고유하다고 가정, 고유 ID가 있다면 변경 권장
+                            rank={user.rank}
+                            nickName={user.nickname}
+                            point={`${user.score}P`}
+                            profileImageUrl={user.profileImageUrl} // 추가: 프로필 이미지 전달
+                        />
+                    ))
+                ) : (
+                    <div className="emptyState">랭킹 데이터가 없습니다.</div>
+                )}
             </div>
             <Footer />
         </div>
     );
 }
 
-export default Ranking;
+RegionalRanking.propTypes = {
+    year: PropTypes.number,
+    month: PropTypes.number,
+};
+
+export default RegionalRanking;

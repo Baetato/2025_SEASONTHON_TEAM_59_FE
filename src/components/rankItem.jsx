@@ -8,8 +8,7 @@ import rank3 from "../assets/rank3.png";
 import rank1Star from "../assets/rank1-star.png";
 import rank2Star from "../assets/rank2-star.png";
 import rank3Star from "../assets/rank3-star.png";
-import imgBox from "../assets/IcnBox.png"
-
+import imgBox from "../assets/IcnBox.png";
 
 function RankingItem({ rank, nickName, point, profileImageUrl }) {
     const rankClassName = rank === 1 ? "rankStyleGold" : rank === 2 ? "rankStyleSilver" : rank === 3 ? "rankStyleBronze" : "rankStyle";
