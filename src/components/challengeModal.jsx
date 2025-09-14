@@ -69,6 +69,7 @@ export default function ChallengeModal({ challenges, stageIndex, onClose, onRese
   };
 
   return (
+    <>
     <Overlay onClick={onClose}>
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
         <ModalHeaderContainer>
@@ -119,8 +120,8 @@ export default function ChallengeModal({ challenges, stageIndex, onClose, onRese
           onChange={handleFileChange}
         />
       </ModalWrapper>
-
-      {/* isTwoCut 안내 모달 
+    </Overlay>
+    {/* isTwoCut 안내 모달 
           TODO: 잘되는지 체크 필요 */}
       {showTwoCutModal && (
         <Modal
@@ -130,7 +131,7 @@ export default function ChallengeModal({ challenges, stageIndex, onClose, onRese
           buttons={[
             {
               label: "다음에",
-              onClick: () => setIsModalOpen(false),
+              onClick: () => onClose(), // 챌린지 모달 닫기
             },
             {
               label: "촬영하기",
@@ -142,8 +143,7 @@ export default function ChallengeModal({ challenges, stageIndex, onClose, onRese
           ]}
         />
       )}
-      
-    </Overlay>
+    </>
   );
 }
 

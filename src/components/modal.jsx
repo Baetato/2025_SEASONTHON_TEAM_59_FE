@@ -39,11 +39,11 @@ export default function Modal({ isOpen, title, description, icon, score, buttons
             )}
           </ContentBox>
 
-          <ButtonRow count={buttons.length}>
+          <ButtonRow $count={buttons.length}>
             {buttons.map((btn, idx) => (
               <ModalButton
                 key={idx}
-                count={buttons.length}
+                $count={buttons.length}
                 onClick={btn.onClick}
               >
                 <ButtonText>{btn.label}</ButtonText>
@@ -155,7 +155,7 @@ const ScoreText = styled.span`
 const ButtonRow = styled.div`
   display: flex;
   justify-content: center;
-  gap: ${({ count }) => (count === 2 ? "5px" : "0")};
+  gap: ${({ $count }) => ($count === 2 ? "5px" : "0")};
   margin-top: 4px;
   margin-bottom: 4px;
 `;
@@ -173,7 +173,7 @@ const ModalButton = styled.button`
   font-size: 12px;
   font-weight: 800;
 
-  width: ${({ count }) => (count === 1 ? "191px" : "93px")};
+  width: ${({ $count }) => ($count === 1 ? "191px" : "93px")};
   height: 42px;
 
   &:hover {
