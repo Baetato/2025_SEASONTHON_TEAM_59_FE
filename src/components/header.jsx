@@ -80,6 +80,7 @@ const Header = forwardRef(function Header(_, ref) {
   const currentXP = points;
   const nextLevelXP = getRequiredXP(level); // 다음 레벨까지 필요한 XP
   const progressPercent = Math.min((currentXP / nextLevelXP) * 100, 100);
+  console.log(`레벨: ${level}, 현재 XP: ${currentXP}, 다음 레벨까지 XP: ${nextLevelXP}, 진행도: ${progressPercent}%`);
 
 
   return (
@@ -101,6 +102,7 @@ const Header = forwardRef(function Header(_, ref) {
 
         {/* 닉네임 표시 */}
         <NicknameText>{nickname}</NicknameText>
+
 
         {/* 설정 아이콘 표시 */}
         <SettingIcon src={SettingIcn} alt="setting" />

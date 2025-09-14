@@ -28,6 +28,7 @@ export default function HomeStage() {
   const [challengeModalOpen, setChallengeModalOpen] = useState(false); // 챌린지 모달
   const [rewardModalOpen, setRewardModalOpen] = useState(false); // 일일 3회 보상 모달
   const [doneModalOpen, setDoneModalOpen] = useState(false); // 오늘의 스테이지 모두 완료 모달
+  const [showTwoCutModal, setShowTwoCutModal] = useState(false);  // 두컷인증 안내 모달
 
 
   useEffect(() => {
@@ -129,8 +130,8 @@ export default function HomeStage() {
       <Content>
 
         <RewardBarContainer>
-          {/*<RewardBar completedCount={completedCount}  onStarClick={handleRewardStarClick}/>  ← API에서 바로 받은 값 사용 */}
-          <RewardBar completedCount={3} onStarClick={handleRewardStarClick}/>
+          <RewardBar completedCount={completedCount}  onStarClick={handleRewardStarClick}/>
+          {/*<RewardBar completedCount={3} onStarClick={handleRewardStarClick}/>*/}
         </RewardBarContainer>
 
         <StageScroll 
