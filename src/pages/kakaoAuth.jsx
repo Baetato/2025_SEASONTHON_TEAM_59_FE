@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api.js";
+import { useUser } from "../states/userContext";
 import styled from "styled-components";
 
 export default function KakaoAuth() {
@@ -8,6 +9,7 @@ export default function KakaoAuth() {
   const [searchParams] = useSearchParams();
   const loadingMessage = "카카오 로그인 중...";
   const navigate = useNavigate();
+  const { updateUser } = useUser();
   console.log(api.defaults.baseURL)
 
   useEffect(() => {
@@ -21,17 +23,29 @@ export default function KakaoAuth() {
     const fetchToken = async () => {
       try {
         const res = await api.get(
-          `/v1/oauth2/callback/${provider}?code=${code}`
+          `/v1/oauth2/callback/${provider}?code=${code}`,
+          {
+            withCredentials: true, // 쿠키 포함 요청
+          }
         );
 
         const { accessToken, refreshToken } = res.data.data.tokenDto;
         const memberInfo = res.data.data.memberInfoResDto;
 
+        // 전역 상태 업데이트
+        updateUser({
+          nickname: memberInfo.nickname,
+          picture: memberInfo.picture,
+          level: memberInfo.level,
+          exp: memberInfo.exp,
+          point: memberInfo.point,
+        });
+
+
         // 로컬 스토리지나 상태 관리 라이브러리에 저장
         // TODO: 어디에 저장할지 확정
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("nickname", memberInfo.nickname);
 
         // 닉네임 페이지로 이동
         navigate("/login/nick");
