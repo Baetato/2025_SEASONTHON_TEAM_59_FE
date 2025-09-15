@@ -21,7 +21,7 @@ function RegionalRanking({ year, month } = {}) {
 
     // year와 month가 prop으로 제공되지 않으면 현재 날짜 사용
     const currentYear = year || new Date().getFullYear();
-    const currentMonth = month || new Date().getMonth() + 1; // JavaScript 월은 0부터 시작
+    const currentMonth = month || new Date().getMonth() + 1; 
 
     // 월간 지역 랭킹 데이터 가져오기
     const loadRegionalRanking = async () => {
@@ -84,11 +84,11 @@ function RegionalRanking({ year, month } = {}) {
                 {regionalRankings.length > 0 ? (
                     regionalRankings.map((user) => (
                         <RankingItem
-                            key={user.rank} // rank가 고유하다고 가정, 고유 ID가 있다면 변경 권장
+                            key={user.rank} 
                             rank={user.rank}
                             nickName={user.nickname}
                             point={`${user.score}P`}
-                            profileImageUrl={user.profileImageUrl} // 추가: 프로필 이미지 전달
+                            profileImageUrl={user.profileImageUrl} 
                         />
                     ))
                 ) : (
