@@ -279,6 +279,7 @@ const ProgressBarWrapper = styled.div`
     width: 198px;
     height: 24px;
 `;
+const CoinIcon = styled.img`width: 17px; height: 16px;`;
 const PointBox = styled.div`
     width: 114px;
     height: 21px;
