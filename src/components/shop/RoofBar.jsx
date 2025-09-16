@@ -38,9 +38,9 @@ const RoofBackground = styled.img`
 `;
 
 const RightBadge = styled.div`
-  position: absolute;
+  position: fixed;
   top: 4.9%;
-  right: 4.8%;
+  right: 24.6%;
   display: inline-flex;
   align-items: center;
   gap: 6px;

@@ -12,11 +12,11 @@ export default function CharacterCard({ name, image, price, disabled, onClick })
         <PriceText>{price.toLocaleString()}</PriceText>
       </BottomPrice>
 
-      {disabled && (
+      {/* {disabled && (
         <DisabledOverlay>
           <DisabledText>업데이트 대기중</DisabledText>
         </DisabledOverlay>
-      )}
+      )} */}
     </Card>
   );
 }
@@ -56,6 +56,7 @@ const TopName = styled.div`
 
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.2px #281900; /* 외곽선 */
 `;
 
 // const Fill = styled.span`

@@ -70,7 +70,7 @@ function renderTabContent(activeTab, handleBuy) {
   if (activeTab === "캐릭터 스킨") {
     const skins = [
       { id: "coconut-skin", name: "코코넛", price: 200, image: mascotCoconut },
-      { id: "idle-skin", name: "아이들", price: 206, image: mascotIdle },
+      { id: "idle-skin", name: "리프", price: 206, image: mascotIdle },
       { id: "unknown", name: "???", price: 206, image: mascotUnready, disabled: true },
     ];
     return (
