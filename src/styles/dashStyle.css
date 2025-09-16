@@ -5,6 +5,7 @@ body {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .dashContainer {
@@ -57,9 +58,15 @@ body {
     position: relative;
 }
 
+.envCon{
+    display: flex;
+    width: 100%;
+    margin: 0 10px;
+    position: relative;
+}
+
 .marginBox {
     width: 100%;
-    margin-top: 30px;
 }
 
 .fontStyle {

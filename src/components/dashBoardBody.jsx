@@ -65,7 +65,7 @@ export default function DashBoardBody() {
             </div>
             <div className="marginBox">
                 <span className="fontStyle">환경 보호 효과</span>
-                <div className="flexBox">
+                <div className="envCon">
                     <div className="dashProtected topMargin">
                         <img src={DashButtonImg} alt="대시버튼 컨테이너" className="dashProtected" />
                         <span className="inner-text">{stats.treesPlantedEffect.toLocaleString()}그루</span>
