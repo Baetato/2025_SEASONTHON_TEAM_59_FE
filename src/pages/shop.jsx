@@ -1,10 +1,15 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useUser } from "../states/userContext";
 import Footer from "../components/footer";
 import RoofBar from "../components/shop/RoofBar";
 import ShopTabBar from "../components/shop/ShopTabBar";
-import ShopItemCard from "../components/shop/ShopItemCard";
+import CharacterCard from "../components/shop/CharacterCard";
+import CharacterGrid from "../components/shop/CharacterGrid";
+import mascotCoconut from "../assets/mascot-coconut.png";
+import mascotIdle from "../assets/mascot-idle.png";
+import mascotCarrot from "../assets/mascot-carrot.png";
+import mascotUnready from "../assets/mascot-unready.png";
 
 const TABS = ["캐릭터", "캐릭터 스킨", "장신구", "펫", "열매", "스테이지 스킨"];
 
@@ -14,8 +19,6 @@ export default function ShopPage() {
 
   // TODO: 탭 이동 시 목록 fetch 예정 (API 연동)
   // useEffect(() => { fetchItems(activeTab) }, [activeTab])
-
-  const items = useMemo(() => mockItemsByTab(activeTab), [activeTab]);
 
   const handleBuy = (item) => {
     // TODO: 구매 API POST 연동 예정
@@ -33,17 +36,7 @@ export default function ShopPage() {
           onChange={setActiveTab}
         />
 
-        <ItemsGrid>
-          {items.map((it) => (
-            <ShopItemCard
-              key={it.id}
-              thumbnail={it.thumbnail}
-              name={it.name}
-              price={it.price}
-              onBuy={() => handleBuy(it)}
-            />
-          ))}
-        </ItemsGrid>
+        {renderTabContent(activeTab, handleBuy)}
       </ContentArea>
 
       <FooterSpacer />
@@ -52,15 +45,51 @@ export default function ShopPage() {
   );
 }
 
-/* ===== Mock (임시) 데이터: API 연동 전까지 탭별 항목 샘플 ===== */
-function mockItemsByTab(tab) {
-  const base = [
-    { id: `${tab}-1`, name: `${tab} A`, price: 50, thumbnail: "/icons/icon-192.png" },
-    { id: `${tab}-2`, name: `${tab} B`, price: 120, thumbnail: "/icons/icon-512.png" },
-    { id: `${tab}-3`, name: `${tab} C`, price: 200, thumbnail: "/vite.svg" },
-    { id: `${tab}-4`, name: `${tab} D`, price: 90, thumbnail: "/icons/icon-192.png" },
-  ];
-  return base;
+/* ===== 탭 컨텐츠 렌더러 ===== */
+function renderTabContent(activeTab, handleBuy) {
+  if (activeTab === "캐릭터") {
+    const characters = [
+      { id: "idle", name: "아이들", price: 200, image: mascotIdle },
+      { id: "carrot", name: "캐럿", price: 201, image: mascotCarrot },
+    ];
+    return (
+      <CharacterGrid>
+        {characters.map((it) => (
+          <CharacterCard
+            key={it.id}
+            name={it.name}
+            image={it.image}
+            price={it.price}
+            onClick={() => handleBuy(it)}
+          />
+        ))}
+      </CharacterGrid>
+    );
+  }
+
+  if (activeTab === "캐릭터 스킨") {
+    const skins = [
+      { id: "coconut-skin", name: "코코넛", price: 200, image: mascotCoconut },
+      { id: "idle-skin", name: "아이들", price: 206, image: mascotIdle },
+      { id: "unknown", name: "???", price: 206, image: mascotUnready, disabled: true },
+    ];
+    return (
+      <CharacterGrid>
+        {skins.map((it) => (
+          <CharacterCard
+            key={it.id}
+            name={it.name}
+            image={it.image}
+            price={it.price}
+            disabled={it.disabled}
+            onClick={it.disabled ? undefined : () => handleBuy(it)}
+          />
+        ))}
+      </CharacterGrid>
+    );
+  }
+
+  return <Placeholder>상품 준비 중</Placeholder>;
 }
 
 /* ===== styled ===== */
@@ -75,12 +104,13 @@ const ContentArea = styled.div`
   padding-bottom: 120px; /* 푸터 공간 확보 */
 `;
 
-const ItemsGrid = styled.div`
+const Placeholder = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 2열 */
-  gap: 12px;
-  margin-top: 12px;
-  padding-bottom: 12px;
+  place-items: center;
+  color: #281900;
+  font-family: "Maplestory OTF";
+  font-weight: 700;
+  height: 200px;
 `;
 
 const FooterSpacer = styled.div`
