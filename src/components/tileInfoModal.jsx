@@ -30,9 +30,8 @@ export default function TileInfoModal({ tile, onClose }) {
             <>
               이 텃밭은
               <br />
-              <ChallengeName>{tile?.challenge?.name}</ChallengeName>
-    
-              를 완료했어요.
+              <ChallengeName>{tile?.challenge?.name}</ChallengeName>를
+              완료했어요.
             </>
           )}
         </TileText>
