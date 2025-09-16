@@ -3,9 +3,9 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import leafIcon from "../assets/leaf.png";
 
-const CoinAnimation = ({ tileIndex, start, end = { x: 460, y: 190 }, onComplete }) => {
+const CoinAnimation = ({ tileIndex, start, onComplete }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [delta, setDelta] = useState({ x: 0, y: 0 });
+  const [endPos, setEndPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     let startX = 0;
@@ -35,6 +35,17 @@ const CoinAnimation = ({ tileIndex, start, end = { x: 460, y: 190 }, onComplete 
 
     setPosition({ x: startX, y: startY });
 
+    // 헤더 포인트 박스의 화면 좌표 계산
+    const headerPointEl = document.getElementById('header-point-box');
+    if (headerPointEl) {
+      const rect = headerPointEl.getBoundingClientRect();
+      // 중심점으로 향하도록 타겟 설정
+      setEndPos({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+    } else {
+      // 폴백: 대략 우상단으로
+      setEndPos({ x: window.innerWidth - 100, y: 90 });
+    }
+
     const timer = setTimeout(() => {
       if (onComplete) onComplete();
     }, 1500);
@@ -49,6 +60,8 @@ const CoinAnimation = ({ tileIndex, start, end = { x: 460, y: 190 }, onComplete 
       style={{
         '--start-x': `${position.x}px`,
         '--start-y': `${position.y}px`,
+        '--end-x': `${endPos.x}px`,
+        '--end-y': `${endPos.y}px`,
       }}
     />
   );
@@ -64,32 +77,26 @@ const AnimatedCoin = styled.img`
   z-index: 9999;
   pointer-events: none;
   
-  /* 시작 위치를 타일 위치로 설정 */
+  /* 시작 위치: 타일 */
   left: var(--start-x, 0);
   top: var(--start-y, 0);
   
-  /* 코인바로 이동하는 애니메이션 */
-  animation: coinFlyToHeader 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  /* 포인트 박스 중심으로 이동하는 애니메이션 */
+  animation: coinFlyToHeader 1.1s cubic-bezier(0.25, 0.8, 0.35, 1) forwards;
   
   @keyframes coinFlyToHeader {
     0% {
       transform: translate(-50%, -50%) scale(1) rotate(0deg);
       opacity: 1;
     }
-    10% {
-      transform: translate(-50%, -60%) scale(1.2) rotate(45deg);
-    }
     50% {
-      transform: translate(-200px, -250px) scale(1) rotate(180deg);
-      opacity: 1;
-    }
-    80% {
-      transform: translate(-280px, -300px) scale(0.8) rotate(270deg);
-      opacity: 0.8;
+      /* 중간 살짝 위로 탄도 곡선 느낌 */
+      transform: translate(calc((var(--end-x) - var(--start-x)) * 0.5), calc((var(--end-y) - var(--start-y)) * 0.4 - 60px)) scale(0.9) rotate(180deg);
+      opacity: 0.95;
     }
     100% {
-      /* 코인바 위치로 이동 (헤더 우측 상단) */
-      transform: translate(-300px, -320px) scale(0.5) rotate(360deg);
+      /* 최종: 포인트 박스 중심 */
+      transform: translate(calc(var(--end-x) - var(--start-x)), calc(var(--end-y) - var(--start-y))) scale(0.55) rotate(360deg);
       opacity: 0;
     }
   }

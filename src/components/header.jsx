@@ -14,9 +14,9 @@ const Header = forwardRef(function Header(_, ref) {
   const { user, updateUser,fetchUser } = useUser(); // Context에서 가져오기
   const navigate = useNavigate();
 
-  const [animatedPoints, setAnimatedPoints] = useState(0); // 포인트 애니메이션 값
+  const [animatedPoints, setAnimatedPoints] = useState(user?.point ?? 0); // 컨텍스트 값으로 초기화
   const [isPointBumping, setIsPointBumping] = useState(false); // 포인트 강조용
-  const prevPointsRef = useRef(0); // 포인트 변화 추적용 ref
+  const prevPointsRef = useRef(user?.point ?? 0); // 포인트 변화 추적용 ref
 
   // 테스트용
   useImperativeHandle(ref, () => ({
@@ -26,22 +26,19 @@ const Header = forwardRef(function Header(_, ref) {
     },
   }));
 
-  // ✅ 컴포넌트가 처음 마운트될 때 실행
+  // ✅ 필요 시에만 사용자 정보를 새로고침 (초기 로딩이 되었고 닉네임이 비어있을 때 등)
   useEffect(() => {
-    fetchUser();
-  }, []);
+    if (!user?.nickname) {
+      fetchUser();
+    }
+  }, [user?.nickname]);
 
   // ✅ 부모에서 ref.current.fetchUser() 호출 할때 쓰는 거
   /*useImperativeHandle(ref, () => ({
     refreshUser: fetchUser,
   }));*/
 
-  useEffect(() => {
-    if (!user) return;
-    // 초기 포인트 세팅
-    setAnimatedPoints(user.point ?? 0);
-    prevPointsRef.current = user.point ?? 0;
-  }, []);
+  // 초기 마운트 시 별도 0 초기화를 하지 않음 (컨텍스트 값으로 초기화됨)
 
 
   useEffect(() => {
@@ -200,7 +197,7 @@ const Header = forwardRef(function Header(_, ref) {
               </defs>
             </svg>
           </ProgressBarWrapper>
-          <PointBox>
+          <PointBox id="header-point-box">
             <CoinIcon src={CoinIcn} alt="coin" />
             <PointText $isBumping={isPointBumping}>{points}</PointText>
           </PointBox>
