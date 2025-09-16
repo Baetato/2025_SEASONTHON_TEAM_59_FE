@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import CoinIcn from "../assets/CoinIcn.png";
+import CoinIcn from "../../assets/CoinIcn.png";
 
 export default function ChallengeItem({ colors, title, points, width, height, fontSize }) {
 

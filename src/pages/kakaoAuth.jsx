@@ -37,6 +37,7 @@ export default function KakaoAuth() {
         updateUser({
           nickname: memberInfo.nickname,
           picture: memberInfo.picture,
+          avatarUrl: memberInfo.avatarUrl,
           level: memberInfo.level,
           exp: memberInfo.exp,
           point: memberInfo.point,

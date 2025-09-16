@@ -38,6 +38,7 @@ export default function GoogleAuth() {
         updateUser({
           nickname: memberInfo.nickname,
           picture: memberInfo.picture,
+          avatarUrl: memberInfo.avatarUrl,
           level: memberInfo.level,
           exp: memberInfo.exp,
           point: memberInfo.point,

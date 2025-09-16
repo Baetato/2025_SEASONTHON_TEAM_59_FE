@@ -1,26 +1,63 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Header from "../components/header";
-import ChallengeToggle from "../components/challengeToggle";
-import ChallengeLevelBtn from "../components/challengeLevelBtn";
-import ChallengeItem from "../components/challengeItem";
+import ChallengeToggle from "../components/challenge/challengeToggle";
+import ChallengeLevelBtn from "../components/challenge/challengeLevelBtn";
+import ChallengeItem from "../components/challenge/challengeItem";
+import AchievementItem from "../components/challenge/achievementItem";
 import Footer from "../components/footer";
 
 import api from "../api/api";
+import { getMyAchievements, claimAchievement } from "../api/achievementsApi";  // 업적 챌린지 API
 
 export default function Challenge() {
   const [activeBtn, setActiveBtn] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("쉬움");
   const [challenges, setChallenges] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [achievements, setAchievements] = useState([]);
+  const [challengeLoading, setChallengeLoading] = useState(false);
+  const [achievementLoading, setAchievementLoading] = useState(false);
 
   const levelMap = { 쉬움: "EASY", 보통: "MEDIUM", 어려움: "HARD" };
 
-  useEffect(() => {
-    if (activeBtn === "achievement") return; // 업적 챌린지는 API 호출 안함
+  {/* 사용자 별 업적 불러오기 */}
+  const loadAchievements = async () => {
+    setAchievementLoading(true);
+    try {
+      const achievement = await getMyAchievements();
+      console.log("내 업적:", achievement);
 
+      // 업적 정보 업데이트
+      setAchievements(achievement);
+    } catch (err) {
+      alert("업적 정보를 불러오는데 실패했습니다.");
+    } finally {
+      setAchievementLoading(false);
+    }
+  };
+
+  {/* 업적 획득하기 */}
+  const handleClaimAchievement = async (achievementId) => {
+    try {
+      const response = await claimAchievement(achievementId);
+      alert(response.message || "업적을 획득했습니다!");
+      // 업적 목록 갱신
+      loadAchievements();
+    } catch (err) {
+      alert(err.message || "업적 획득에 실패했습니다.");
+    }
+  };
+
+  useEffect(() => {
+    {/** 업적 목록 불러오기 */}
+    if (activeBtn === "achievement") {
+      loadAchievements();
+      return;
+    }
+
+    {/** 챌린지 목록 불러오기 */}
     let mounted = true;
-    setLoading(true);
+    setChallengeLoading(true);
 
     (async () => {
       try {
@@ -53,7 +90,7 @@ export default function Challenge() {
         console.error("챌린지 목록 불러오기 실패:", e);
         if (mounted) setChallenges([]);
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setChallengeLoading(false);
       }
     })();
 
@@ -61,6 +98,7 @@ export default function Challenge() {
       mounted = false;
     };
   }, [selectedLevel, activeBtn]);
+
 
   return (
     <Container>
@@ -75,7 +113,21 @@ export default function Challenge() {
 
         <ChallengeContainer>
           {activeBtn === "achievement" ? (
-            <LoadingText>Coming Soon...</LoadingText>
+            <ChallengeListContainer>
+              {achievementLoading ? (
+                <LoadingText>불러오는 중<br />...</LoadingText>
+              ) : (
+                achievements
+                  .filter((item) => activeBtn === "all" || true)
+                  .map((item) => (
+                    <AchievementItem
+                      key={item.id}
+                      achievement={item}
+                      onClick={() => handleClaimAchievement(item.id)}
+                    />
+                  ))
+                )}
+            </ChallengeListContainer>
           ) : (
             <>
               {/* 난이도 선택 버튼 */}
@@ -102,7 +154,7 @@ export default function Challenge() {
 
               {/* 챌린지 리스트 */}
               <ChallengeListContainer>
-                {loading ? (
+                {challengeLoading ? (
                   <LoadingText>불러오는 중<br />...</LoadingText>
                 ) : (
                   challenges

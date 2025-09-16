@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import ChallengeItem from "./challengeItem";
+import ChallengeItem from "./challenge/challengeItem.jsx";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
 import Modal from "./modal.jsx";

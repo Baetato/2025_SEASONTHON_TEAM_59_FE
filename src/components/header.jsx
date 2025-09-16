@@ -95,20 +95,10 @@ const Header = forwardRef(function Header(_, ref) {
   const progressPercent = Math.min((currentXP / nextLevelXP) * 100, 100);
   //console.log(`레벨: ${level}, 현재 XP: ${currentXP}, 다음 레벨까지 XP: ${nextLevelXP}, 진행도: ${progressPercent}%`);
 
+
     return (
         <HeaderWrapper>
             <HeaderBar>
-                {/* TODO: 애니메이션 테스트코드.. 나중에 진짜 API로 잘되는지 확인한 후 삭제할것
-        <button
-          onClick={() =>
-            setUser((prev) => ({
-              ...prev,
-              point: (prev?.point ?? 0) + 100,
-            }))
-          }
-        >
-          포인트 +100 테스트
-        </button>*/}
                 {/* 레벨 텍스트 */}
                 <LevelText>LV. {level}</LevelText>
 
@@ -205,7 +195,7 @@ const Header = forwardRef(function Header(_, ref) {
         </ProgressContainer>
 
         {/* 프로필 (프레임 + 이미지) */}
-        <ProfileWrapper>
+        <ProfileWrapper onClick={() => navigate("/my-page")}>
           <ProfileFrameImg src={ProfileFrame} alt="frame" />
           <ProfileImg src={profileImg || ProfileEx} alt="profile" />
         </ProfileWrapper>
@@ -318,11 +308,12 @@ const PointText = styled.span`
   display: inline-block; // transform 적용 위해 필요
 `;
 const ProfileWrapper = styled.div`
-    position: absolute;
-    top: 52px;
-    left: 0;
-    width: 90px;
-    height: 90px;
+  position: absolute;
+  top: 52px;
+  left: 0;
+  width: 90px;
+  height: 90px;
+  cursor: pointer;
 `;
 const ProfileFrameImg = styled.img`
     width: 90px;

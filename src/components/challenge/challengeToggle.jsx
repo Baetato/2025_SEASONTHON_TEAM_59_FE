@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import ChallengeBtn from "../assets/ChallengeBtn.png";
+import ChallengeBtn from "../../assets/ChallengeBtn.png";
 
 export default function ChallengeToggle({ active, onClick }) {
   return (

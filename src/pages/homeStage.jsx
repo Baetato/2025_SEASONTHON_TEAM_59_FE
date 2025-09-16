@@ -42,8 +42,8 @@ export default function HomeStage() {
         setCharacterStage(data.currentStage);
         setCompletedCount(data.completedCount);
         setChallenges(data.dailyChallengesResDtos);
-        //setIsRewarded(data.isRewarded);
-        setIsRewarded(false); // API 변경됨 주의!
+        setIsRewarded(data.isRewarded);
+        //setIsRewarded(false); // 테스트코드
 
         // 스테이지 상태는 백엔드에서 별도 배열로 내려준다고 가정
         const mapBackendStatus = (backendStatus) => {
