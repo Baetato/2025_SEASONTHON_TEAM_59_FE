@@ -138,4 +138,9 @@ RegionalRanking.propTypes = {
     month: PropTypes.number,
 };
 
+RegionalRanking.defaultProps = {
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+};
+
 export default RegionalRanking;

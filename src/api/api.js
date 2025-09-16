@@ -98,9 +98,11 @@ export const getMyStreakRanking = async () => {
     }
 };
 
-// 나의 월간 지역 랭킹 (GET /api/v1/ranking/me/monthly/regional) - year, month 필요
 export const getMyMonthlyRegionalRanking = async (year, month) => {
     try {
+        if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12) {
+            throw new Error("유효하지 않은 연도 또는 월");
+        }
         const response = await api.get("/v1/ranking/me/monthly/regional", {
             params: { year, month },
         });

@@ -76,7 +76,6 @@
     width: 51px;
     height: 51px;
     border-radius: 50%;
-    box-sizing: border-box;
     align-items: center;
     justify-content: center;
     position: absolute;
@@ -84,11 +83,14 @@
 }
 
 .profileImgStyle {
-    top: 1px;
     border-radius: 50%;
-    width: 41px;
-    height: 41px;
-    object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+    width: 40.8px;
+    height: 40.8px;
+    object-fit: cover;
+    position: absolute; /* Use absolute positioning to center it */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the image */
     z-index: 99;
 }
 

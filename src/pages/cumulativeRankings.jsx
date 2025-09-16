@@ -113,7 +113,7 @@ function Ranking() {
                             rank={user.rank}
                             nickName={user.nickname}
                             point={`${user.score}P`} // score를 point로 변환
-                            profileImageUrl={user.profileImageUrl} // 추가: 프로필 이미지 전달
+                            profileImageUrl={user.profileImageUrl}
                         />
                     ))
                 ) : (
