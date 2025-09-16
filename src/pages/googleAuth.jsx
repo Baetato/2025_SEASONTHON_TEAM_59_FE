@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api.js";
 import { useUser } from "../states/userContext";
@@ -9,9 +9,14 @@ export default function GoogleAuth() {
   const [searchParams] = useSearchParams();
   const loadingMessage = "구글 로그인 중...";
   const navigate = useNavigate();
-    const { updateUser } = useUser();
+  const { updateUser } = useUser();
+  const processedRef = useRef(false);
+
 
   useEffect(() => {
+    if (processedRef.current) return; // 이미 처리된 경우(크롬 콜백 중복 호출 방지)
+    processedRef.current = true;
+
     const code = searchParams.get("code"); // URL에서 ?code=값 추출
     if (!code) {
       alert("인가 코드가 존재하지 않습니다.");
@@ -49,6 +54,8 @@ export default function GoogleAuth() {
         console.error(err);
         alert("로그인 처리 중 오류가 발생했습니다.");
         navigate("/login");
+      } finally {
+        processedRef.current = false; // 재시도 가능
       }
     };
 
