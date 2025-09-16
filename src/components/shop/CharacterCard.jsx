@@ -90,7 +90,6 @@ const PriceText = styled.span`
 const DisabledOverlay = styled.div`
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
   border-radius: 12px;
   display: flex;
   align-items: center;
