@@ -42,7 +42,8 @@ export default function HomeStage() {
         setCharacterStage(data.currentStage);
         setCompletedCount(data.completedCount);
         setChallenges(data.dailyChallengesResDtos);
-        setIsRewarded(data.isRewarded);
+        //setIsRewarded(data.isRewarded);
+        setIsRewarded(false); // API 변경됨 주의!
 
         // 스테이지 상태는 백엔드에서 별도 배열로 내려준다고 가정
         const mapBackendStatus = (backendStatus) => {
@@ -119,25 +120,39 @@ export default function HomeStage() {
 
   {/* 일일 챌린지 보상 바 클릭 */}
   const handleRewardStarClick = async (e) => {
-    if (isRewarded || completedCount < 3) return; // ✅ 조건 충족 안 하면 클릭 막기
+    if (isRewarded) return; // ✅ 조건 충족 안 하면 클릭 막기
 
     try {
-      await api.post("/v1/members/daily-bonus");
+      const res = await api.post("/v1/members/daily-bonus");
+      console.log("보상 API 응답:", res);
 
-      setRewardModalOpen(true); // 일일 챌린지 완주 모달 열기
-      headerRef.current?.refreshUser();  // 보상 성공 → Header한테 api 갱신 명령
+      if (res.data?.statusCode === 200) {
+        // 모달 열기
+        setRewardModalOpen(true);
 
-      {/*} 🌟 코인 애니메이션 추가
-      const rect = e.currentTarget.getBoundingClientRect(); // 클릭한 별 위치
-      // 20개의 코인 생성
-      const newCoins = Array.from({ length: 20 }).map(() => ({
-        id: Date.now() + Math.random(),
-        start: {
-          x: rect.left + rect.width / 2 + (Math.random() - 0.5) * 40, // 랜덤 퍼짐
-          y: rect.top + rect.height / 2 + (Math.random() - 0.5) * 40,
-        },
-      }));
-      setAnimatingCoins(prev => [...prev, ...newCoins]);*/}
+        // Header 갱신
+        headerRef.current?.refreshUser();
+        // 테스트 코드
+        // headerRef.current?.addTestPoints(100);
+
+        // 코인 애니메이션
+        const newCoins = Array.from({ length: 20 }).map(() => ({
+          id: Date.now() + Math.random(),
+          start: {
+            x: window.innerWidth-130,
+            y: 220
+          },
+          delay: Math.random() * 800, // 0~0.5초 딜레이
+        }));
+        setAnimatingCoins(prev => [...prev, ...newCoins]);
+
+        // 상태 갱신: 보상 받았음을 표시
+        setIsRewarded(true);
+
+      } else {
+        alert("보상 실패!");
+      }
+
     } catch (err) {
       alert(err.response?.data?.detail || "보상 실패!");
     }
@@ -157,12 +172,13 @@ export default function HomeStage() {
   };
 
   // 코인이 모두 사라졌을 때 한 번만 실행
-  useEffect(() => {
+  /*useEffect(() => {
     if (animatingCoins.length === 0) {
       // 모든 코인 애니메이션 끝나고 포인트 갱신
-      headerRef.current?.addTestPoints(100);
+      //headerRef.current?.addTestPoints(100);
+      headerRef.current?.refreshUser();  // 보상 성공 → Header한테 api 갱신 명령
     }
-  }, [animatingCoins]);
+  }, [animatingCoins]);*/
 
 
   const closeModal = () => setChallengeModalOpen(false);

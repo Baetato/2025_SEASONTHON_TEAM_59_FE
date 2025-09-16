@@ -16,7 +16,21 @@ export default defineConfig({
         /^\/assets\//              // 정적 파일 제외
       ],
       workbox: {
-        navigateFallbackDenylist: [/^\/auth\/google\/assets/], // CSS/JS 등 정적 파일 제외
+        navigateFallbackDenylist: [/^\/auth\/google\/assets/],
+        runtimeCaching: [
+          {
+            urlPattern: /^\/auth\/google\/callback/,
+            handler: "NetworkOnly",
+          },
+          {
+            urlPattern: /^\/auth\/kakao\/callback/,
+            handler: "NetworkOnly",
+          },
+          {
+            urlPattern: /^\/api\//,
+            handler: "NetworkOnly",
+          },
+        ],
       },
       manifest: {
         name: "LeafUp",
