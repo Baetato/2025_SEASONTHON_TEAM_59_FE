@@ -3,10 +3,10 @@ import axios from "axios";
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+    },
 });
 
 // 🔑 토큰 재발급 요청 함수
@@ -37,14 +37,14 @@ const refreshAccessToken = async () => {
 
 // 요청 인터셉터
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
+    (config) => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
 );
 
 
