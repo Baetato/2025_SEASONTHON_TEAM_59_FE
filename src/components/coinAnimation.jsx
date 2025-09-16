@@ -3,34 +3,44 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import leafIcon from "../assets/leaf.png";
 
-const CoinAnimation = ({ tileIndex, onComplete }) => {
+const CoinAnimation = ({ tileIndex, start, end = { x: 460, y: 190 }, onComplete }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  
+  const [delta, setDelta] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
-    // 타일 위치 계산 (3x3 그리드)
-    const row = Math.floor(tileIndex / 3);
-    const col = tileIndex % 3;
-    const tileWidth = 98;
-    const tileHeight = 113;
-    const overlapX = 24;
-    const overlapY = 39;
-    
-    // 화면 중앙 기준으로 타일 위치 계산
-    const farmAreaWidth = 3 * tileWidth - 2 * overlapX;
-    const farmAreaHeight = 3 * tileHeight - 2 * overlapY;
-    
-    const startX = window.innerWidth / 2 - farmAreaWidth / 2 + col * (tileWidth - overlapX) + tileWidth / 2;
-    const startY = window.innerHeight / 2 - farmAreaHeight / 2 + row * (tileHeight - overlapY) + tileHeight / 2;
-    
+    let startX = 0;
+    let startY = 0;
+
+    if (start) {
+      // 스테이지 관련 리워드바 프롭을 주면 그걸 사용
+      startX = start.x;
+      startY = start.y;
+    } else if (tileIndex !== undefined) {
+      // 팀원 기존 로직
+      // 타일 위치 계산 (3x3 그리드)
+      const row = Math.floor(tileIndex / 3);
+      const col = tileIndex % 3;
+      const tileWidth = 98;
+      const tileHeight = 113;
+      const overlapX = 24;
+      const overlapY = 39;
+
+      // 화면 중앙 기준으로 타일 위치 계산
+      const farmAreaWidth = 3 * tileWidth - 2 * overlapX;
+      const farmAreaHeight = 3 * tileHeight - 2 * overlapY;
+
+      startX = window.innerWidth / 2 - farmAreaWidth / 2 + col * (tileWidth - overlapX) + tileWidth / 2;
+      startY = window.innerHeight / 2 - farmAreaHeight / 2 + row * (tileHeight - overlapY) + tileHeight / 2;
+    }
+
     setPosition({ x: startX, y: startY });
-    
-    // 애니메이션 완료 후 콜백 호출
+
     const timer = setTimeout(() => {
       if (onComplete) onComplete();
     }, 1500);
-    
+
     return () => clearTimeout(timer);
-  }, [tileIndex, onComplete]);
+  }, [tileIndex, start, onComplete]);
   
   return (
     <AnimatedCoin 

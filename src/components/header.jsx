@@ -11,28 +11,37 @@ import ProfileIcn from "../assets/ProfileIcn.png";
 import api from "../api/api.js";
 
 const Header = forwardRef(function Header(_, ref) {
-  const { user, fetchUser } = useUser(); // Context에서 가져오기
+  const { user, updateUser,fetchUser } = useUser(); // Context에서 가져오기
   const navigate = useNavigate();
 
   const [animatedPoints, setAnimatedPoints] = useState(0); // 포인트 애니메이션 값
+  const [isPointBumping, setIsPointBumping] = useState(false); // 포인트 강조용
   const prevPointsRef = useRef(0); // 포인트 변화 추적용 ref
+
+  // 테스트용
+  useImperativeHandle(ref, () => ({
+    refreshUser: fetchUser,
+    addTestPoints: (amount) => {
+      updateUser({ point: (user.point ?? 0) + amount });
+    },
+  }));
 
   // ✅ 컴포넌트가 처음 마운트될 때 실행
   useEffect(() => {
     fetchUser();
   }, []);
 
-  // ✅ 부모에서 ref.current.fetchUser() 호출 가능
-  useImperativeHandle(ref, () => ({
+  // ✅ 부모에서 ref.current.fetchUser() 호출 할때 쓰는 거
+  /*useImperativeHandle(ref, () => ({
     refreshUser: fetchUser,
-  }));
+  }));*/
 
   useEffect(() => {
     if (!user) return;
     // 초기 포인트 세팅
     setAnimatedPoints(user.point ?? 0);
     prevPointsRef.current = user.point ?? 0;
-  }, [user?.point]);
+  }, []);
 
 
   useEffect(() => {
@@ -56,6 +65,11 @@ const Header = forwardRef(function Header(_, ref) {
       const progress = Math.min((timestamp - startTime) / duration, 1);
       const currentValue = Math.floor(prevPoints + (newPoints - prevPoints) * progress);
       setAnimatedPoints(currentValue);
+
+      // 포인트가 올라가는 동안 잠깐 커지는 효과
+      if (progress < 0.5) setIsPointBumping(true);
+      else setIsPointBumping(false);
+
       if (progress < 1) requestAnimationFrame(step);
     };
 
@@ -66,7 +80,6 @@ const Header = forwardRef(function Header(_, ref) {
   if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
 
   //  사용자 관련 정보 추출
-
   const points = animatedPoints;
   const level = user?.level ?? 1;
   const nickname = user?.nickname ?? "사용자";
@@ -189,7 +202,7 @@ const Header = forwardRef(function Header(_, ref) {
           </ProgressBarWrapper>
           <PointBox>
             <CoinIcon src={CoinIcn} alt="coin" />
-            <PointText>{points}</PointText>
+            <PointText $isBumping={isPointBumping}>{points}</PointText>
           </PointBox>
         </ProgressContainer>
 
@@ -208,7 +221,7 @@ const Header = forwardRef(function Header(_, ref) {
 export default Header;
 
 // Styled Components (기존과 동일)
-const HeaderWrapper = styled.div`position: fixed; z-index:99999;`;
+const HeaderWrapper = styled.div`position: fixed; z-index:9999;`;
 const HeaderBar = styled.div`
   width: 393px;
   height: 97px;
@@ -296,6 +309,11 @@ const PointText = styled.span`
   font-size: 12px;
   font-weight: 900;
   line-height: 22px;
+
+  transition: transform 0.2s ease;
+  transform: ${({ $isBumping }) => ($isBumping ? "scale(1.4)" : "scale(1)")};
+  display: inline-block; // transform 적용 위해 필요
+
 `;
 const CoinIcon = styled.img`width: 17px; height: 16px;`;
 const ProfileWrapper = styled.div`

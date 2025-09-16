@@ -3,6 +3,7 @@ import ChallengeItem from "./challengeItem";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
 import Modal from "./modal.jsx";
+import ResetIcn from "../assets/resetIcn.png";
 
 const challengeColors = {
   EASY: { background: "#7CB5A9", border: "#568269" },
@@ -74,7 +75,9 @@ export default function ChallengeModal({ challenges, stageIndex, onClose, onRese
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
         <ModalHeaderContainer>
           <ModalHeader>스테이지 {stageIndex} 도전</ModalHeader>
-          <ResetContainer onClick={onReset}>&</ResetContainer>
+          <ResetContainer onClick={onReset}>
+            <ResetIcon src={ResetIcn} alt="reset-icon" />
+          </ResetContainer>
         </ModalHeaderContainer>
 
         <ChallengeList>
@@ -159,7 +162,7 @@ const Overlay = styled.div`
 `;
 
 const ModalWrapper = styled.div`
-  width: 200px;
+  width: 210px;
   height: 309px;
   border-radius: 3px;
   border: 2px solid #382C28;
@@ -178,7 +181,7 @@ const ModalHeaderContainer = styled.div`
   gap: 5px;
 `
 const ModalHeader = styled.div`
-  width: 138px;
+  width: 140px;
   height: 41.887px;
   border-radius: 3px;
   background: linear-gradient(180deg, #5C4D49 0%, #463733 100%);
@@ -193,7 +196,7 @@ const ModalHeader = styled.div`
 `;
 
 const ResetContainer = styled.div`
-  width: 48px;
+  width: 50px;
   height: 41.887px;
   border-radius: 3px;
   background: linear-gradient(180deg, #5C4D49 0%, #463733 100%);
@@ -206,6 +209,20 @@ const ResetContainer = styled.div`
   justify-content: center;
   margin-bottom: 3px;
   cursor: pointer;
+`;
+
+const ResetIcon = styled.img`
+  width: 34px;
+  height: 40px;
+
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  /* 호버/포커스 시 커지기 */
+  &:hover,
+  &:focus-visible {
+    transform: scale(1.06);
+  }
 `;
 
 const ChallengeList = styled.div`

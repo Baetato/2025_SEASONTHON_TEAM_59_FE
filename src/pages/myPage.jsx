@@ -8,6 +8,7 @@ import { useUser } from "../states/userContext";
 import VerifyTopBar from "../components/verifyTopBar";
 import EnvProtectEffect from "../components/envProtectEffect";
 import Achievement from "../components/achievement.jsx";
+import NicknameChangeModal, { NicknameResultModal } from "../components/nicknameChangeModal.jsx";
 
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
@@ -21,11 +22,14 @@ import trophyIcon from "../assets/rank1-star.png";
 import leafIcon from "../assets/rank2-star.png";
 
 import uploadProfileImage from "../api/uploadProfileImg.js";
+import api from "../api/api.js";
 
 export default function MyPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const { user, fetchUser } = useUser();
+  const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
+  const [nicknameChangeResult, setNicknameChangeResult] = useState(null); 
   const MAX_ACHIEVEMENTS = 10;
 
   // 실제 사용자 업적 데이터 예시
@@ -59,6 +63,34 @@ export default function MyPage() {
     }
   };
 
+  {/* 닉네임 변경 모달 오픈 핸들러 */}
+  const handleEditClick = () => {
+    setIsNicknameModalOpen(true);
+  };
+
+  const handleNicknameChange = async (newNickname) => {
+    try {
+      console.log("닉네임 변경 요청:", newNickname);
+
+      const res = await api.post("/v1/members/nickname", { nickname: newNickname });
+      const data = res.data.message;
+      console.log("닉네임 변경 성공:", data);
+
+      // Context 갱신
+      await fetchUser();
+
+      // 닉네임 변경 모달 닫기
+      setIsNicknameModalOpen(false);
+
+      // 성공 결과 모달 띄우기
+      setNicknameChangeResult("success");
+    } catch (err) {
+      // 실패 결과 모달 띄우기
+      setNicknameChangeResult("error");
+    }
+  };
+
+
   return (
       <Container>
         <VerifyTopBar title={"마이 페이지"} onBack={() => navigate("/home-stage")} />
@@ -81,7 +113,19 @@ export default function MyPage() {
 
                 <NicknameContainer>
                   <Nickname>{user?.nickname || "닉네임"}</Nickname>
-                  <ProfileAction>수정</ProfileAction>
+                  <EditIcon
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    onClick={handleEditClick}
+                  >
+                    <path
+                      d="M7 1.75013H2.91667C2.60725 1.75013 2.3105 1.87305 2.09171 2.09184C1.87292 2.31063 1.75 2.60738 1.75 2.9168V11.0835C1.75 11.3929 1.87292 11.6896 2.09171 11.9084C2.3105 12.1272 2.60725 12.2501 2.91667 12.2501H11.0833C11.3928 12.2501 11.6895 12.1272 11.9083 11.9084C12.1271 11.6896 12.25 11.3929 12.25 11.0835V7.00013M10.7187 1.53138C10.9508 1.29932 11.2656 1.16895 11.5937 1.16895C11.9219 1.16895 12.2367 1.29932 12.4687 1.53138C12.7008 1.76345 12.8312 2.07819 12.8312 2.40638C12.8312 2.73457 12.7008 3.04932 12.4687 3.28138L7.21117 8.53955C7.07265 8.67794 6.90154 8.77925 6.71358 8.83413L5.03767 9.32413C4.98747 9.33877 4.93426 9.33965 4.88361 9.32667C4.83296 9.3137 4.78673 9.28734 4.74976 9.25037C4.71279 9.2134 4.68644 9.16717 4.67346 9.11652C4.66048 9.06587 4.66136 9.01266 4.676 8.96247L5.166 7.28655C5.22114 7.09874 5.32264 6.92783 5.46117 6.78955L10.7187 1.53138Z"
+                      strokeWidth="1.16667"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </EditIcon>
                   <ProfileInfo>{user?.introduction || "안녕하세요! 소개글을 입력해주세요."}</ProfileInfo>
                 </NicknameContainer>
               </ProfileImgContainer>
@@ -127,6 +171,21 @@ export default function MyPage() {
             ]}
           />
         </Content>
+
+        {/* 닉네임 변경 모달 */}
+        {isNicknameModalOpen && (
+          <NicknameChangeModal
+            onClose={() => setIsNicknameModalOpen(false)}
+            onNicknameChange={handleNicknameChange}
+          />
+        )}
+        {/* 닉네임 변경 결과 모달 */}
+        {nicknameChangeResult && (
+          <NicknameResultModal
+            result={nicknameChangeResult}
+            onClose={() => setNicknameChangeResult(null)}
+          />
+        )}
       </Container>
     );
 
@@ -220,6 +279,7 @@ const ProfileExImg = styled.img`
   position: absolute;
   top: 56px;
   left: 60px;
+  border-radius: 72px;
   transform: translate(-50%, -50%); /* 중앙 정렬 */
 `;
 
@@ -274,6 +334,23 @@ const ProfileAction = styled.div`
   &:hover,
   &:focus-visible {
     color: #8C7A75; /* 조금 더 진한 색상 */
+  }
+`;
+
+// 수정 아이콘 (SVG → styled-component)
+const EditIcon = styled.svg`
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+
+  path {
+    stroke: #B29E99;
+    transition: stroke 0.2s ease;
+  }
+
+  &:hover path,
+  &:focus-visible path {
+    stroke: #8C7A75; /* hover 시 진한 색상 */
   }
 `;
 
