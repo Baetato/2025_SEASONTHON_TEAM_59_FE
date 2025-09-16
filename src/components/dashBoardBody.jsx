@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import "../styles/dashStyle.css";
 import DashButtonImg from "../assets/ChoiceBtn.png";
 import StaticImg from "../assets/statistics.png";
-import { getMyCarbonStatistics } from "../api/api"; // API 함수 임포트
+import { getGlobalCarbonStatics } from "../api/api"; // API 함수 임포트
 
 export default function DashBoardBody() {
     const [stats, setStats] = useState({
         totalCarbonReduction: 0,
+        serviceOperatingDays: 0,
+        dailyAverageReduction: 0,
         treesPlantedEffect: 0,
         carEmissionReductionEffect: 0,
     });
@@ -16,12 +18,19 @@ export default function DashBoardBody() {
     useEffect(() => {
         const fetchCarbonStats = async () => {
             try {
-                const response = await getMyCarbonStatistics();
-                setStats(response.data); // API 응답의 data 객체를 상태로 설정
+                const response = await getGlobalCarbonStatics();
+                // API 응답에서 data 객체를 추출
+                setStats(response.data || {
+                    totalCarbonReduction: 0,
+                    serviceOperatingDays: 0,
+                    dailyAverageReduction: 0,
+                    treesPlantedEffect: 0,
+                    carEmissionReductionEffect: 0,
+                });
                 setLoading(false);
             } catch (err) {
-                console.error("API Error:", err.response || err);
-                setError(err.response?.data?.detail || err.message);
+                console.error("API Error:", err.message || err);
+                setError(err.message || "탄소 통계 데이터를 가져오지 못했습니다.");
                 setLoading(false);
             }
         };
@@ -41,24 +50,24 @@ export default function DashBoardBody() {
         <div className="dashSection">
             <div>
                 <div className="fontBox">
-                    <span className="fontStyle">나의 탄소 감축량 대시보드</span>
+                    <span className="fontStyle">전체 사용자 탄소 감축량 대시보드</span>
                 </div>
                 <div className="flexBox">
                     <div className="stat-container">
                         <div className="dashInfo">
                             <img src={DashButtonImg} alt="대시버튼 컨테이너" className="imgCon" />
-                            <span className="inner-text">총 탄소감축량 (kgCO₂,eq)</span>
-                            <span className="inner-value">{stats.totalCarbonReduction.toLocaleString()}</span>
+                            <span className="inner-text">총 탄소감축량 </span>
+                            <span className="inner-value">{`${stats.totalCarbonReduction.toLocaleString()}gCO₂eq`}</span>
                         </div>
                         <div className="dashInfo">
                             <img src={DashButtonImg} alt="대시버튼 컨테이너" className="imgCon" />
                             <span className="inner-text">서비스 운영일수</span>
-                            <span className="inner-value">364일</span> {/* 임시 하드코딩 */}
+                            <span className="inner-value">{`${stats.serviceOperatingDays.toLocaleString()}일`}</span>
                         </div>
                         <div className="dashInfo">
                             <img src={DashButtonImg} alt="대시버튼 컨테이너" className="imgCon" />
-                            <span className="inner-text">일평균 감축량 (kgCO₂,eq)</span>
-                            <span className="inner-value">{Math.round(stats.totalCarbonReduction / 364).toLocaleString()}</span>
+                            <span className="inner-text">일평균 감축량</span>
+                            <span className="inner-value">{`${stats.dailyAverageReduction.toLocaleString()}gCO₂eq`}</span>
                         </div>
                     </div>
                 </div>

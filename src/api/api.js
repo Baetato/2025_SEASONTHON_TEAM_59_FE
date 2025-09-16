@@ -111,13 +111,13 @@ export const getMyMonthlyRegionalRanking = async (year, month) => {
     }
 };
 
-export const getMyCarbonStatistics = async () => {
-    try {
-        const response = await api.get("/v1/statistics/me");
+export const getGlobalCarbonStatics = async() => {
+    try{
+        const response = await api.get("/v1/statistics/global");
         return response.data;
-    } catch (error) {
-        const message = error.response?.data?.message || "탄소 감축량 통계 조회 실패";
-        console.error("getMyCarbonStatistics 오류:", message, error);
+    } catch (error){
+        const message = error.response?.data?.message || "전체 탄소 감축량 통계 조회 실패";
+        console.error("getGlobalCarbonStatics 오류 : ", message, error);
         throw new Error(message);
     }
 };
