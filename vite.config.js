@@ -8,12 +8,14 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      devOptions:{enabled: true}, // vite dev 로 돌려도 PWA 까지 볼 수 있게끔 주는 옵션
+      devOptions: {
+        enabled: true, // vite dev 로 돌려도 PWA 까지 볼 수 있게끔
+      },
       navigateFallbackDenylist: [
-        /^\/auth\/kakao\/callback/, // 콜백 URL 제외
-        /^\/auth\/google\/callback/, // 콜백 URL 제외
-        /^\/api\//,                // API 요청 제외
-        /^\/assets\//              // 정적 파일 제외
+        /^\/auth\/kakao\/callback/,
+        /^\/auth\/google\/callback/,
+        /^\/api\//,
+        /^\/assets\//
       ],
       workbox: {
         navigateFallbackDenylist: [/^\/auth\/google\/assets/],
@@ -56,16 +58,16 @@ export default defineConfig({
     }),
   ],
   server: {
-    host: true, // 모든 외부 접속 허용
+    host: true,
     port: 5173,
     allowedHosts: [
-      "be00b60b65bd.ngrok-free.app", // ngrok에서 받은 주소
+      "be00b60b65bd.ngrok-free.app",
       "634762697c8c.ngrok-free.app",
       "6e1f8ff5a132.ngrok-free.app"
     ],
     proxy: {
       "/api": {
-        target: "https://leafup-dev-api.duckdns.org", // 백엔드 개발 주소
+        target: "https://leafup-dev-api.duckdns.org",
         secure: false,
       },
     },
