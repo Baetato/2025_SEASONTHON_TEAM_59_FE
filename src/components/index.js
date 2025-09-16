@@ -2,3 +2,4 @@
 export { default as GuideModal } from "./guideModal";
 export { default as TileInfoModal } from "./tileInfoModal";
 export { default as CompletionModal } from "./completionModal";
+export { default as CoinAnimation } from "./coinAnimation";

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Stage from "./stage.jsx";
 import StageRoad from "../assets/stageRoad.png";
 
-export default function StageScroll({ stages, characterStage, onStartClick }) {
+export default function StageScroll({ stages, characterStage, onStartClick, mascotStatus }) {
   const stageRefs = useRef([]);  // 캐릭터 위치로 자동 스크롤
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function StageScroll({ stages, characterStage, onStartClick }) {
     }
   }, [stages, characterStage]);
 
-  // 각 스테이지의 위치 직접 지정
+  // 각 스테이지의 위치 지정
   const topOffsets = [-7, 6, 16, 27, 38, 50, 60, 72, 81, 90];
   const leftOffsets = [31, 50, 16, 48, 10, 40, 8, 50, 11, 50];
 
@@ -42,6 +42,7 @@ export default function StageScroll({ stages, characterStage, onStartClick }) {
                   index={stage.index}
                   status={stage.status}
                   hasCharacter={characterStage === stage.index}
+                  mascotStatus={mascotStatus}
                   onStartClick={onStartClick}
                 />
               </StageWrapper>

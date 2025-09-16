@@ -3,8 +3,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { ProtectedRoute, PublicRoute, NicknameRoute } from "./routes/protectedRoutes";
 import { registerSW } from "virtual:pwa-register";  // PWA
-//import { RecoilRoot } from 'recoil';  // 상태관리
+import { UserProvider } from "./states/userContext";
 
 import './index.css'
 import App from './App.jsx'
@@ -18,6 +19,7 @@ import LoginLocRe from './pages/loginLocRe.jsx'
 import LoginComplete from './pages/loginComplete.jsx';
 
 import Challenge from './pages/challenge.jsx';
+import MyPage from './pages/myPage.jsx';
 
 import CameraMain from './pages/cameraMain.jsx'
 import CameraPage from './pages/cameraTest.jsx'
@@ -31,42 +33,14 @@ import CumulativeRankingPage from "./pages/cumulativeRankings.jsx"
 import RegionalRankingPage from "./pages/regionalRanking.jsx"
 import StreakRankingPage from "./pages/streakRanking.jsx"
 import CarbonDashBoard from './pages/carbonDashBoard.jsx';
+import ShopPage from './pages/shop.jsx';
 
 // ✅ 서비스워커 등록 (렌더 전에 실행)
 registerSW({ immediate: true });
 
-const getAccessToken = () => localStorage.getItem('accessToken');
-
-function ProtectedRoute({ children }) {  // 토큰 여부만 검증
-  const token = localStorage.getItem("accessToken");
-  if (!token) return <Navigate to="/login" replace />;
-  return children;
-}
-
-
-function PublicRoute({ children }) {  // 토큰 있는 사람만 접근 가능
-  const token = localStorage.getItem("accessToken");
-  const nickname = localStorage.getItem("nickname");
-
-  if (token && nickname && nickname !== "null#null") {
-    return <Navigate to="/home-stage" replace />;
-  }
-  return children;
-}
-
-function NicknameRoute({ children }) {  // 토큰은 있는데 닉네임 설정 안된 사람
-  const token = localStorage.getItem("accessToken");
-  const nickname = localStorage.getItem("nickname");
-
-  if (!token) return <Navigate to="/login" replace />;
-  if (nickname && nickname !== "null#null") {
-    return <Navigate to="/home-stage" replace />;
-  }
-  return children;
-}
-
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <UserProvider>
       <BrowserRouter>
         <Routes>
           {/* 로그인 관련 */}
@@ -84,6 +58,8 @@ createRoot(document.getElementById('root')).render(
           <Route path="/home-stage" element={<ProtectedRoute><HomeStage /></ProtectedRoute>} />
           <Route path="/home-farm" element={<ProtectedRoute><Home /></ProtectedRoute>} />
 
+          {/* 마이 페이지 */}
+          <Route path="/my-page" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
 
           {/* 기타 페이지 */}
           <Route path="/challenge" element={<ProtectedRoute><Challenge /></ProtectedRoute>} />
@@ -97,7 +73,11 @@ createRoot(document.getElementById('root')).render(
           <Route path='/streak-ranking' element={<StreakRankingPage/>} />
           <Route path='/carbon-dashboard' element={<CarbonDashBoard/>} />
 
+          {/* 상점 */}
+          <Route path="/store" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
+
         </Routes>
       </BrowserRouter>
+    </UserProvider>
   </StrictMode>,
 )

@@ -5,16 +5,18 @@ import RewardStar from "../assets/Stage-RewardStar.png";
 import FlagIcnUnfilled from "../assets/flagIcn-unfilled.png";
 import FlagIcnFilled from "../assets/flagIcn.png";
 
-export default function RewardBar({ completedCount = 0, onStarClick}) {
+export default function RewardBar({ completedCount = 0, isRewarded = false, onStarClick }) {
   const totalFlags = 3;
-  const [starClaimed, setStarClaimed] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   const handleStarClick = () => {
-    if (completedCount === totalFlags && !starClaimed) {
+    if (!isRewarded && completedCount >= totalFlags) {
+      setClicked(true);   // 즉시 UI에서 애니메이션 끔
       onStarClick?.();
-      setStarClaimed(true); // 애니메이션 멈추게 하기
     }
   };
+
+  const isActive = !isRewarded && !clicked && completedCount >= totalFlags;
 
   return (
     <RewardBarWrapper>
@@ -31,7 +33,8 @@ export default function RewardBar({ completedCount = 0, onStarClick}) {
       <RewardStarIcon
         src={RewardStar}
         alt="Reward Star"
-        $animate={completedCount === totalFlags && !starClaimed} // ✅ 클릭 후 false로
+        $animate={isActive}
+        $disabled={!isActive}
         onClick={handleStarClick}
       />
     </RewardBarWrapper>
@@ -80,11 +83,12 @@ const RewardStarIcon = styled.img`
   left: 77%;
   width: 44px;
   height: 44px;
+  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
+  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
 
   ${({ $animate }) =>
     $animate &&
     css`
       animation: ${pulse} 1s infinite ease-in-out;
-      cursor: pointer;   // ✅ 커서 포인터 추가
     `}
 `;
