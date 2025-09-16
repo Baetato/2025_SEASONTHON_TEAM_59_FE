@@ -7,7 +7,7 @@ import ShopTabBar from "../components/shop/ShopTabBar";
 import CharacterCard from "../components/shop/CharacterCard";
 import CharacterGrid from "../components/shop/CharacterGrid";
 import mascotCoconut from "../assets/mascot-coconut.png";
-import mascotIdle from "../assets/mascot-idle.png";
+import mascotIdle from "../assets/mascot-basic.png";
 import mascotCarrot from "../assets/mascot-carrot.png";
 import mascotUnready from "../assets/mascot-unready.png";
 
@@ -96,7 +96,7 @@ function renderTabContent(activeTab, handleBuy) {
 const PageRoot = styled.div`
   position: relative;
   min-height: 100%;
-  background: #FFF8E8;
+  background: #5C4D49;
 `;
 
 const ContentArea = styled.div`

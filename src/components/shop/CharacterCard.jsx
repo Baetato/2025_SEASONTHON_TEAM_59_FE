@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import leafIcon from "../../assets/leaf.png";
 import characterCardBg from "../../assets/characterModal.png";
 
 export default function CharacterCard({ name, image, price, disabled, onClick }) {
@@ -10,7 +9,6 @@ export default function CharacterCard({ name, image, price, disabled, onClick })
       <TopName>{name}</TopName>
       <CenterImage src={image} alt={name} />
       <BottomPrice>
-        <LeafBg src={leafIcon} alt="" aria-hidden="true" />
         <PriceText>{price.toLocaleString()}</PriceText>
       </BottomPrice>
 
@@ -26,7 +24,6 @@ export default function CharacterCard({ name, image, price, disabled, onClick })
 const Card = styled.div`
   position: relative;
   width: 100px;
-  height: 154px;
   display: grid;
   grid-template-rows: 32px 1fr 36px;
   align-items: center;
@@ -41,52 +38,53 @@ const Card = styled.div`
 
 const Bg = styled.img`
   position: absolute;
-  inset: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
 `;
 
 const TopName = styled.div`
   position: relative;
-  margin-top: 4px;
-  font-family: "Maplestory OTF";
+  margin-top: 16px;
+  z-index: 999;
+  font-size: 20px;
+  left: 0%;
+  font-family: "Maplestory OTF", sans-serif;
+  font-style: normal;
   font-weight: 700;
-  font-size: 13px;
-  color: #281900;
+  line-height: 22px; /* 137.5% */
+  letter-spacing: -0.408px;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #281900;
+  background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const CenterImage = styled.img`
   position: relative;
-  max-width: 76px;
-  max-height: 76px;
-  object-fit: contain;
+  max-width: 94%;
+  max-height: 96%;
+  bottom: 7%;
+  object-fit: cover;
 `;
 
 const BottomPrice = styled.div`
   position: relative;
   width: 88px;
+  top: -50%;
+  left: 8px;
   height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-const LeafBg = styled.img`
-  position: absolute;
-  width: 88px;
-  height: 24px;
-  object-fit: contain;
-  opacity: 0.9;
-`;
-
 const PriceText = styled.span`
   position: relative;
   font-family: "Maplestory OTF";
-  font-weight: 700;
+  font-weight:500;
   font-size: 13px;
-  color: #281900;
+  color: #FFF8E8;
 `;
 
 const DisabledOverlay = styled.div`
