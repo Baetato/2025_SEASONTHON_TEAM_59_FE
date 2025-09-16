@@ -110,3 +110,14 @@ export const getMyMonthlyRegionalRanking = async (year, month) => {
         throw error;
     }
 };
+
+export const getMyCarbonStatistics = async () => {
+    try {
+        const response = await api.get("/v1/statistics/me");
+        return response.data;
+    } catch (error) {
+        const message = error.response?.data?.message || "탄소 감축량 통계 조회 실패";
+        console.error("getMyCarbonStatistics 오류:", message, error);
+        throw new Error(message);
+    }
+};

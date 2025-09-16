@@ -1,5 +1,6 @@
 // src/pages/RegionalRanking.jsx
 import React, { useEffect, useState } from "react";
+import styled from "styled-components"; // Import styled-components
 import Header from "../components/rankHeader";
 import Nav from "../components/rankNav";
 import RankingItem from "../components/rankItem";
@@ -13,6 +14,33 @@ import "../styles/rankingItemStyles.css";
 import "../styles/rankPage.css";
 import Footer from "../components/footer";
 
+// Styled component for LoadingText
+const LoadingText = styled.div`
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 완전 중앙 정렬 */
+
+    text-align: center;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #281900;
+    font-family: "Maplestory OTF";
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.408px;
+
+    background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+`;
+
 function RegionalRanking({ year, month } = {}) {
     const [regionalRankings, setRegionalRankings] = useState([]);
     const [myRanking, setMyRanking] = useState(null);
@@ -21,7 +49,7 @@ function RegionalRanking({ year, month } = {}) {
 
     // year와 month가 prop으로 제공되지 않으면 현재 날짜 사용
     const currentYear = year || new Date().getFullYear();
-    const currentMonth = month || new Date().getMonth() + 1; 
+    const currentMonth = month || new Date().getMonth() + 1;
 
     // 월간 지역 랭킹 데이터 가져오기
     const loadRegionalRanking = async () => {
@@ -67,7 +95,13 @@ function RegionalRanking({ year, month } = {}) {
     }, [currentYear, currentMonth]);
 
     // 로딩 및 에러 UI
-    if (loading) return <div className="appContainer">로딩 중...</div>;
+    if (loading)
+        return (
+            <LoadingText>
+                불러오는 중<br />
+                ...
+            </LoadingText>
+        );
     if (error) return <div className="appContainer">에러: {error}</div>;
 
     return (
@@ -77,18 +111,17 @@ function RegionalRanking({ year, month } = {}) {
                 nickName={myRanking?.nickname ?? "게스트"}
                 point={myRanking?.score ? `${myRanking.score}P` : "0P"}
                 profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
-                
             />
             <Nav />
             <div className="rankingList scrollGap">
                 {regionalRankings.length > 0 ? (
                     regionalRankings.map((user) => (
                         <RankingItem
-                            key={user.rank} 
+                            key={user.rank}
                             rank={user.rank}
                             nickName={user.nickname}
                             point={`${user.score}P`}
-                            profileImageUrl={user.profileImageUrl} 
+                            profileImageUrl={user.profileImageUrl}
                         />
                     ))
                 ) : (

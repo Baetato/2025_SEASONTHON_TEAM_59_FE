@@ -1,5 +1,6 @@
 // src/pages/streakRanking.jsx
 import React, { useEffect, useState } from "react";
+import styled from "styled-components"; // Import styled-components
 import Header from "../components/rankStreakHeader";
 import Nav from "../components/rankNav";
 import RankingItem from "../components/streakRankItem";
@@ -11,6 +12,33 @@ import "../styles/topNavStyles.css";
 import "../styles/rankingItemStyles.css";
 import "../styles/rankPage.css";
 import Footer from "../components/footer";
+
+// Styled component for LoadingText
+const LoadingText = styled.div`
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 완전 중앙 정렬 */
+
+    text-align: center;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #281900;
+    font-family: "Maplestory OTF";
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.408px;
+
+    background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+`;
 
 function StreakRanking() {
     const [streakRankings, setStreakRankings] = useState([]);
@@ -25,7 +53,7 @@ function StreakRanking() {
             const data = await getStreakRanking();
             console.log("스트릭 랭킹 데이터:", data);
             if (data.statusCode === 200) {
-                setStreakRankings(data.data.rankings);
+                setStreakRankings(data.data.rankings || []);
             } else {
                 setError(data.message || "랭킹 데이터를 불러오지 못했습니다.");
             }
@@ -53,12 +81,19 @@ function StreakRanking() {
     };
 
     useEffect(() => {
-        loadStreakRanking();
-        loadMyStreakRanking();
+        Promise.all([loadStreakRanking(), loadMyStreakRanking()]).finally(() => {
+            setLoading(false);
+        });
     }, []);
 
     // 로딩 및 에러 UI
-    if (loading) return <div className="appContainer">로딩 중...</div>;
+    if (loading)
+        return (
+            <LoadingText>
+                불러오는 중<br />
+                ...
+            </LoadingText>
+        );
     if (error) return <div className="appContainer">에러: {error}</div>;
 
     return (
@@ -71,15 +106,19 @@ function StreakRanking() {
             />
             <Nav />
             <div className="rankingList scrollGap">
-                {streakRankings.map((user) => (
-                    <RankingItem
-                        key={user.rank}
-                        rank={user.rank}
-                        nickName={user.nickname}
-                        score={`${user.score}일`} // score로 변경
-                        profileImageUrl={user.profileImageUrl}
-                    />
-                ))}
+                {streakRankings.length > 0 ? (
+                    streakRankings.map((user) => (
+                        <RankingItem
+                            key={user.rank}
+                            rank={user.rank}
+                            nickName={user.nickname}
+                            score={`${user.score}일`}
+                            profileImageUrl={user.profileImageUrl}
+                        />
+                    ))
+                ) : (
+                    <div className="emptyState">랭킹 데이터가 없습니다.</div>
+                )}
             </div>
             <Footer />
         </div>

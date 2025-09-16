@@ -1,7 +1,14 @@
-import React from "react";
+import Header from "../components/dashBoardHeader";
+import Body from "../components/dashBoardBody";
+import Footer from "../components/footer";
+import "../styles/dashStyle.css";
 
-function CarbonDashBoard() {
-  return <div>개발중입니다.</div>;
+export default function CarbonDashBoard() {
+    return (
+        <div className="dashContainer">
+            <Header />
+            <Body />
+            <Footer />
+        </div>
+    );
 }
-
-export default CarbonDashBoard;

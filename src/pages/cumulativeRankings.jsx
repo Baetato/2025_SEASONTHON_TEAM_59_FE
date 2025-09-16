@@ -1,15 +1,44 @@
 import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 import Header from "../components/rankHeader";
 import Nav from "../components/rankNav";
 import RankingItem from "../components/rankItem";
-import { getTotalRanking, getMyTotalRanking } from "../api/api"; // getTotalRanking 추가
-import ProfileImg from "../assets/defaultProfile.png"; // 프로필 이미지 임포트
+import { getTotalRanking, getMyTotalRanking } from "../api/api";
+import ProfileImg from "../assets/defaultProfile.png";
 
 import "../styles/headerStyles.css";
 import "../styles/topNavStyles.css";
 import "../styles/rankingItemStyles.css";
 import "../styles/rankPage.css";
 import Footer from "../components/footer";
+
+// Styled component for LoadingText
+const LoadingText = styled.div`
+    white-space: nowrap;
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    text-align: center;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #281900;
+    font-family: "Maplestory OTF";
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.408px;
+
+    background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+`;
 
 function Ranking() {
     const [totalRankings, setTotalRankings] = useState([]); // 전체 랭킹 상태
@@ -24,7 +53,7 @@ function Ranking() {
             const data = await getTotalRanking();
             console.log("전체 누적 포인트 랭킹 데이터:", data);
             if (data.statusCode === 200) {
-                setTotalRankings(data.data.rankings); // 상위 100위 데이터 저장
+                setTotalRankings(data.data.rankings || []); // 상위 100위 데이터 저장, 빈 배열 fallback
             } else {
                 setError(data.message || "랭킹 데이터를 불러오지 못했습니다.");
             }
@@ -52,12 +81,19 @@ function Ranking() {
     };
 
     useEffect(() => {
-        loadTotalRanking();
-        loadMyTotalRanking();
+        Promise.all([loadTotalRanking(), loadMyTotalRanking()]).finally(() => {
+            setLoading(false);
+        });
     }, []);
 
     // 로딩 및 에러 UI
-    if (loading) return <div className="appContainer">로딩 중...</div>;
+    if (loading)
+        return (
+            <LoadingText>
+                불러오는 중<br />
+                ...
+            </LoadingText>
+        );
     if (error) return <div className="appContainer">에러: {error}</div>;
 
     return (
@@ -70,15 +106,19 @@ function Ranking() {
             />
             <Nav />
             <div className="rankingList scrollGap">
-                {totalRankings.map((user) => (
-                    <RankingItem
-                        key={user.rank}
-                        rank={user.rank}
-                        nickName={user.nickname}
-                        point={`${user.score}P`} // score를 point로 변환
-                        profileImageUrl={user.profileImageUrl} // 추가: 프로필 이미지 전달
-                    />
-                ))}
+                {totalRankings.length > 0 ? (
+                    totalRankings.map((user) => (
+                        <RankingItem
+                            key={user.rank}
+                            rank={user.rank}
+                            nickName={user.nickname}
+                            point={`${user.score}P`} // score를 point로 변환
+                            profileImageUrl={user.profileImageUrl} // 추가: 프로필 이미지 전달
+                        />
+                    ))
+                ) : (
+                    <div className="emptyState">랭킹 데이터가 없습니다.</div>
+                )}
             </div>
             <Footer />
         </div>
