@@ -326,12 +326,6 @@ export default function HomeFarm() {
             label: challenge.label
           });
           
-          // 예시: 수확 API 호출
-          // await api.post('/v1/garden/harvest', { 
-          //   challengeId: challenge.originalChallengeId,
-          //   tileIndex: index 
-          // });
-          
           // 임시 성공 시뮬레이션
           console.log('✅ 수확 완료!');
         }
@@ -370,13 +364,6 @@ export default function HomeFarm() {
       />
 
       <Content>
-        {/* 오른쪽 고정 메뉴 */}
-        <MenuContainer>
-          <HomeMenuButton type="location" onClick={() => alert("Coming Soon..!")} />
-          <HomeMenuButton type="community" onClick={() => alert("Coming Soon..!")} />
-          <HomeMenuButton type="setting" onClick={() => alert("Coming Soon..!")} />
-        </MenuContainer>
-
         <Canvas>
           <Mascot
             src={getMascotImage()}
@@ -486,7 +473,7 @@ export default function HomeFarm() {
             tileIndex={coin.tileIndex}
             onComplete={() => {
               setAnimatingCoins(prev => prev.filter(c => c.id !== coin.id));
-              // 헤더의 포인트 업데이트 (실제로는 API 호출 후 헤더 새로고침)
+              // 헤더의 포인트 업데이트
               if (headerRef.current?.refreshUser) {
                 headerRef.current.refreshUser();
               }
