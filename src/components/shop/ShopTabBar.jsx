@@ -26,7 +26,7 @@ export default function ShopTabBar({ tabs = [], activeTab, onChange }) {
 
 const Root = styled.div`
   position: fixed;
-  top: 72px; /* RoofBar와 맞닿게 배치할 경우 조정 가능 */
+  top: 5.5%; /* RoofBar와 맞닿게 배치할 경우 조정 가능 */
   left: 50%;
   transform: translate(-50%, 128px); /* 지붕(120px) 아래로 내림 + 여백 8px */
   width: 100%;
@@ -35,7 +35,7 @@ const Root = styled.div`
   grid-template-columns: repeat(6, 1fr);
   gap: 0; /* 6개가 붙어 보이도록 간격 제거 */
   background: #261B18; /* 탭 영역 배경색 */
-  padding: 8px 8px 10px 8px;
+  padding: 0px 3px 0px 3px;
   z-index: 1100;
 `;
 
@@ -48,7 +48,7 @@ const TabButton = styled.button`
   width: 100%;
   height: 84px; /* 이미지 비율에 맞춰 조정 */
   background-image: url(${(p) => (p.$active ? clickedBg : unclickedBg)});
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
@@ -60,7 +60,7 @@ const Label = styled.span`
   font-family: "Maplestory OTF";
   font-weight: 700;
   color: #FEF4E9;
-  font-size: 20px;
+  font-size: 12px;
   line-height: 1.1;
   text-align: center;
 `;

@@ -52,13 +52,35 @@ const TopName = styled.div`
   font-weight: 700;
   line-height: 22px; /* 137.5% */
   letter-spacing: -0.408px;
-  -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: #281900;
   background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
-  background-clip: text;
+
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `;
+
+// const Fill = styled.span`
+//   position: absolute;
+//   top: 6.3%;
+//   left: 31%;
+//   color: #281900;
+//   font-family: "Maplestory OTF";
+//   font-size: 20px;
+//   font-weight: 700;
+//   -webkit-text-stroke: 2px #281900;
+//   z-index: 0;
+// `;
+
+// const Fill2 = styled.span`
+//   position: absolute;
+//   top: 6.1%;
+//   left: 34%;
+//   color: #281900;
+//   font-family: "Maplestory OTF";
+//   font-size: 20px;
+//   font-weight: 700;
+//   -webkit-text-stroke: 2px #281900;
+//   z-index: 0;
+// `;
 
 const CenterImage = styled.img`
   position: relative;

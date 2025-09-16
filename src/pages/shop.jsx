@@ -11,7 +11,7 @@ import mascotIdle from "../assets/mascot-basic.png";
 import mascotCarrot from "../assets/mascot-carrot.png";
 import mascotUnready from "../assets/mascot-unready.png";
 
-const TABS = ["캐릭터", "캐릭터 스킨", "장신구", "펫", "열매", "스테이지 스킨"];
+const TABS = ["캐릭터", "캐릭터 스킨", "장신구", "펫", "열매", <>스테이지<br/>스킨</>];
 
 export default function ShopPage() {
   const { user } = useUser();
@@ -49,7 +49,7 @@ export default function ShopPage() {
 function renderTabContent(activeTab, handleBuy) {
   if (activeTab === "캐릭터") {
     const characters = [
-      { id: "idle", name: "아이들", price: 200, image: mascotIdle },
+      { id: "idle", name: "리프", price: 200, image: mascotIdle },
       { id: "carrot", name: "캐럿", price: 201, image: mascotCarrot },
     ];
     return (
@@ -96,12 +96,12 @@ function renderTabContent(activeTab, handleBuy) {
 const PageRoot = styled.div`
   position: relative;
   min-height: 100%;
-  background: #8D726B; /* 화면 내부 배경색 */
+  background: #5C4D49; /* 화면 내부 배경색 */
 `;
 
 const ContentArea = styled.div`
   padding: 12px 16px 0 16px;
-  padding-top: 72px; /* fixed 헤더 여백 */
+  padding-top: 70%; /* fixed 헤더 여백 */
   padding-bottom: 220px; /* 푸터 + 고정 Roof/탭 여유 공간 확보 */
 `;
 

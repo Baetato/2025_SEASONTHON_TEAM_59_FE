@@ -9,8 +9,7 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 100px);
   justify-content: center; /* 가운데 정렬 */
-  gap: 14px; /* 14~16px 권장 간격 */
-  margin-top: 12px;
+  gap: 14px; 
 `;
 
 
