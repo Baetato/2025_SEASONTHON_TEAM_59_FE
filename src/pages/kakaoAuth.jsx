@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef} from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api.js";
 import { useUser } from "../states/userContext";
@@ -10,9 +10,12 @@ export default function KakaoAuth() {
   const loadingMessage = "카카오 로그인 중...";
   const navigate = useNavigate();
   const { updateUser } = useUser();
-  console.log(api.defaults.baseURL)
+  const processedRef = useRef(false);
 
   useEffect(() => {
+    if (processedRef.current) return; // 이미 처리된 경우(크롬 콜백 중복 호출 방지)
+    processedRef.current = true;
+
     const code = searchParams.get("code"); // URL에서 ?code=값 추출
     if (!code) {
       alert("인가 코드가 존재하지 않습니다.");
@@ -24,11 +27,9 @@ export default function KakaoAuth() {
       try {
         const res = await api.get(
           `/v1/oauth2/callback/${provider}?code=${code}`,
-          {
-            withCredentials: true, // 쿠키 포함 요청
-          }
         );
 
+        console.log(res.data)
         const { accessToken, refreshToken } = res.data.data.tokenDto;
         const memberInfo = res.data.data.memberInfoResDto;
 
@@ -42,10 +43,14 @@ export default function KakaoAuth() {
         });
 
 
+        console.log("저장 직전 accessToken:", accessToken);
         // 로컬 스토리지나 상태 관리 라이브러리에 저장
         // TODO: 어디에 저장할지 확정
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
+
+
+        console.log("저장 후 accessToken(localStorage):", localStorage.getItem("accessToken"));
 
         // 닉네임 페이지로 이동
         navigate("/login/nick");
@@ -53,6 +58,8 @@ export default function KakaoAuth() {
         console.error(err);
         alert("로그인 처리 중 오류가 발생했습니다.");
         navigate("/login");
+      } finally {
+        processedRef.current = false; // 재시도 가능
       }
     };
 

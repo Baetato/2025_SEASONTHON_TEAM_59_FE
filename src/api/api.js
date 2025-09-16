@@ -21,8 +21,12 @@ const refreshAccessToken = async () => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    const newAccessToken = response.data.accessToken;
+    const newAccessToken = response.data.data?.accessToken;
+    const newRefreshToken = response.data.data?.refreshToken;
+
+    console.log("토큰 갱신 성공 ✅, newAccessToken:", newAccessToken);
     localStorage.setItem("accessToken", newAccessToken);
+    localStorage.setItem("refreshToken", newRefreshToken);
     return newAccessToken;
   } catch (err) {
     console.error("토큰 갱신 실패 ❌", err);
@@ -70,10 +74,11 @@ api.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then((token) => {
-            originalRequest.headers.Authorization = "Bearer " + token;
-            return api(originalRequest);
-          })
+        .then((token) => {
+          if (!token) throw new Error("Refresh token failed: token undefined");
+          originalRequest.headers.Authorization = "Bearer " + token;
+          return api(originalRequest);
+        })
           .catch((err) => Promise.reject(err));
       }
 
