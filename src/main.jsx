@@ -33,6 +33,7 @@ import CumulativeRankingPage from "./pages/cumulativeRankings.jsx"
 import RegionalRankingPage from "./pages/regionalRanking.jsx"
 import StreakRankingPage from "./pages/streakRanking.jsx"
 import CarbonDashBoard from './pages/carbonDashBoard.jsx';
+import ShopPage from './pages/shop.jsx';
 
 // ✅ 서비스워커 등록 (렌더 전에 실행)
 registerSW({ immediate: true });
@@ -71,6 +72,10 @@ createRoot(document.getElementById('root')).render(
           <Route path='/regional-ranking' element={<ProtectedRoute><RegionalRankingPage/></ProtectedRoute>} />
           <Route path='/streak-ranking' element={<ProtectedRoute><StreakRankingPage/></ProtectedRoute>} />
           <Route path='/carbon-dashboard' element={<ProtectedRoute><CarbonDashBoard/></ProtectedRoute>} />
+
+          {/* 상점 */}
+          <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
+          <Route path="/store" element={<Navigate to="/shop" replace />} />
 
         </Routes>
       </BrowserRouter>
