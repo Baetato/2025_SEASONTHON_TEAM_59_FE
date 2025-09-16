@@ -89,23 +89,25 @@ function getStoredUsername() {
 
 // API 응답 → 내부 completedChallenges로 매핑
 // - tileIndex는 서버가 안 주므로 0~8 순서 부여
-// - content가 있으면 label로 저장해 모달에서 노출(없으면 기본 매핑 이름 사용)
+// - label: 서버 content 없으면 챌린지 한글명으로 대체하여 항상 명칭 노출
 function mapApiToCompleted(apiCompleted) {
   console.log('🐛 API 응답 데이터:', apiCompleted);
   const now = new Date().toISOString();
   const mapped = (apiCompleted || [])
     .slice(0, 9)
     .map((row, idx) => {
-      const type = CHALLENGE_ID_MAP[row.challengeId] ?? null;
-      if (!type) {
-        console.warn(`⚠️ 알 수 없는 challengeId: ${row.challengeId}`);
-        return null;
+      // 정의된 매핑이 없더라도 드롭하지 않고 고유 타입으로 유지해 진행률/표시가 가능하도록 함
+      const type = CHALLENGE_ID_MAP[row.challengeId] ?? `custom_${row.challengeId}`;
+      if (!CHALLENGE_ID_MAP[row.challengeId]) {
+        console.warn(`⚠️ 알 수 없는 challengeId: ${row.challengeId} (임시로 ${type}로 처리)`);
       }
+      const defaultMeta = CHALLENGE_TYPES.find((t) => t.id === type);
+      const displayName = row.content || defaultMeta?.name || null;
       return {
         type,
         completedAt: now,
         tileIndex: idx,
-        label: row.content || null,
+        label: displayName, // 모달에서 항상 챌린지명 노출되도록
         originalChallengeId: row.challengeId, // 수확 API에서 사용
       };
     })
@@ -157,6 +159,7 @@ export default function HomeFarm() {
   const [harvestedTiles, setHarvestedTiles] = useState(new Set()); // 수확된 타일들
   const [animatingCoins, setAnimatingCoins] = useState([]); // 애니메이션 중인 코인들
   const headerRef = useRef(null); // 헤더 참조를 위한 ref
+  const devFilledRef = useRef(false); // 개발용 마지막 칸 채우기 1회 보호
 
   // 주간 현황 조회
   useEffect(() => {
@@ -222,6 +225,31 @@ export default function HomeFarm() {
       setTileStates(prev => ({ ...prev, ...newTileStates }));
     }
   }, [weekProgress.isComplete, completedChallenges, harvestedTiles]);
+
+  // 개발용: 완료된 챌린지가 8종류일 때 마지막 1칸 자동 채우기 (애니메이션 흐름 테스트)
+  useEffect(() => {
+    if (!import.meta.env.DEV) return; // 개발 모드에서만 동작
+    if (devFilledRef.current) return;
+    const uniqueTypes = new Set(completedChallenges.map(c => c.type));
+    if (uniqueTypes.size === 8) {
+      // 남은 타일 인덱스 찾기
+      const usedIndexes = new Set(completedChallenges.map(c => c.tileIndex));
+      let freeIndex = 0;
+      for (let i = 0; i < 9; i++) {
+        if (!usedIndexes.has(i)) { freeIndex = i; break; }
+      }
+      const dummy = {
+        type: `dev_dummy_${Date.now()}`,
+        completedAt: new Date().toISOString(),
+        tileIndex: freeIndex,
+        label: "테스트 채우기", // 모달 표시용
+        originalChallengeId: -1,
+      };
+      setCompletedChallenges(prev => [...prev, dummy]);
+      devFilledRef.current = true;
+      console.log('🧪 개발용: 마지막 1칸 자동 채움 → 타일', freeIndex);
+    }
+  }, [completedChallenges]);
 
   // 마스코트 상태 (비로그인이어도 기본 idle 노출)
   const getMascotStatus = () =>
@@ -311,6 +339,13 @@ export default function HomeFarm() {
       // 수확된 타일로 표시
       setHarvestedTiles(prev => new Set([...prev, index]));
       
+      // 헤더 포인트 즉시 +5 (애니메이션과 동시 진행)
+      try {
+        if (headerRef.current?.addTestPoints) {
+          headerRef.current.addTestPoints(5);
+        }
+      } catch (e) { /* noop */ }
+
       // 코인 애니메이션 시작
       const coinId = Date.now() + index;
       setAnimatingCoins(prev => [...prev, { id: coinId, tileIndex: index }]);

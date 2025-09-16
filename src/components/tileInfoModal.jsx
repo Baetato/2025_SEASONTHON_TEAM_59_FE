@@ -30,9 +30,9 @@ export default function TileInfoModal({ tile, onClose }) {
             <>
               이 텃밭은
               <br />
-              {tile?.challenge?.name}를
-              <br />
-              완료했어요.
+              <ChallengeName>{tile?.challenge?.name}</ChallengeName>
+    
+              를 완료했어요.
             </>
           )}
         </TileText>
@@ -64,26 +64,40 @@ const TileImgCard = styled.div`
   background: url(${farmModal}) center / contain no-repeat;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 24px 16px 64px 16px; /* 하단 버튼 공간 확보 */
   box-sizing: border-box;
 `;
 
 const TileText = styled.div`
   text-align: center;
-  margin-bottom: 28%;
+  margin-bottom: 0;
   font-family: "Maplestory OTF", sans-serif;
   color: #5c4d49;
-  line-height: 1.6;
-  font-size: 16px;
+  line-height: 1.45;
+  font-size: 15px;
   text-shadow: 0 1px 0 rgba(40, 25, 0, 0.2);
   display: grid;
   gap: 8px;
   place-items: center;
+  max-width: 160px;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+`;
+
+const ChallengeName = styled.span`
+  display: inline-block;
+  color: #B29E99;
+  max-width: 160px;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  font-weight: 700;
 `;
 
 const ConfirmTextButton = styled.button`
   position: absolute;
-  top: 128px; /* farm-modal.png 기준 배치 */
+  bottom: 25px; /* 배경 하단에 고정 */
   left: 50%;
   transform: translateX(-50%);
   background: none;

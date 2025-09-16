@@ -197,7 +197,7 @@ const Header = forwardRef(function Header(_, ref) {
               </defs>
             </svg>
           </ProgressBarWrapper>
-          <PointBox>
+          <PointBox id="header-point-box">
             <CoinIcon src={CoinIcn} alt="coin" />
             <PointText $isBumping={isPointBumping}>{points}</PointText>
           </PointBox>
