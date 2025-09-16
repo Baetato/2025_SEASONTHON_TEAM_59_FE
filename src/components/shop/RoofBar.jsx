@@ -24,11 +24,10 @@ const Root = styled.div`
 `;
 
 const RoofBackground = styled.img`
-  position: absolute;
+  position: fixed;
   inset: 0;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 `;
 
 const RightBadge = styled.div`
