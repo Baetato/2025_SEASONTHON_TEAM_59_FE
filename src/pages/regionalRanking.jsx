@@ -4,7 +4,7 @@ import styled from "styled-components"; // Import styled-components
 import Header from "../components/rankHeader";
 import Nav from "../components/rankNav";
 import RankingItem from "../components/rankItem";
-import { getMonthlyRegionalRanking, getMyMonthlyRegionalRanking } from "../api/api";
+import { getMonthlyRegionalRanking, getMyMonthlyRegionalRanking } from "../api/rankingApi";
 import ProfileImg from "../assets/defaultProfile.png";
 import PropTypes from "prop-types";
 

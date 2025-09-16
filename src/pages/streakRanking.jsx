@@ -4,7 +4,7 @@ import styled from "styled-components"; // Import styled-components
 import Header from "../components/rankStreakHeader";
 import Nav from "../components/rankNav";
 import RankingItem from "../components/streakRankItem";
-import { getStreakRanking, getMyStreakRanking } from "../api/api";
+import { getStreakRanking, getMyStreakRanking } from "../api/rankingApi";
 import ProfileImg from "../assets/defaultProfile.png"; // 프로필 이미지 임포트
 
 import "../styles/headerStyles.css";

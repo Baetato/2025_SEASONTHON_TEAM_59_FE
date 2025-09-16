@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Header from "../components/rankHeader";
 import Nav from "../components/rankNav";
 import RankingItem from "../components/rankItem";
-import { getTotalRanking, getMyTotalRanking } from "../api/api";
+import { getTotalRanking, getMyTotalRanking } from "../api/rankingApi";
 import ProfileImg from "../assets/defaultProfile.png";
 
 import "../styles/headerStyles.css";

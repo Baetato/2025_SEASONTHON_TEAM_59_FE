@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "../styles/dashStyle.css";
 import DashButtonImg from "../assets/ChoiceBtn.png";
 import StaticImg from "../assets/statistics.png";
-import { getGlobalCarbonStatics } from "../api/api"; // API 함수 임포트
+import { getGlobalCarbonStatics } from "../api/rankingApi"; // API 함수 임포트
 
 export default function DashBoardBody() {
     const [stats, setStats] = useState({
