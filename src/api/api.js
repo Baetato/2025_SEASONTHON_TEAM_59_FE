@@ -15,10 +15,11 @@ const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
     if (!refreshToken) throw new Error("리프레시 토큰 없음");
 
-    // 👉 body에 담아서 요청
-    const response = await api.post("/v1/oauth2/token/access", {
-      refreshToken,
-    });
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/v1/oauth2/token/access`,
+      { refreshToken },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
     const newAccessToken = response.data.accessToken;
     localStorage.setItem("accessToken", newAccessToken);
@@ -86,7 +87,9 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        window.location.href = "/login"; // refresh 실패 시
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

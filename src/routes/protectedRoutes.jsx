@@ -3,7 +3,6 @@ import { Navigate } from "react-router-dom";
 
 // 토큰만 확인 (로그인 필요)
 export function ProtectedRoute({ children }) {
-  const { user } = useUser();
   const token = localStorage.getItem("accessToken");
   if (!token) return <Navigate to="/login" replace />;
   return children;
