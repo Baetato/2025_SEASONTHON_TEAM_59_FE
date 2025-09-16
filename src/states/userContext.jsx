@@ -8,6 +8,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
     nickname: "",
     picture: "",
+    avatarUrl: "", 
     level: 0,
     exp: 0,
     point: 0,
@@ -23,6 +24,7 @@ export const UserProvider = ({ children }) => {
       const userData = {
         nickname: data.nickname,
         picture: data.picture,
+        avatarUrl: data.avatarUrl,
         level: data.level,
         exp: data.exp,
         point: data.point,
@@ -39,7 +41,10 @@ export const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchUser();
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      fetchUser();
+    }
   }, []);
 
   return (
