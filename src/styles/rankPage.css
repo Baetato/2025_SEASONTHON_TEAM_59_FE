@@ -5,6 +5,7 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: #382C28;
 }
 
 .loadApp {

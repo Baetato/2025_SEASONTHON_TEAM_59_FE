@@ -29,7 +29,7 @@ export default function LoginAuth() {
     } else {
       // 둘 중 하나라도 미동의 → 전체 동의
       // 위치 동의 먼저
-      handleLocationToggle();
+      await handleLocationToggle();
       // 카메라 권한 요청
       if (!cameraAgree) {
         try {

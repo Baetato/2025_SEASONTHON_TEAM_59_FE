@@ -1,25 +1,6 @@
 import styled from "styled-components";
-import ModalBtn from "../assets/ModalBtn.png";
 
-{/* 모달 사용방법 예시
-      <Modal
-        isOpen={모달창 제어할 상태}
-        title="모달창 제목"
-        description="설명"
-        buttons={[ // 버튼 두개까지 가능
-          {
-            label: "돌아가기", // 버튼 이름
-            onClick: () => navigate(-1), // 누르면 이동할 함수
-          },
-          {
-            label: "이어가기",
-            onClick: () => setIsModalOpen(false),
-          },
-        ]}
-      />
-*/}
-
-export default function Modal({ isOpen, title, description, icon, score, buttons = [] }) {
+export default function ShopModal({ isOpen, title, description, icon, score, buttons = [], iconWidth = 156, iconHeight = 189 }) {
   if (!isOpen) return null;
 
   return (
@@ -27,16 +8,15 @@ export default function Modal({ isOpen, title, description, icon, score, buttons
       <ModalWrapper>
         <ModalContainer>
           <ContentBox>
-            {title && <Title>{title}</Title>}
-            {description && <Description>{description}</Description>}
-
-            {/* 아이콘 + 점수 영역 */}
             {(icon || score) && (
-              <IconScoreWrapper>
-                {score !== undefined && <ScoreText>{score}</ScoreText>}
+              <IconScoreWrapper $iconW={iconWidth} $iconH={iconHeight}>
                 {icon && <img src={icon} alt="modal-icon" />}
+                {score !== undefined && <ScoreText>{score}</ScoreText>}
               </IconScoreWrapper>
             )}
+
+            {title && <Title>{title}</Title>}
+            {description && <Description>{description}</Description>}
           </ContentBox>
 
           <ButtonRow $count={buttons.length}>
@@ -58,7 +38,7 @@ export default function Modal({ isOpen, title, description, icon, score, buttons
 
 // Styled Components
 const Overlay = styled.div`
-  background: rgba(0, 0, 0, 0.6); /* 어둡게 */
+  background: rgba(0, 0, 0, 0.6);
   position: absolute;
   inset: 0;
   display: flex;
@@ -69,7 +49,6 @@ const Overlay = styled.div`
 
 const ModalWrapper = styled.div`
   width: 194px;
-  height: 177px;
   border-radius: 3px;
   border: 2px solid #382C28;
   background: #382C28;
@@ -88,7 +67,7 @@ const ModalContainer = styled.div`
 
 const ContentBox = styled.div`
   width: 191px;
-  height: 127px;
+  min-height: 127px;
   border-radius: 3px;
   border-top: 2px solid #B29E99;
   border-right: 1px solid #B29E99;
@@ -100,6 +79,7 @@ const ContentBox = styled.div`
   justify-content: center;
   align-items: center;
   padding: 8px;
+  gap: 15px;
 `;
 
 const Title = styled.p`
@@ -110,31 +90,35 @@ const Title = styled.p`
   font-size: 16px;
   font-style: normal;
   font-weight: 800;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
   letter-spacing: -0.408px;
+  .accent { color: #7CB5A9; }
 `;
 
 const Description = styled.p`
-  margin-top: 4px;
+  margin-top: 0px;
+  margin-bottom: 15px;
   text-align: center;
   color: #B29E99;
   font-family: "SUITE Variable";
   font-size: 12px;
   font-style: normal;
   font-weight: 800;
-  line-height: 22px; /* 183.333% */
+  line-height: 18px;
   letter-spacing: -0.408px;
 `;
 
 const IconScoreWrapper = styled.div`
-  margin-top: 12px;
+  margin-top: 4px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
 
   img {
-    width: 17px;
-  height: 16px;
+    width: ${(p) => (p.$iconW ? `${p.$iconW}px` : '17px')};
+    height: ${(p) => (p.$iconH ? `${p.$iconH}px` : '16px')};
+    object-fit: contain;
   }
 `;
 
@@ -148,7 +132,7 @@ const ScoreText = styled.span`
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
   letter-spacing: -0.408px;
 `;
 
@@ -157,9 +141,10 @@ const ButtonRow = styled.div`
   justify-content: center;
   gap: ${({ $count }) => ($count === 2 ? "5px" : "0")};
   margin-top: 4px;
-  margin-bottom: 4px;
+  margin-bottom: -4px;
 `;
 
+import ModalBtn from "../../assets/ModalBtn.png";
 const ModalButton = styled.button`
   background-image: url(${ModalBtn});
   background-size: cover;
@@ -187,11 +172,11 @@ const ButtonText = styled.span`
   font-weight: 700;
   line-height: 22px;
   letter-spacing: -0.408px;
-
   background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: #281900;
 `;
+
+

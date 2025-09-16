@@ -1,6 +1,6 @@
 // pages/loginNick.jsx
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import LoginTopBar from "../components/loginTopBar";
 import LoginNextBtn from "../components/loginNextBtn";
@@ -58,6 +58,7 @@ const data = {
 
 export default function LoginLocRe() {
   const navigate = useNavigate();
+  const locationState = useLocation().state || {};
   const [location, setLocation] = useState("");
 
   const [city, setCity] = useState("");
@@ -83,7 +84,12 @@ export default function LoginLocRe() {
       return;
     }
     // TODO: 이동할 페이지 처리
-    navigate("/login/complete");
+    navigate("/login/complete", {
+      state: {
+        nickname: locationState.nickname,
+        regionName: location,
+      },
+    });
   };
 
   return (

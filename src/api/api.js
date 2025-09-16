@@ -9,6 +9,32 @@ const api = axios.create({
     },
 });
 
+// 🔑 토큰 재발급 요청 함수
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) throw new Error("리프레시 토큰 없음");
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/v1/oauth2/token/access`,
+      { refreshToken },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const newAccessToken = response.data.data?.accessToken;
+    const newRefreshToken = response.data.data?.refreshToken;
+
+    console.log("토큰 갱신 성공 ✅, newAccessToken:", newAccessToken);
+    localStorage.setItem("accessToken", newAccessToken);
+    localStorage.setItem("refreshToken", newRefreshToken);
+    return newAccessToken;
+  } catch (err) {
+    console.error("토큰 갱신 실패 ❌", err);
+    throw err;
+  }
+};
+
+
 // 요청 인터셉터
 api.interceptors.request.use(
     (config) => {
@@ -21,105 +47,63 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// 응답 인터셉터 (선택)
+
+// 응답 인터셉터
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 // 토큰 만료 처리, 에러 핸들링 등
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // 토큰 만료 시 처리
-            console.warn("⚠️ 액세스 토큰 만료됨!");
-            // TODO: refreshToken 갱신 로직 추가
-        }
-        return Promise.reject(error);
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+        .then((token) => {
+          if (!token) throw new Error("Refresh token failed: token undefined");
+          originalRequest.headers.Authorization = "Bearer " + token;
+          return api(originalRequest);
+        })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const newToken = await refreshAccessToken();
+        processQueue(null, newToken);
+        originalRequest.headers.Authorization = "Bearer " + newToken;
+        return api(originalRequest);
+      } catch (err) {
+        processQueue(err, null);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
+    return Promise.reject(error);
+  }
 );
 
+
 export default api;
-
-//누적랭킹 조회(리스트)
-export const getTotalRanking = async () => {
-    try {
-        const response = await api.get("/v1/ranking/total");
-        return response.data;
-    } catch (error) {
-        const message = error.response?.data?.message || "전체 랭킹 조회 실패";
-        console.error("getTotalRanking 오류:", message, error);
-        throw new Error(message);
-    }
-};
-
-//스트릭랭킹조회(스트릭)
-export const getStreakRanking = async () => {
-    try {
-        const response = await api.get("/v1/ranking/streak");
-        return response.data;
-    } catch (error) {
-        console.error("getStreakRanking 오류:", error);
-        throw error;
-    }
-};
-
-//지역랭킹 조회
-export const getMonthlyRegionalRanking = async (year, month) => {
-    try {
-        if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12) {
-            throw new Error("유효하지 않은 연도 또는 월");
-        }
-        const response = await api.get("/v1/ranking/monthly/regional", {
-            params: { year, month },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("getMonthlyRegionalRanking 오류:", error);
-        throw error;
-    }
-};
-
-//누적랭킹에서 나의 랭킹 조회
-export const getMyTotalRanking = async () => {
-    try {
-        const response = await api.get("/v1/ranking/me/total");
-        return response.data;
-    } catch (error) {
-        console.error("getMyTotalRanking 오류:", error);
-        throw error;
-    }
-};
-
-//나의 스트릭 랭킹 조회
-export const getMyStreakRanking = async () => {
-    try {
-        const response = await api.get("/v1/ranking/me/streak");
-        return response.data;
-    } catch (error) {
-        console.error("getMyStreakRanking 오류:", error);
-        throw error;
-    }
-};
-
-export const getMyMonthlyRegionalRanking = async (year, month) => {
-    try {
-        if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12) {
-            throw new Error("유효하지 않은 연도 또는 월");
-        }
-        const response = await api.get("/v1/ranking/me/monthly/regional", {
-            params: { year, month },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("getMyMonthlyRegionalRanking 오류:", error);
-        throw error;
-    }
-};
-
-export const getGlobalCarbonStatics = async() => {
-    try{
-        const response = await api.get("/v1/statistics/global");
-        return response.data;
-    } catch (error){
-        const message = error.response?.data?.message || "전체 탄소 감축량 통계 조회 실패";
-        console.error("getGlobalCarbonStatics 오류 : ", message, error);
-        throw new Error(message);
-    }
-};
