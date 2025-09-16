@@ -74,8 +74,7 @@ createRoot(document.getElementById('root')).render(
           <Route path='/carbon-dashboard' element={<ProtectedRoute><CarbonDashBoard/></ProtectedRoute>} />
 
           {/* 상점 */}
-          <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
-          <Route path="/store" element={<Navigate to="/shop" replace />} />
+          <Route path="/store" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
 
         </Routes>
       </BrowserRouter>
