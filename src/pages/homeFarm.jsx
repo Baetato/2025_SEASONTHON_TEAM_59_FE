@@ -23,6 +23,7 @@ import farmComplete from "../assets/farm-get.png";
 import farmLocked from "../assets/farm-fail.png";
 import iconInfo from "../assets/icon-info.png";
 import leafIcon from "../assets/leaf.png";
+import storeCoconut from "../assets/store-coconut.png";
 
 /* ===== 상수/맵 ===== */
 const TILE_BY_STATUS = {
@@ -226,6 +227,17 @@ export default function HomeFarm() {
   const getMascotStatus = () =>
     isWeekEnd ? (weekProgress.isComplete ? "happy" : "embarrassed") : "idle";
 
+  // 상점에서 장착한 마스코트 반영
+  const getMascotImage = () => {
+    try {
+      const equipped = localStorage.getItem('equippedMascot');
+      if (equipped === 'coconut') {
+        return storeCoconut;
+      }
+    } catch (e) {}
+    return MASCOT_BY_STATUS[getMascotStatus()];
+  };
+
   // 각 타일 상태 - 개선된 로직
   const getTileStatus = (index) => {
     const challenge = completedChallenges.find((c) => c.tileIndex === index);
@@ -367,7 +379,7 @@ export default function HomeFarm() {
 
         <Canvas>
           <Mascot
-            src={MASCOT_BY_STATUS[getMascotStatus()]}
+            src={getMascotImage()}
             alt="마스코트"
             draggable={false}
           />

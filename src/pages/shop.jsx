@@ -10,12 +10,15 @@ import mascotCoconut from "../assets/mascot-coconut.png";
 import mascotIdle from "../assets/mascot-basic.png";
 import mascotCarrot from "../assets/mascot-carrot.png";
 import mascotUnready from "../assets/mascot-unready.png";
+import storeCoconut from "../assets/store-coconut.png";
+import ShopModal from "../components/shop/ShopModal.jsx";
 
 const TABS = ["캐릭터", "캐릭터 스킨", "장신구", "펫", "열매", <>스테이지<br/>스킨</>];
 
 export default function ShopPage() {
   const { user } = useUser();
   const [activeTab, setActiveTab] = useState(TABS[0]);
+  const [modalStep, setModalStep] = useState(null); // null | 'buy_confirm' | 'use_confirm'
 
   // TODO: 탭 이동 시 목록 fetch 예정 (API 연동)
   // useEffect(() => { fetchItems(activeTab) }, [activeTab])
@@ -36,11 +39,51 @@ export default function ShopPage() {
           onChange={setActiveTab}
         />
 
-        {renderTabContent(activeTab, handleBuy)}
+        {renderTabContent(activeTab, (it) => {
+          if (it.id === 'coconut-skin' || it.id === 'coconut' || it.name.includes('코코넛')) {
+            setModalStep('buy_confirm');
+          } else {
+            handleBuy(it);
+          }
+        })}
       </ContentArea>
 
       <FooterSpacer />
       <Footer />
+
+      {/* 구매 확인 모달 */}
+      <ShopModal
+        isOpen={modalStep === 'buy_confirm'}
+        icon={storeCoconut}
+        iconWidth={156}
+        iconHeight={189}
+        title={<span><span className="accent">코코넛</span> 상품을<br/>구매하시겠습니까?</span>}
+        description="화분에서 자라난 나뭇잎 고양이!"
+        buttons={[
+          { label: '돌아가기', onClick: () => setModalStep(null) },
+          { label: '구매하기', onClick: () => {
+              // TODO: 구매 API 연동
+              setModalStep('use_confirm');
+            }
+          }
+        ]}
+      />
+
+      {/* 사용 여부 모달 */}
+      <ShopModal
+        isOpen={modalStep === 'use_confirm'}
+        title={<span>바로 상품을<br/>사용할까요?</span>}
+        buttons={[
+          { label: '아니오', onClick: () => setModalStep(null) },
+          { label: '예', onClick: () => {
+              try {
+                localStorage.setItem('equippedMascot', 'coconut');
+              } catch (e) {}
+              setModalStep(null);
+            }
+          }
+        ]}
+      />
     </PageRoot>
   );
 }
