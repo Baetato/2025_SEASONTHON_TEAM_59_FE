@@ -16,11 +16,17 @@ export default function RoofBar({ leafCount = 0 }) {
 }
 
 const Root = styled.div`
-  position: relative;
+  position: fixed;
+  top: 72px; /* 요구사항: 상단에서 72px 띄움 */
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
+  max-width: 390px; /* #root 폭 기준 */
   height: 120px;
+  background: #261B18; /* 지붕 영역 배경색 */
   border-radius: 10px;
   overflow: hidden;
+  z-index: 1200;
 `;
 
 const RoofBackground = styled.img`

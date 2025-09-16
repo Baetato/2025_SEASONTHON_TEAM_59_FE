@@ -1,5 +1,7 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
+import clickedBg from "../../assets/clicked.png";
+import unclickedBg from "../../assets/unclicked.png";
 
 export default function ShopTabBar({ tabs = [], activeTab, onChange }) {
   return (
@@ -7,15 +9,15 @@ export default function ShopTabBar({ tabs = [], activeTab, onChange }) {
       {tabs.map((tab) => {
         const isActive = tab === activeTab;
         return (
-          <Pill
+          <TabButton
             key={tab}
             role="tab"
             aria-selected={isActive}
-            className={isActive ? "active" : ""}
+            $active={isActive}
             onClick={() => onChange?.(tab)}
           >
-            {tab}
-          </Pill>
+            <Label>{tab}</Label>
+          </TabButton>
         );
       })}
     </Root>
@@ -23,35 +25,44 @@ export default function ShopTabBar({ tabs = [], activeTab, onChange }) {
 }
 
 const Root = styled.div`
-  margin-top: 10px;
+  position: fixed;
+  top: 72px; /* RoofBar와 맞닿게 배치할 경우 조정 가능 */
+  left: 50%;
+  transform: translate(-50%, 128px); /* 지붕(120px) 아래로 내림 + 여백 8px */
+  width: 100%;
+  max-width: 390px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0; /* 6개가 붙어 보이도록 간격 제거 */
+  background: #261B18; /* 탭 영역 배경색 */
+  padding: 8px 8px 10px 8px;
+  z-index: 1100;
 `;
 
-const Pill = styled.button`
+const TabButton = styled.button`
   appearance: none;
-  border: 2px solid #382C28;
-  border-radius: 999px;
-  background: #FFF;
-  box-shadow: 0 2px 0 #382C28;
-  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  width: 100%;
+  height: 84px; /* 이미지 비율에 맞춰 조정 */
+  background-image: url(${(p) => (p.$active ? clickedBg : unclickedBg)});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Label = styled.span`
   font-family: "Maplestory OTF";
   font-weight: 700;
-  font-size: 14px;
-  color: #281900;
+  color: #FEF4E9;
+  font-size: 20px;
+  line-height: 1.1;
   text-align: center;
-  cursor: pointer;
-  transition: all .2s ease;
-
-  &.active {
-    background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
-  }
-
-  &:active {
-    transform: translateY(2px);
-    box-shadow: 0 0 0 #382C28;
-  }
 `;
 
 

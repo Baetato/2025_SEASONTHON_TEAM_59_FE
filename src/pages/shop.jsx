@@ -96,12 +96,13 @@ function renderTabContent(activeTab, handleBuy) {
 const PageRoot = styled.div`
   position: relative;
   min-height: 100%;
-  background: #5C4D49;
+  background: #8D726B; /* 화면 내부 배경색 */
 `;
 
 const ContentArea = styled.div`
   padding: 12px 16px 0 16px;
-  padding-bottom: 120px; /* 푸터 공간 확보 */
+  padding-top: 72px; /* fixed 헤더 여백 */
+  padding-bottom: 220px; /* 푸터 + 고정 Roof/탭 여유 공간 확보 */
 `;
 
 const Placeholder = styled.div`
