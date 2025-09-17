@@ -159,7 +159,7 @@ export default function HomeFarm() {
   const [harvestedTiles, setHarvestedTiles] = useState(new Set()); // 수확된 타일들
   const [animatingCoins, setAnimatingCoins] = useState([]); // 애니메이션 중인 코인들
   const headerRef = useRef(null); // 헤더 참조를 위한 ref
-  const devFilledRef = useRef(false); // 개발용 마지막 칸 채우기 1회 보호
+  const progressScheduledRef = useRef(false); // 8개 타일 성장 스케줄 1회 보호
 
   // 주간 현황 조회
   useEffect(() => {
@@ -211,6 +211,18 @@ export default function HomeFarm() {
 
   const weekProgress = getWeekProgress(completedChallenges);
   
+  // 초기 상태: 8칸은 'beginning(plant)'으로 채우기 (인덱스 0~7), 8번은 비워둠
+  useEffect(() => {
+    setTileStates(prev => {
+      if (Object.keys(prev || {}).length > 0) return prev; // 이미 세팅된 경우 건너뜀
+      const base = {};
+      for (let i = 0; i < 8; i++) {
+        base[i] = "plant";
+      }
+      return base;
+    });
+  }, []);
+
   // 주간 목표 달성 시 모든 타일을 done 상태로 전환
   useEffect(() => {
     if (weekProgress.isComplete && completedChallenges.length > 0) {
@@ -226,28 +238,37 @@ export default function HomeFarm() {
     }
   }, [weekProgress.isComplete, completedChallenges, harvestedTiles]);
 
-  // 개발용: 완료된 챌린지가 8종류일 때 마지막 1칸 자동 채우기 (애니메이션 흐름 테스트)
+  // 1칸 채워지면(최초 챌린지 도착) 8칸을 1초 후 grow, 2초 후 done으로 진행
   useEffect(() => {
-    if (!import.meta.env.DEV) return; // 개발 모드에서만 동작
-    if (devFilledRef.current) return;
-    const uniqueTypes = new Set(completedChallenges.map(c => c.type));
-    if (uniqueTypes.size === 8) {
-      // 남은 타일 인덱스 찾기
-      const usedIndexes = new Set(completedChallenges.map(c => c.tileIndex));
-      let freeIndex = 0;
-      for (let i = 0; i < 9; i++) {
-        if (!usedIndexes.has(i)) { freeIndex = i; break; }
-      }
-      const dummy = {
-        type: `dev_dummy_${Date.now()}`,
-        completedAt: new Date().toISOString(),
-        tileIndex: freeIndex,
-        label: "테스트 채우기", // 모달 표시용
-        originalChallengeId: -1,
+    if (progressScheduledRef.current) return;
+    if (completedChallenges && completedChallenges.length >= 1) {
+      progressScheduledRef.current = true;
+      // 1초 후 grow
+      const t1 = setTimeout(() => {
+        setTileStates(prev => {
+          const next = { ...(prev || {}) };
+          for (let i = 0; i < 9; i++) {
+            if (next[i] === "plant") next[i] = "growing";
+          }
+          return next;
+        });
+      }, 1000);
+
+      // 2초 후 done
+      const t2 = setTimeout(() => {
+        setTileStates(prev => {
+          const next = { ...(prev || {}) };
+          for (let i = 0; i < 9; i++) {
+            if (next[i] === "growing") next[i] = "done";
+          }
+          return next;
+        });
+      }, 2000);
+
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
       };
-      setCompletedChallenges(prev => [...prev, dummy]);
-      devFilledRef.current = true;
-      console.log('🧪 개발용: 마지막 1칸 자동 채움 → 타일', freeIndex);
     }
   }, [completedChallenges]);
 
