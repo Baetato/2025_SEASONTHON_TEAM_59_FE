@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 
 import Header from "../components/header.jsx";
 import Footer from "../components/footer.jsx";
-import HomeMenuButton from "../components/homeMenuBtn.jsx";
-import { GuideModal, TileInfoModal, CompletionModal, CoinAnimation } from "../components";
+// import HomeMenuButton from "../components/homeMenuBtn.jsx";
+import { GuideModal, TileInfoModal, CompletionModal } from "../components";
+import CoinAnimationUnified from "../components/CoinAnimationUnified.jsx";
 
 import api from "../api/api.js";
 
@@ -524,7 +525,7 @@ export default function HomeFarm() {
         
         {/* 코인 애니메이션 */}
         {animatingCoins.map(coin => (
-          <CoinAnimation 
+          <CoinAnimationUnified 
             key={coin.id} 
             tileIndex={coin.tileIndex}
             onComplete={() => {
@@ -561,15 +562,15 @@ const Content = styled.div`
   overflow: hidden;             /* 스크롤 방지 */
 `;
 
-const MenuContainer = styled.div`
-  position: fixed;
-  right: 10px;
-  top: 20%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 1000;
-`;
+// const MenuContainer = styled.div`
+//   position: fixed;
+//   right: 10px;
+//   top: 20%;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+//   z-index: 1000;
+// `;
 
 const Canvas = styled.div`
   position: relative;
