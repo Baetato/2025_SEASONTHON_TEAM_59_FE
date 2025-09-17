@@ -13,7 +13,8 @@ export default function CoinAnimationUnified({
   delay = 0,
   onComplete,
 }) {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const initialPosition = start ?? { x: 0, y: 0 };
+  const [position, setPosition] = useState(initialPosition);
   const [endPos, setEndPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function CoinAnimationUnified({
 
     const timer = setTimeout(() => {
       if (onComplete) onComplete();
-    }, variant === "farm" ? 1100 + delay : 1000 + delay);
+    }, variant === "farm" ? 1100 + delay : 1000);
 
     return () => clearTimeout(timer);
   }, [tileIndex, start, variant, delay, onComplete]);
@@ -124,6 +125,7 @@ const AnimatedCoinStage = styled.img`
   pointer-events: none;
   left: 0; top: 0;
   animation: ${coinFlyStraight} 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: var(--delay, 0ms); /* 여기에 딜레이 적용 */
 `;
 
 

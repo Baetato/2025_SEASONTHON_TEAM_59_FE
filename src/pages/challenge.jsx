@@ -7,6 +7,9 @@ import ChallengeItem from "../components/challenge/challengeItem";
 import AchievementItem from "../components/challenge/achievementItem";
 import Footer from "../components/footer";
 
+import Congratulations from "../assets/achievement/CongratulationAchievement.png";
+import ModalBtn from "../assets/ModalBtn.png";
+
 import api from "../api/api";
 import { getMyAchievements, claimAchievement } from "../api/achievementsApi";  // 업적 챌린지 API
 
@@ -17,6 +20,7 @@ export default function Challenge() {
   const [achievements, setAchievements] = useState([]);
   const [challengeLoading, setChallengeLoading] = useState(false);
   const [achievementLoading, setAchievementLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const levelMap = { 쉬움: "EASY", 보통: "MEDIUM", 어려움: "HARD" };
 
@@ -40,13 +44,18 @@ export default function Challenge() {
   const handleClaimAchievement = async (achievementId) => {
     try {
       const response = await claimAchievement(achievementId);
-      alert(response.message || "업적을 획득했습니다!");
       // 업적 목록 갱신
       loadAchievements();
+      setIsModalOpen(true);
     } catch (err) {
       alert(err.message || "업적 획득에 실패했습니다.");
     }
   };
+
+  {/* 업적 중 하나라도 UNLOCKED 상태인지 체크 */}
+  const hasUnlockedAchievement = achievements.some(
+    (item) => item.status === "UNLOCKED"
+  );
 
   useEffect(() => {
     {/** 업적 목록 불러오기 */}
@@ -108,6 +117,7 @@ export default function Challenge() {
           <ChallengeToggle
             active={activeBtn}
             onClick={(value) => setActiveBtn(value)}
+            hasNew={hasUnlockedAchievement} // 빨간 점 표시 여부
           />
         </ToggleContainer>
 
@@ -174,6 +184,28 @@ export default function Challenge() {
         </ChallengeContainer>
       </Content>
       <Footer />
+
+      {/* ✅ 업적 획득 성공 모달 */}
+      {isModalOpen && (
+        <Overlay>
+          <ModalWrapper>
+            <ModalContainer>
+              <ContentBox>
+                <img src={Congratulations} alt="trophy" width={96} height={42} />
+                <Description>프로필에서 내가 획득한<br/>업적을 확인할 수 있어요.</Description>
+              </ContentBox>
+
+              <ButtonRow>
+                <ModalButton onClick={() => setIsModalOpen(false)}>
+                  <ButtonText>확인</ButtonText>
+                </ModalButton>
+              </ButtonRow>
+            </ModalContainer>
+          </ModalWrapper>
+        </Overlay>
+      )}
+
+
     </Container>
   );
 }
@@ -248,7 +280,6 @@ const ChallengeListContainer = styled.div`
   }
 `;
 
-
 const LoadingText = styled.div`
   position: absolute;
   top: 55%;
@@ -273,4 +304,90 @@ const LoadingText = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
+`;
+
+/* ===== styled (모달 부분 복붙) ===== */
+const Overlay = styled.div`
+  background: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+`;
+
+const ModalWrapper = styled.div`
+  width: 194px;
+  height: 177px;
+  border-radius: 3px;
+  border: 2px solid #382C28;
+  background: #382C28;
+  box-shadow: 0 4px 0 0 #382C28;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2px 3px;
+`;
+
+const ModalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ContentBox = styled.div`
+  width: 191px;
+  height: 127px;
+  border-radius: 3px;
+  border-top: 2px solid #B29E99;
+  border-right: 1px solid #B29E99;
+  border-bottom: 1px solid #B29E99;
+  border-left: 1px solid #B29E99;
+  background: linear-gradient(180deg, #FFF8E8 0%, #FFF8E8 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  gap: 8px;
+`;
+
+const Description = styled.p`
+  text-align: center;
+  color: #B29E99;
+  font-family: "SUITE Variable";
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 16px;
+`;
+
+const ButtonRow = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+  margin-bottom: 4px;
+`;
+
+const ModalButton = styled.button`
+  background-image: url(${ModalBtn});
+  background-size: cover;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+
+  width: 191px;
+  height: 42px;
+`;
+
+const ButtonText = styled.span`
+  font-family: 'Maplestory OTF';
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #281900;
 `;
