@@ -10,7 +10,7 @@ import StageScroll from '../components/stageScroll.jsx';
 import ChallengeModal from '../components/challengeModal.jsx';
 import Modal from '../components/modal.jsx';
 import RewardBar from '../components/rewardBar.jsx';
-import CoinAnimation from '../components/coinAnimation2.jsx';
+import CoinAnimationUnified from '../components/CoinAnimationUnified.jsx';
 import Footer from '../components/footer.jsx';
 import api from '../api/api.js';
 
@@ -241,8 +241,9 @@ export default function HomeStage() {
 
         {/* ✅ 코인 애니메이션 */}
         {animatingCoins.map(coin => (
-          <CoinAnimation
+          <CoinAnimationUnified
             key={coin.id}
+            variant="stage"
             start={coin.start} // 시작 좌표
             delay={coin.delay || 0} // 딜레이
             onComplete={() => {
