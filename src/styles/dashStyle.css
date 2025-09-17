@@ -1,0 +1,190 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.dashContainer {
+    width: 100%;
+    height: 100%;
+    background-color: #382c28;
+    max-width: 393px; /* 푸터와 동일한 최대 너비 */
+    min-height: 100vh;
+}
+
+.fontBox {
+    width: 100%;
+    display: flex;
+}
+
+.staticImg {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    margin: auto; /* 추가적인 가로 중앙 정렬 보장 */
+}
+
+.staticIamge {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.dashSection {
+    box-sizing: border-box;
+    width: 100%;
+    align-items: center;
+    position: relative;
+    min-height: calc(100vh - 176px);
+}
+
+.stat-container {
+    margin-top: 40px;
+    display: flex;
+}
+
+.flexBox {
+    display: flex;
+    width: 100%;
+    margin: 0 10px;
+    margin-top: 30px;
+    position: relative;
+}
+
+.envCon{
+    display: flex;
+    width: 100%;
+    margin: 0 10px;
+    position: relative;
+}
+
+.marginBox {
+    width: 100%;
+}
+
+.fontStyle {
+    font-family: "Maplestory OTF", system-ui, sans-serif;
+    position: absolute;
+    font-weight: 700;
+    font-size: 20px;
+    color: #ffe8b3;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
+    margin-left: 25px;
+    margin-top: 35px;
+}
+
+.imgCon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.topMargin {
+    margin-top: 65px;
+}
+
+.inner-text {
+    font-family: "SUITE Variable", system-ui, sans-serif;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    white-space: nowrap;
+    color: ivory;
+}
+
+.inner-value {
+    font-family: "SUITE Variable", system-ui, sans-serif;
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    white-space: nowrap;
+    color: ivory;
+}
+
+.dashInfo {
+    position: relative;
+    width: 122px;
+    height: 50px;
+}
+
+.dashProtected {
+    position: relative;
+    width: 183px;
+    height: 50px;
+}
+
+.dashProtected .inner-text {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    color: ivory;
+    font-size: 12px;
+    font-family: "SUITE Variable", system-ui, sans-serif;
+}
+
+.dashProtected .inner-value {
+    font-family: "SUITE Variable", system-ui, sans-serif;
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    color: ivory;
+    font-size: 10px;
+}
+
+.dashHeader {
+    width: 100%;
+    height: 75px;
+    align-items: center;
+    justify-content: space-between;
+    display: flex;
+    position: relative;
+    background-color: #5c4d49;
+}
+
+.backButton {
+    width: 13px;
+    height: 29px;
+    margin-left: 20px;
+    border: none;
+    background-color: #5c4d49;
+}
+
+.backImg {
+    width: 100%;
+    height: 100%;
+}
+
+.statistics {
+    width: 40px;
+    height: 22px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@font-face {
+    font-family: "Maplestory OTF";
+    src: url("../fonts/MaplestoryOTFBold/Maplestory OTF Bold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}

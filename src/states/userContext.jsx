@@ -42,7 +42,8 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    if (token) {
+
+    if (token && token !== "undefined") {   // <- 방어 추가
       fetchUser();
     }
   }, []);

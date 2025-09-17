@@ -3,10 +3,10 @@ import axios from "axios";
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+    },
 });
 
 // 🔑 토큰 재발급 요청 함수
@@ -21,8 +21,12 @@ const refreshAccessToken = async () => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    const newAccessToken = response.data.accessToken;
+    const newAccessToken = response.data.data?.accessToken;
+    const newRefreshToken = response.data.data?.refreshToken;
+
+    console.log("토큰 갱신 성공 ✅, newAccessToken:", newAccessToken);
     localStorage.setItem("accessToken", newAccessToken);
+    localStorage.setItem("refreshToken", newRefreshToken);
     return newAccessToken;
   } catch (err) {
     console.error("토큰 갱신 실패 ❌", err);
@@ -33,14 +37,14 @@ const refreshAccessToken = async () => {
 
 // 요청 인터셉터
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
+    (config) => {
+        const token = localStorage.getItem("accessToken");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
 );
 
 
@@ -70,10 +74,11 @@ api.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then((token) => {
-            originalRequest.headers.Authorization = "Bearer " + token;
-            return api(originalRequest);
-          })
+        .then((token) => {
+          if (!token) throw new Error("Refresh token failed: token undefined");
+          originalRequest.headers.Authorization = "Bearer " + token;
+          return api(originalRequest);
+        })
           .catch((err) => Promise.reject(err));
       }
 

@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-54d0af47'], (function (workbox) { 'use strict';
+define(['./workbox-f8c404e3'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
@@ -79,12 +79,15 @@ define(['./workbox-54d0af47'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "index.html",
-    "revision": "0.9cg35flv4p"
+    "revision": "0.h5k4stgmae8"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/],
     denylist: [/^\/auth\/google\/assets/]
   }));
+  workbox.registerRoute(/^\/auth\/google\/callback/, new workbox.NetworkOnly(), 'GET');
+  workbox.registerRoute(/^\/auth\/kakao\/callback/, new workbox.NetworkOnly(), 'GET');
+  workbox.registerRoute(/^\/api\//, new workbox.NetworkOnly(), 'GET');
 
 }));

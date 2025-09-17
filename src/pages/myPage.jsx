@@ -1,13 +1,13 @@
 // src/pages/myPage.jsx
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useUser } from "../states/userContext";
 
 import VerifyTopBar from "../components/verifyTopBar";
 import EnvProtectEffect from "../components/envProtectEffect";
-import Achievement from "../components/achievement.jsx";
+import AchievementIcon from "../components/challenge/achievementIcon.jsx";
 import NicknameChangeModal, { NicknameResultModal } from "../components/nicknameChangeModal.jsx";
 
 import ProfileFrame from "../assets/ProfileFrame.png";
@@ -22,37 +22,37 @@ import trophyIcon from "../assets/rank1-star.png";
 import leafIcon from "../assets/rank2-star.png";
 
 import uploadProfileImage from "../api/uploadProfileImg.js";
+import fetchMyStatistics from "../api/statisticsApi.js";
+import { getClaimedAchievements } from "../api/achievementsApi";  // 업적 챌린지 API
 import api from "../api/api.js";
 
 export default function MyPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const { user, fetchUser } = useUser();
+
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [nicknameChangeResult, setNicknameChangeResult] = useState(null); 
+  const [isUploading, setIsUploading] = useState(false);
+  const [achievementLoading, setAchievementLoading] = useState(false);
+  const [achievements, setAchievements] = useState([]);
+  const [carbonText, setCarbonText] = useState("대단해요! 지금까지 ___ kgCO₂eq 절약했어요!");
+  const [treeEffect, setTreeEffect] = useState("0그루 나무 심기와 동일한 효과");
+  const [carEffect, setCarEffect] = useState("0대 자동차 1년간 운행 저감 효과");
+
   const MAX_ACHIEVEMENTS = 10;
 
-  // 실제 사용자 업적 데이터 예시
-  const apiResponse = [
-    { icon: trophyIcon, title: "첫 도전 달성"},
-    { icon: leafIcon, title: "환경 지킴이"},
-  ];
-  // 프론트에서 나머지 슬롯 채우기
-  const achievements = [
-    ...apiResponse,
-    ...Array(MAX_ACHIEVEMENTS - apiResponse.length).fill(null),
-  ];
-
+  {/* 프로필 이미지 변경 핸들러 */}
   const handleCameraClick = () => {
     fileInputRef.current.click();
   };
-
-  {/* 프로필 이미지 변경 핸들러 */}
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     try {
+      setIsUploading(true); // 업로드 시작
+
       const result = await uploadProfileImage(file);
       console.log("업로드 성공!", result);
 
@@ -60,6 +60,8 @@ export default function MyPage() {
       fetchUser(); 
     } catch (err) {
       alert("업로드 실패!");
+    } finally {
+      setIsUploading(false); // 업로드 종료
     }
   };
 
@@ -90,6 +92,49 @@ export default function MyPage() {
     }
   };
 
+  {/* 내 통계 불러오기 */}
+  const loadStatistics = async () => {
+    try {
+      const stats = await fetchMyStatistics();
+      console.log("내 통계:", stats);
+
+      // 통계 정보 업데이트
+      setCarbonText(stats.data.totalCarbonReduction);
+      setTreeEffect(stats.data.treesPlantedEffect);
+      setCarEffect(stats.data.carEmissionReductionEffect);
+
+    } catch (err) {
+      alert("통계 정보를 불러오는데 실패했습니다.");
+    }
+  };
+
+  {/* 사용자 별 획득한 업적 불러오기 */}
+  const loadAchievements = async () => {
+   setAchievementLoading(true);
+   try {
+      const achievement = await getClaimedAchievements();
+      console.log("내 업적:", achievement);
+
+      // 프론트에서 나머지 슬롯 null로 채우기
+      const filledAchievements = [
+        ...achievement, // 서버에서 받은 업적
+        ...Array(MAX_ACHIEVEMENTS - achievement.length).fill(null),
+      ];
+
+      setAchievements(filledAchievements);
+      console.log("채워진 업적:", filledAchievements);
+    } catch (err) {
+      alert("업적 정보를 불러오는데 실패했습니다.");
+    } finally {
+      setAchievementLoading(false);
+    }
+  };
+
+  // 페이지 진입 시 통계 정보 로드
+  useEffect(() => {
+    loadStatistics();
+    loadAchievements();
+  }, []);
 
   return (
       <Container>
@@ -101,7 +146,13 @@ export default function MyPage() {
               <Title>프로필</Title>
               <ProfileImgContainer>
                 <ProfileFrameImg src={ProfileFrame} alt="프로필 프레임" />
-                <ProfileExImg src={user?.picture || ProfileEx} alt="프로필 예시" />
+                {isUploading ? (
+                  <LoadingOverlay>
+                    <LoadingSpinner />
+                  </LoadingOverlay>
+                ) : (
+                  <ProfileExImg src={user?.picture || ProfileEx} alt="프로필 예시" />
+                )}
                 <CameraButton src={CameraBtn} alt="카메라 버튼" onClick={handleCameraClick}/>
                 <input
                   type="file"
@@ -137,13 +188,13 @@ export default function MyPage() {
             <div style={{ display: 'flex', displayDirection: 'row' }}>
               <Title $top={"-19px"} $left={"14px"}>내 리프업 파트너</Title>
               <LeafCharacterContainer>
-                <LeafCharacterImg src={mascot} alt="리프업 파트너" />
+                <LeafCharacterImg src={user?.avatarUrl} alt="리프업 파트너" />
                 <StageImg src={Stage} alt="스테이지 배경" />
                 <ClosetIcon src={ClosetIcn} alt="옷장 아이콘" />
               </LeafCharacterContainer>
               <div style={{ position: 'absolute', top: '-2.5%', right: '-2%', width: '189px', height: '232px' }}>
                 <LeafName>샥샥이</LeafName>
-                <LeafDescription>샥샥거려서 샥샥이입니다. <br/>환경을 위해 열심히 샥샥거릴게요!</LeafDescription>
+                <LeafDescription>샥샥거려서 샥샥이입니다. <br/>환경을 위해 열심히 노력할게요!</LeafDescription>
                 <FenceIcon src={FenceIcn} alt="울타리 아이콘" />
               </div>
             </div >
@@ -155,19 +206,18 @@ export default function MyPage() {
             <Title $top={"-19px"} $left={"14px"}>내가 달성한 업적</Title>
             <Grid>
               {achievements.map((ach, idx) => (
-                <Achievement
+                <AchievementIcon
                   key={idx}
-                  icon={ach?.icon} // 없으면 undefined/null → EmptyAchievement 보여짐
-                  title={ach?.title}
+                  achievement={ach}
                 />
               ))}
             </Grid>
           </ContainerBackGround>
-          <CarbonText>대단해요! 지금까지 ___ kgCO₂eq 절약했어요!</CarbonText>
+          <CarbonText>대단해요! 지금까지 {carbonText} kgCO₂eq 절약했어요!</CarbonText>
           <EnvProtectEffect
             effects={[
-              { title: "13,636,364그루", content: "나무 심기와 동일한 효과" },
-              { title: "65,217대", content: "자동차 1년간 운행 저감 효과" },
+              { title: `${treeEffect}그루`, content: "나무 심기와 동일한 효과" },
+              { title: `${carEffect}대`, content: "자동차 1년간 운행 저감 효과" },
             ]}
           />
         </Content>
@@ -321,22 +371,6 @@ const Nickname = styled.div`
   letter-spacing: -0.408px;
 `;
 
-// 수정 버튼
-const ProfileAction = styled.div`
-  color: #B29E99;
-  font-family: "SUITE Variable";
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-
-  transition: color 0.2s ease;
-
-  &:hover,
-  &:focus-visible {
-    color: #8C7A75; /* 조금 더 진한 색상 */
-  }
-`;
-
 // 수정 아이콘 (SVG → styled-component)
 const EditIcon = styled.svg`
   width: 14px;
@@ -464,3 +498,33 @@ const CarbonText = styled.div`
   letter-spacing: -0.408px;
   margin: 15px auto 10px;
 `
+
+// 업로드 중 오버레이
+const LoadingOverlay = styled.div`
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  aspect-ratio: 1/1;
+  position: absolute;
+  top: 56px;
+  left: 60px;
+  border-radius: 72px;
+  transform: translate(-50%, -50%); /* 중앙 정렬 */
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+`;
+
+const LoadingSpinner = styled.div`
+  width: 24px;
+  height: 24px;
+  border: 3px solid #FFF8E8;     // 테두리 색상
+  border-top: 3px solid #382C28; // 회전 부분 색상 다르게
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;

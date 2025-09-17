@@ -3,6 +3,27 @@
     box-sizing: border-box;
 }
 
+.profileCon {
+    width: 51px;
+    height: 51px;
+}
+
+.dayStyle {
+    font-family: "Maplestory OTF", system-ui, sans-serif;
+    position: absolute;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    /* 기본(fallback) 색상 — 그라데이션을 지원하지 않는 브라우저에서 사용 */
+    color: #ffe8b3;
+    /* Chrome / Safari용 텍스트 투명 처리 (그라데이션 보이게 함) */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* 그라데이션 텍스트 (지원 브라우저에만 적용) */
+    background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
+}
+
 .rankingFrame {
     min-height: 57px; /* 적정 최소값 */
     display: flex; /* 필요 속성 추가 */
@@ -17,28 +38,23 @@
     box-sizing: border-box;
 }
 
-.starStyle{
+.starStyle {
     margin-top: 90%;
     position: absolute;
-    width:36px;
+    width: 36px;
     height: 19px;
+    z-index: 999;
 }
 
-.shadow{
+.shadow {
     width: 284px;
     height: 55px;
     align-items: center;
     display: flex;
-    box-shadow: 
-        -1px 0 0 #B29E99, 
-        1px 0 0 #B29E99, 
-        0 1px 0 #B29E99, 
-        0 -2px 0 #B29E99;
-    justify-content: space-between;
+    box-shadow: -1px 0 0 #b29e99, 1px 0 0 #b29e99, 0 1px 0 #b29e99, 0 -2px 0 #b29e99;
 }
 
 .userInfo {
-    
     display: flex;
     align-items: center;
     text-align: center;
@@ -57,21 +73,25 @@
 
 .profileImgContainer {
     display: flex;
-    left: 50px;
-    width: 55px;
-    height: 55px;
+    width: 51px;
+    height: 51px;
     border-radius: 50%;
-    box-sizing: border-box;
     align-items: center;
     justify-content: center;
     position: absolute;
+    left: 50px;
 }
 
 .profileImgStyle {
-    width: 100%;
-    height: 100%;
+    border-radius: 50%;
+    width: 40.8px;
+    height: 40.8px;
     object-fit: cover;
-    border-radius: inherit;
+    position: absolute; /* Use absolute positioning to center it */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the image */
+    z-index: 99;
 }
 
 .rankStyle {
@@ -83,9 +103,7 @@
     left: 25px;
     font-weight: 700;
     font-size: 24px;
-    /* 기본(fallback) 색상 — 그라데이션을 지원하지 않는 브라우저에서 사용 */
     color: #ffe8b3;
-    /* Chrome / Safari용 텍스트 투명 처리 (그라데이션 보이게 함) */
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -106,36 +124,32 @@
 }
 
 .pointContainer {
-    max-width: 60px;
     display: flex;
-    text-align: center;
+    justify-content: flex-end;
     align-items: center;
     height: 57px;
     position: relative;
-    justify-content: flex-end;
+    width: 100%;
 }
 
-.pointStyle {
+.pointStyles {
     color: #7cb29e;
-    text-align: right;
-    text-shadow: 0 2px 0 #382c28; /* 잘못된 var() 제거 */
-    -webkit-text-stroke: 1px #000; /* 통합 선언 */
+    text-shadow: 0 2px 0 #382c28;
+    -webkit-text-stroke: 1px #000;
     font-family: "Maplestory OTF", system-ui, sans-serif;
     font-size: 16px;
-    font-style: normal;
     font-weight: 700;
-    line-height: 22px; /* 137.5% */
+    line-height: 22px;
     letter-spacing: -0.408px;
-    padding-right: 40px;
+    margin-right: 10px; /* leafIcon과 간격 */
 }
 
 .leafIconStyle {
-    flex-shrink: 0; 
-    right: 10px;
-    position: absolute;
     width: 23px;
-    height: 22px;   
-    object-fit: cover; /* 이미지 비율 유지하며 꽉 채움 */
+    height: 22px;
+    object-fit: cover;
+    margin-right: 10px;
+    flex-shrink: 0;
 }
 
 .rankStyleGold {

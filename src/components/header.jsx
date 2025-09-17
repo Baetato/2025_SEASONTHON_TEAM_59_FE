@@ -74,7 +74,8 @@ const Header = forwardRef(function Header(_, ref) {
     prevPointsRef.current = newPoints; // 다음 업데이트를 위해 저장
   }, [user?.point]);
 
-  if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
+    if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
+
 
   //  사용자 관련 정보 추출
   const points = animatedPoints;
@@ -92,30 +93,20 @@ const Header = forwardRef(function Header(_, ref) {
   const currentXP = points;
   const nextLevelXP = getRequiredXP(level); // 다음 레벨까지 필요한 XP
   const progressPercent = Math.min((currentXP / nextLevelXP) * 100, 100);
-  console.log(`레벨: ${level}, 현재 XP: ${currentXP}, 다음 레벨까지 XP: ${nextLevelXP}, 진행도: ${progressPercent}%`);
+  //console.log(`레벨: ${level}, 현재 XP: ${currentXP}, 다음 레벨까지 XP: ${nextLevelXP}, 진행도: ${progressPercent}%`);
 
-  return (
-    <HeaderWrapper>
-      <HeaderBar>
-        {/* TODO: 애니메이션 테스트코드.. 나중에 진짜 API로 잘되는지 확인한 후 삭제할것
-        <button
-          onClick={() =>
-            setUser((prev) => ({
-              ...prev,
-              point: (prev?.point ?? 0) + 100,
-            }))
-          }
-        >
-          포인트 +100 테스트
-        </button>*/}
-        {/* 레벨 텍스트 */}
-        <LevelText>LV. {level}</LevelText>
 
-        {/* 닉네임 표시 */}
-        <NicknameText>{nickname}</NicknameText>
+    return (
+        <HeaderWrapper>
+            <HeaderBar>
+                {/* 레벨 텍스트 */}
+                <LevelText>LV. {level}</LevelText>
 
-        {/* 설정 아이콘 표시 */}
-        <SettingIcon src={SettingIcn} alt="setting" />
+                {/* 닉네임 표시 */}
+                <NicknameText>{nickname}</NicknameText>
+
+                {/* 설정 아이콘 표시 */}
+                <SettingIcon src={SettingIcn} alt="setting" />
 
         {/* 진행도 바 + 포인트 박스 */}
         <ProgressContainer>
@@ -204,7 +195,7 @@ const Header = forwardRef(function Header(_, ref) {
         </ProgressContainer>
 
         {/* 프로필 (프레임 + 이미지) */}
-        <ProfileWrapper>
+        <ProfileWrapper onClick={() => navigate("/my-page")}>
           <ProfileFrameImg src={ProfileFrame} alt="frame" />
           <ProfileImg src={profileImg || ProfileEx} alt="profile" />
         </ProfileWrapper>
@@ -218,89 +209,95 @@ const Header = forwardRef(function Header(_, ref) {
 export default Header;
 
 // Styled Components (기존과 동일)
+
 const HeaderWrapper = styled.div`position: fixed; z-index:9999;`;
 const HeaderBar = styled.div`
-  width: 393px;
-  height: 97px;
-  flex-shrink: 0;
-  border-bottom: 3px solid #382c28;
-  background: #5c4d49;
-  box-shadow: 0 3px 0 0 #382c28;
-  position: relative;
+    width: 393px;
+    height: 97px;
+    flex-shrink: 0;
+    border-bottom: 3px solid #382c28;
+    background: #5c4d49;
+    box-shadow: 0 3px 0 0 #382c28;
+    position: relative;
 `;
 const LevelText = styled.div`
-  position: absolute;
-  margin-top: 46px;
-  margin-left: 82px;
-  width: 70px;
-  height: 22px;
-  text-align: center;
-  -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: #281900;
-  font-family: 'Titan One';
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 22px;
-  letter-spacing: -0.408px;
-  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+    position: absolute;
+    margin-top: 46px;
+    margin-left: 82px;
+    width: 70px;
+    height: 22px;
+    text-align: center;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #281900;
+    font-family: "Titan One";
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 `;
 const NicknameText = styled.div`
-  position: absolute;
-  margin-top: 68px;
-  margin-left: 95px;
-  color: #FFECBF;
-  text-align: center;
-  font-family: "SUITE Variable";
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 22px;
+    position: absolute;
+    margin-top: 68px;
+    margin-left: 95px;
+    color: #ffecbf;
+    text-align: center;
+    font-family: "SUITE Variable";
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 22px;
 `;
 const SettingIcon = styled.img`
-  position: absolute;
-  margin-top: 52px;
-  margin-left: 350px;
-  cursor: pointer;
-  width: 29.855px;
-  height: 33.464px;
+    position: absolute;
+    margin-top: 52px;
+    margin-left: 350px;
+    cursor: pointer;
+    width: 29.855px;
+    height: 33.464px;
 
-  /* 부드러운 변환 */
-  transition: transform 0.2s ease;
+    /* 부드러운 변환 */
+    transition: transform 0.2s ease;
 
-  /* 호버/포커스 시 커지기 */
-  &:hover,
-  &:focus-visible {
-    transform: scale(1.06);
-  }
+    /* 호버/포커스 시 커지기 */
+    &:hover,
+    &:focus-visible {
+        transform: scale(1.06);
+    }
 `;
 const ProgressContainer = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  display: flex;
-  align-items: center;
-  margin-left: 74px;
-  margin-top: 4px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: flex;
+    align-items: center;
+    margin-left: 74px;
+    margin-top: 4px;
 `;
-const ProgressBarWrapper = styled.div`width: 198px; height: 24px;`;
+const ProgressBarWrapper = styled.div`
+    width: 198px;
+    height: 24px;
+`;
+const CoinIcon = styled.img`width: 17px; height: 16px;`;
 const PointBox = styled.div`
-  width: 114px;
-  height: 21px;
-  flex-shrink: 0;
-  border-radius: 0 0 5px 5px;
-  border-right: 2px solid #B29E99;
-  border-bottom: 3px solid #B29E99;
-  border-left: 2px solid #B29E99;
-  background: #FFF8E8;
-  box-shadow: 0 3px 0 0 #B29E99;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin-left: 4px;
+    width: 114px;
+    height: 21px;
+    flex-shrink: 0;
+    border-radius: 0 0 5px 5px;
+    border-right: 2px solid #b29e99;
+    border-bottom: 3px solid #b29e99;
+    border-left: 2px solid #b29e99;
+    background: #fff8e8;
+    box-shadow: 0 3px 0 0 #b29e99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-left: 4px;
 `;
 const PointText = styled.span`
+
   color: #5C4D49;
   font-family: "SUITE Variable";
   font-size: 12px;
@@ -310,50 +307,48 @@ const PointText = styled.span`
   transition: transform 0.2s ease;
   transform: ${({ $isBumping }) => ($isBumping ? "scale(1.4)" : "scale(1)")};
   display: inline-block; // transform 적용 위해 필요
-
 `;
-const CoinIcon = styled.img`width: 17px; height: 16px;`;
 const ProfileWrapper = styled.div`
   position: absolute;
   top: 52px;
   left: 0;
   width: 90px;
   height: 90px;
+  cursor: pointer;
 `;
 const ProfileFrameImg = styled.img`
-  width: 90px;
-  height: 90px;
-  stroke: #382C28;
-  filter: drop-shadow(0 3px 0 #382C28);
-  border: 2px solid #382C28;
-  border-radius: 90px;
+    width: 90px;
+    height: 90px;
+    stroke: #382c28;
+    filter: drop-shadow(0 3px 0 #382c28);
+    border: 2px solid #382c28;
+    border-radius: 90px;
 `;
 const ProfileImg = styled.img`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 72px;
-  height: 72px;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  object-fit: cover;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 72px;
+    height: 72px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
 `;
 const ProfileIcon = styled.img`
-  position: absolute;
-  top: 125%;
-  left: 17%;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
+    position: absolute;
+    top: 125%;
+    left: 17%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
 
-  /* 부드러운 변환 */
-  transition: transform 0.2s ease;
+    /* 부드러운 변환 */
+    transition: transform 0.2s ease;
 
-  /* 호버/포커스 시 커지기 */
-  &:hover,
-  &:focus-visible {
-    transform: scale(1.06);
-  }
-  
+    /* 호버/포커스 시 커지기 */
+    &:hover,
+    &:focus-visible {
+        transform: scale(1.06);
+    }
 `;

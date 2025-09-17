@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 import Header from "../components/rankHeader";
 import Nav from "../components/rankNav";
 import RankingItem from "../components/rankItem";
-import { getMyTotalRanking } from "../api/ranking"; // 전체 누적 랭킹 함수 import
+import { getTotalRanking, getMyTotalRanking } from "../api/rankingApi";
+import ProfileImg from "../assets/defaultProfile.png";
 
 import "../styles/headerStyles.css";
 import "../styles/topNavStyles.css";
@@ -10,15 +12,66 @@ import "../styles/rankingItemStyles.css";
 import "../styles/rankPage.css";
 import Footer from "../components/footer";
 
-function Ranking() {
-    const [totalRanking, setTotalRanking] = useState(null);
+// Styled component for LoadingText
+const LoadingText = styled.div`
+    white-space: nowrap;
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
+    text-align: center;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #281900;
+    font-family: "Maplestory OTF";
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.408px;
+
+    background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+`;
+
+function Ranking() {
+    const [totalRankings, setTotalRankings] = useState([]); // 전체 랭킹 상태
+    const [myRanking, setMyRanking] = useState(null); // 내 랭킹 상태
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // 전체 랭킹 데이터 가져오기
     const loadTotalRanking = async () => {
+        try {
+            setLoading(true);
+            const data = await getTotalRanking();
+            console.log("전체 누적 포인트 랭킹 데이터:", data);
+            if (data.statusCode === 200) {
+                setTotalRankings(data.data.rankings || []); // 상위 100위 데이터 저장, 빈 배열 fallback
+            } else {
+                setError(data.message || "랭킹 데이터를 불러오지 못했습니다.");
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+            setError("서버 오류가 발생했습니다.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 내 랭킹 데이터 가져오기 (Header용)
+    const loadMyTotalRanking = async () => {
         try {
             const data = await getMyTotalRanking();
             console.log("나의 전체 누적 포인트 랭킹 데이터:", data);
-            if (data.statusCode === 0) {
-                setTotalRanking(data.data);
+            if (data.statusCode === 200) {
+                setMyRanking(data.data);
             } else {
                 console.error("API error:", data.message);
             }
@@ -28,29 +81,44 @@ function Ranking() {
     };
 
     useEffect(() => {
-        loadTotalRanking();
+        Promise.all([loadTotalRanking(), loadMyTotalRanking()]).finally(() => {
+            setLoading(false);
+        });
     }, []);
 
-    // 예시로 단일 내 랭킹이 있을 경우 Header에 표시, 없으면 기본값 사용
-    // totalRanking에 랭킹 목록이 배열이라면 리스트 렌더링도 수정 필요
-    const mockData = Array.from({ length: 30 }, (_, i) => ({
-        rank: 1 + i,
-        nickName: `누적랭킹유저${i + 1}`,
-        point: `${1000 - i * 10}P`,
-    }));
+    // 로딩 및 에러 UI
+    if (loading)
+        return (
+            <LoadingText>
+                불러오는 중<br />
+                ...
+            </LoadingText>
+        );
+    if (error) return <div className="appContainer">에러: {error}</div>;
 
     return (
         <div className="appContainer">
             <Header
-                rank={totalRanking?.rank ?? mockData[0].rank}
-                nickName={totalRanking?.nickname ?? mockData[0].nickName}
-                point={totalRanking?.score ? `${totalRanking.score}P` : mockData[0].point}
+                rank={myRanking?.rank ?? "-"}
+                nickName={myRanking?.nickname ?? "게스트"}
+                point={myRanking?.score ? `${myRanking.score}P` : "0P"}
+                profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
             />
             <Nav />
             <div className="rankingList scrollGap">
-                {mockData.map((user) => (
-                    <RankingItem key={user.rank} rank={user.rank} nickName={user.nickName} point={user.point} />
-                ))}
+                {totalRankings.length > 0 ? (
+                    totalRankings.map((user) => (
+                        <RankingItem
+                            key={user.rank}
+                            rank={user.rank}
+                            nickName={user.nickname}
+                            point={`${user.score}P`} // score를 point로 변환
+                            profileImageUrl={user.profileImageUrl}
+                        />
+                    ))
+                ) : (
+                    <div className="emptyState">랭킹 데이터가 없습니다.</div>
+                )}
             </div>
             <Footer />
         </div>
