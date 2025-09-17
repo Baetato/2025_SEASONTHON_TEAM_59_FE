@@ -645,7 +645,6 @@ const ClickableTile = styled.img`
       transform: scale(1.08) translateY(-2px);
       filter: brightness(1.1) saturate(1.2);
       z-index: 10;
-      box-shadow: 0 8px 16px rgba(0,0,0,.2);
     `
         : `
       transform: scale(1.03) translateY(-1px);
