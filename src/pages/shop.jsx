@@ -114,7 +114,11 @@ export default function ShopPage() {
         iconWidth={156}
         iconHeight={189}
         title={<span><span className="accent">{selectedAvatar?.name}</span> 상품을<br/>구매하시겠습니까?</span>}
-        description="화분에서 자라난 나뭇잎 고양이!"  // TODO: API에서 설명 받아오기
+        description={
+          selectedAvatar?.name === "캐럿" 
+            ? "화분에서 자라난 나뭇잎 토끼!" 
+            : "화분에서 자라난 나뭇잎 고양이!" // 기본
+        }
         buttons={[
           { label: '돌아가기', onClick: () => setModalStep(null) },
           { label: '구매하기', onClick: () => {
