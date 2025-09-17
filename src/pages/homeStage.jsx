@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { v4 as uuidv4 } from 'uuid';
 
 import GotoFarmBtn from '../assets/GotoFarmBtn.png';
 import CoinIcn from '../assets/CoinIcn.png';
@@ -137,7 +138,7 @@ export default function HomeStage() {
 
         // 코인 애니메이션
         const newCoins = Array.from({ length: 20 }).map(() => ({
-          id: Date.now() + Math.random(),
+          id: uuidv4(),
           start: {
             x: window.innerWidth-130,
             y: 220
@@ -172,13 +173,13 @@ export default function HomeStage() {
   };
 
   // 코인이 모두 사라졌을 때 한 번만 실행
-  /*useEffect(() => {
+  useEffect(() => {
     if (animatingCoins.length === 0) {
       // 모든 코인 애니메이션 끝나고 포인트 갱신
-      //headerRef.current?.addTestPoints(100);
+      //headerRef.current?.addTestPoints(100); // 테스트용
       headerRef.current?.refreshUser();  // 보상 성공 → Header한테 api 갱신 명령
     }
-  }, [animatingCoins]);*/
+  }, [animatingCoins]);
 
 
   const closeModal = () => setChallengeModalOpen(false);
@@ -217,7 +218,7 @@ export default function HomeStage() {
           />
         </BtnWrapper>
 
-        {/* ✅ 테스트용 버튼 */}
+        {/* ✅ 테스트용 버튼
         <TestButton onClick={() => headerRef.current?.addTestPoints(100)}>
           포인트 +100
         </TestButton>
@@ -226,7 +227,7 @@ export default function HomeStage() {
           onClick={() => {
             // 20개의 코인 생성
             const newCoins = Array.from({ length: 20 }).map(() => ({
-              id: Date.now() + Math.random(),
+              id: uuidv4(),
               start: {
                 x: window.innerWidth-130,
                 y: 220
@@ -237,7 +238,7 @@ export default function HomeStage() {
           }}
         >
           코인 날리기
-        </TestButton>
+        </TestButton>*/}
 
         {/* ✅ 코인 애니메이션 */}
         {animatingCoins.map(coin => (

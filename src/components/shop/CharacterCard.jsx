@@ -7,7 +7,12 @@ export default function CharacterCard({ name, image, price, disabled, onClick })
     <Card role="button" aria-label={`${name} 카드`} onClick={onClick} className={disabled ? "disabled" : ""}>
       <Bg src={characterCardBg} alt="" aria-hidden="true" />
       <TopName>{name}</TopName>
-      <CenterImage src={image} alt={name} />
+
+      {/* 이 wrapper가 실제로 이미지를 잘라주는 역할 */}
+      <ImageViewport>
+        <CenterImage src={image} alt={name} />
+      </ImageViewport>
+
       <BottomPrice>
         <PriceText>{price.toLocaleString()}</PriceText>
       </BottomPrice>
@@ -43,7 +48,6 @@ const Bg = styled.img`
 
 const TopName = styled.div`
   position: relative;
-  margin-top: 16px;
   z-index: 999;
   font-size: 20px;
   left: 0%;
@@ -83,18 +87,39 @@ const TopName = styled.div`
 //   z-index: 0;
 // `;
 
-const CenterImage = styled.img`
+/* 이미지가 보여질 영역 — 여기가 실제로 '크롭(잘림)'을 담당 */
+const ImageViewport = styled.div`
   position: relative;
-  max-width: 94%;
-  max-height: 96%;
-  bottom: 7%;
+  margin-top: -15px;
+  width: 90%;
+  height: 110px;
+  z-index: 3;
+  overflow: hidden; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+/* 실제 캐릭터 이미지 — 크기/포지션/확대 조정은 여기서 */
+const CenterImage = styled.img`
+  /* 크게 만들어서 잘리는 효과를 냄 (값은 취향에 맞게 변경) */
+  width: auto;
+  height: 120%;            /* 높이를 120%로 키워서 확대(자르기) */
   object-fit: cover;
+  object-position: center bottom; /* 보여줄 영역 (가운데/하단 등 조정) */
+  transform-origin: center center;
+  transition: transform 0.25s ease;
+
+  /* 호버하면 더 확대되는 효과 (선택사항) */
+  ${ImageViewport}:hover & {
+    transform: scale(1.08);
+  }
 `;
 
 const BottomPrice = styled.div`
   position: relative;
   width: 88px;
-  top: -50%;
+  top: -22%;
   left: 8px;
   height: 24px;
   display: flex;
