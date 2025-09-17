@@ -9,6 +9,8 @@ import Footer from "../components/footer.jsx";
 import { GuideModal, TileInfoModal, CompletionModal } from "../components";
 import CoinAnimationUnified from "../components/CoinAnimationUnified.jsx";
 
+import { useUser } from "../states/userContext";
+
 import api from "../api/api.js";
 
 // Assets
@@ -24,7 +26,7 @@ import farmComplete from "../assets/farm-get.png";
 import farmLocked from "../assets/farm-fail.png";
 import iconInfo from "../assets/icon-info.png";
 import leafIcon from "../assets/leaf.png";
-import storeCoconut from "../assets/store-coconut.png";
+import storeCoconut from "../assets/store-skin-coconut.png";
 
 /* ===== 상수/맵 ===== */
 const TILE_BY_STATUS = {
@@ -144,6 +146,9 @@ const generateTestData = (count = 3) => {
 /* ===== 컴포넌트 ===== */
 export default function HomeFarm() {
   const navigate = useNavigate();
+  const { user } = useUser();
+  const avatarUrl = user?.avatarUrl || mascotIdle;
+  const [currentMascot, setCurrentMascot] = useState(avatarUrl); // 현재 보여줄 마스코트 상태
 
   const [completedChallenges, setCompletedChallenges] = useState([]);
   const [weeklyMeta, setWeeklyMeta] = useState({ year: null, weekOfYear: null });
@@ -223,6 +228,20 @@ export default function HomeFarm() {
       return base;
     });
   }, []);
+
+  // 마스코트 상태 반영
+  useEffect(() => {
+    if (!user?.avatarUrl) return;
+
+    const status = getMascotStatus();
+    
+    // 마스코트 상태가 idle/happy/embarrassed라면 내부 맵에서 가져오기
+    const mascotImage = MASCOT_BY_STATUS[status] || mascotIdle;
+
+    // 현재 avatarUrl이 있으면 컨텍스트 기반으로 보여줌
+    setCurrentMascot(user.avatarUrl || mascotImage);
+  }, [user, isWeekEnd, completedChallenges]);
+
 
   // 주간 목표 달성 시 모든 타일을 done 상태로 전환
   useEffect(() => {
@@ -423,7 +442,7 @@ export default function HomeFarm() {
       <Content>
         <Canvas>
           <Mascot
-            src={getMascotImage()}
+            src={currentMascot}
             alt="마스코트"
             draggable={false}
           />

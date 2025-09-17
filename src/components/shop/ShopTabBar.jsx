@@ -31,12 +31,13 @@ const Root = styled.div`
   transform: translate(-50%, 128px); /* 지붕(120px) 아래로 내림 + 여백 8px */
   width: 100%;
   max-width: 390px;
+  height: 75px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 0; /* 6개가 붙어 보이도록 간격 제거 */
   background: #261B18; /* 탭 영역 배경색 */
   padding: 0px 3px 0px 3px;
-  z-index: 1100;
+  z-index: 999;
 `;
 
 const TabButton = styled.button`

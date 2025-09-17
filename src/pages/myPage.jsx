@@ -132,6 +132,9 @@ export default function MyPage() {
 
   // 페이지 진입 시 통계 정보 로드
   useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }, 0);
     loadStatistics();
     loadAchievements();
   }, []);

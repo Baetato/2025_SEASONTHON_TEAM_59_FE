@@ -1,5 +1,7 @@
 // components/Stage.jsx
 import styled from "styled-components";
+import { useState, useEffect } from "react";
+
 import WaitingImg from "../assets/stage-waiting.png"; // 대기
 import RejectedImg from "../assets/stage-refuse.png"; // 거절
 import ApprovedImg from "../assets/stage-complete.png"; // 승인
@@ -7,27 +9,47 @@ import BeforeImg from "../assets/stage-idle.png"; // 도전 전
 
 import MasCotEmbrassed from "../assets/mascot-embrassed.png";
 import MasCotIdle from "../assets/mascot-idle.png";  // 마스코트 기본 표정
-import MasCotHappy from "../assets/mascot-happy.png";
+import MasCotHappy from "../assets/mascot-happy.gif"; // gif
 
 import ChoiceBtn from "./choiceBtn.jsx"; // Start 버튼
 
-const STATUS_IMAGES = {
-  before: BeforeImg,
-  waiting: WaitingImg,
-  rejected: RejectedImg,
-  approved: ApprovedImg,
-};
-const MASCOT_IMAGES = {
-  idle: MasCotIdle,
-  embarrassed: MasCotEmbrassed,
-  happy: MasCotHappy,
-};
+import { useUser } from "../states/userContext";
 
 
 export default function Stage({ index, status, hasCharacter, mascotStatus, onStartClick }) {
-  const onStart = () => {
-    console.log("모달 띄우기!!");
-  }
+  const { user } = useUser();
+  const avatarUrl = user?.avatarUrl || MasCotIdle;
+  const [currentMascot, setCurrentMascot] = useState("idle"); // 현재 보여줄 마스코트 상태
+
+  const STATUS_IMAGES = {
+    before: BeforeImg,
+    waiting: WaitingImg,
+    rejected: RejectedImg,
+    approved: ApprovedImg,
+  };
+  const MASCOT_IMAGES = {
+    idle: avatarUrl,
+    embarrassed: MasCotEmbrassed,
+    happy: MasCotHappy,
+  };
+
+  useEffect(() => {
+    setCurrentMascot(mascotStatus); // 부모가 내려준 상태 반영
+    if (mascotStatus !== "idle") {
+      const timer = setTimeout(() => {
+        setCurrentMascot("idle"); // 3초 뒤 기본 아바타로
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [mascotStatus]);
+
+  // 캐릭터 클릭 → happy 2초 유지
+  const handleCharacterClick = () => {
+    setCurrentMascot("happy");
+    setTimeout(() => {
+      setCurrentMascot("idle");
+    }, 2000);
+  };
 
   return (
     <StageWrapper>
@@ -35,7 +57,7 @@ export default function Stage({ index, status, hasCharacter, mascotStatus, onSta
       <StageNumber>{index}</StageNumber>
       {hasCharacter && (
         <>
-          <Character src={MASCOT_IMAGES[mascotStatus]} alt="character" />
+          <Character src={MASCOT_IMAGES[currentMascot]} alt="character" onClick={handleCharacterClick}/>
           <StartBtnWrapper>
             <ChoiceBtn onClick={() => onStartClick(index)} width="92px" height="29px">Start</ChoiceBtn>
           </StartBtnWrapper>
@@ -83,7 +105,7 @@ const Character = styled.img`
   width: 147px;
   height: 174px;
   z-index: 3;
-  pointer-events: none;
+  cursor: pointer;
 `;
 
 const StartBtnWrapper = styled.div`

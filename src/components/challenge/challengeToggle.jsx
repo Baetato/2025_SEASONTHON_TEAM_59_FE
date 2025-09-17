@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import ChallengeBtn from "../../assets/ChallengeBtn.png";
 
-export default function ChallengeToggle({ active, onClick }) {
+export default function ChallengeToggle({ active, onClick, hasNew }) {
   return (
     <ToggleWrapper>
       {/* 배경 */}
@@ -20,6 +20,7 @@ export default function ChallengeToggle({ active, onClick }) {
           {active === "achievement" && <ChoiceImage src={ChallengeBtn} alt="업적 챌린지 선택" />}
           <ButtonText $active={active === "achievement"}>업적 챌린지</ButtonText>
         </Button>
+        {hasNew && <RedDot />}
       </ButtonsWrapper>
     </ToggleWrapper>
   );
@@ -89,4 +90,17 @@ const ButtonText = styled.div`
   background-clip: ${(props) => (props.$active ? "text" : "unset")};
   -webkit-background-clip: ${(props) => (props.$active ? "text" : "unset")};
   -webkit-text-fill-color: ${(props) => (props.$active ? "transparent" : "unset")};
+`;
+
+const RedDot = styled.div`
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border: 1px solid #382C28;
+  background: #FF4A4A;
+  border-radius: 50%;
+  filter: drop-shadow(0 1px 0 #382C28);
 `;
