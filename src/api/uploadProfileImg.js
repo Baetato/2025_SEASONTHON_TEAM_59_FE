@@ -2,7 +2,7 @@
 import api from "./api.js";
 
 /**
- * 프로필 이미지 업로드
+ * 프로필 이미지 업로드 로직
  * @param {File} file - 업로드할 파일 객체
  * @returns {Promise<string>} 업로드된 이미지 URL 또는 서버에서 반환하는 데이터
  */

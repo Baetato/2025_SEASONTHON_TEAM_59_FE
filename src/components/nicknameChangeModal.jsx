@@ -3,7 +3,6 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { useUser } from "../states/userContext";
-import api from "../api/api";
 
 // 닉네임 변경 모달
 export default function NicknameChangeModal({ onClose, onNicknameChange }) {
