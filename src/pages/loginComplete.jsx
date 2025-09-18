@@ -1,5 +1,5 @@
 // pages/loginNick.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -15,6 +15,7 @@ import CameraBtn from "../assets/CameraBtn.png";
 
 
 export default function LoginComplete() {
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state || {};
