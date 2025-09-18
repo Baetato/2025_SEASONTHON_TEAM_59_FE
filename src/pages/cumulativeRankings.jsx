@@ -44,6 +44,7 @@ const LoadingText = styled.div`
 const RankingListWrapper = styled.div`
     position: relative;
     min-height: 100vh; /* Ensure it takes up enough space to center the loading text */
+    background-color: #382c28;
 `;
 
 function Ranking() {
@@ -96,7 +97,7 @@ function Ranking() {
         <div className="appContainer">
             <Header
                 rank={myRanking?.rank ?? "-"}
-                nickName={myRanking?.nickname ?? "게스트"}
+                nickName={myRanking?.nickname ?? "로딩중"}
                 point={myRanking?.score ? `${myRanking.score}P` : "0P"}
                 profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
             />
@@ -112,7 +113,7 @@ function Ranking() {
                 ) : totalRankings.length > 0 ? (
                     totalRankings.map((user) => (
                         <RankingItem
-                            key={user.rank}
+                            key={`${user.rank}-${user.nickname}`}
                             rank={user.rank}
                             nickName={user.nickname}
                             point={`${user.score}P`} // score를 point로 변환

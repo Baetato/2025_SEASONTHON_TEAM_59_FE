@@ -216,6 +216,46 @@ export default function HomeFarm() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!completedChallenges.length) return;
+
+    setTileStates(prev => {
+      const next = { ...(prev || {}) };
+
+      // 0~7번은 기본 plant
+      for (let i = 0; i < 8; i++) next[i] = "plant";
+
+      // 8번은 서버 완료 챌린지 여부로 plant 처리
+      next[8] = "plant";
+
+      return next;
+    });
+
+    // 8번이 심어졌으면 전체 애니메이션 실행
+    if (tileStates[8] === "plant" || completedChallenges.length) {
+      const t1 = setTimeout(() => {
+        setTileStates(prev => {
+          const next = { ...prev };
+          for (let i = 0; i < 9; i++) next[i] = "growing";
+          return next;
+        });
+      }, 1000);
+
+      const t2 = setTimeout(() => {
+        setTileStates(prev => {
+          const next = { ...prev };
+          for (let i = 0; i < 9; i++) next[i] = "done";
+          return next;
+        });
+      }, 2000);
+
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+  }, [completedChallenges]);
+
   // 마스코트 상태 반영
   useEffect(() => {
     if (!user?.avatarUrl) return;
@@ -441,6 +481,7 @@ export default function HomeFarm() {
   //     });
   //   }
   // };
+
   // 수정된 수확 처리 함수
   const [harvesting, setHarvesting] = useState(new Set());
 
@@ -688,7 +729,6 @@ const ClickableTile = styled.img`
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center bottom;
-  filter: ${(p) => (p.$hasChallenge ? "none" : "grayscale(0.3)")};
   z-index: ${(p) => (p.$hasChallenge ? "5" : "1")};
 
   &:hover {

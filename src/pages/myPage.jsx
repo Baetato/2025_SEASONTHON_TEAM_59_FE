@@ -186,23 +186,6 @@ export default function MyPage() {
             </ProfileContainer>
           </ContainerBackGround>
 
-          {/* 리프업 파트너 섹션
-          <ContainerBackGround $height="245px">
-            <div style={{ display: 'flex', displayDirection: 'row' }}>
-              <Title $top={"-19px"} $left={"14px"}>내 리프업 파트너</Title>
-              <LeafCharacterContainer>
-                <LeafCharacterImg src={user?.avatarUrl} alt="리프업 파트너" />
-                <StageImg src={Stage} alt="스테이지 배경" />
-                <ClosetIcon src={ClosetIcn} alt="옷장 아이콘" />
-              </LeafCharacterContainer>
-              <div style={{ position: 'absolute', top: '-2.5%', right: '-2%', width: '189px', height: '232px' }}>
-                <LeafName>샥샥이</LeafName>
-                <LeafDescription>샥샥거려서 샥샥이입니다. <br/>환경을 위해 열심히 노력할게요!</LeafDescription>
-                <FenceIcon src={FenceIcn} alt="울타리 아이콘" />
-              </div>
-            </div >
-          </ContainerBackGround>*/}
-
           <ContainerBackGround $height="245px">
             <div style={{
               display: 'flex',
@@ -519,6 +502,7 @@ const FenceIcon = styled.img`
 `
 const Grid = styled.div`
   margin-top: 10px;
+  margin-left: -4px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;

@@ -43,6 +43,7 @@ const LoadingText = styled.div`
 const RankingListWrapper = styled.div`
     position: relative;
     min-height: 100vh; /* Ensure it takes up enough space to center the loading text */
+    background-color: #382c28;
 `;
 
 function RegionalRanking({ year, month } = {}) {
@@ -102,7 +103,7 @@ function RegionalRanking({ year, month } = {}) {
         <div className="appContainer">
             <Header
                 rank={myRanking?.rank ?? "-"}
-                nickName={myRanking?.nickname ?? "게스트"}
+                nickName={myRanking?.nickname ?? "로딩중"}
                 point={myRanking?.score ? `${myRanking.score}P` : "0P"}
                 profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
             />
@@ -118,7 +119,7 @@ function RegionalRanking({ year, month } = {}) {
                 ) : regionalRankings.length > 0 ? (
                     regionalRankings.map((user) => (
                         <RankingItem
-                            key={user.rank}
+                            key={`${user.rank}-${user.nickname}`}
                             rank={user.rank}
                             nickName={user.nickname}
                             point={`${user.score}P`}

@@ -108,6 +108,11 @@ export default function Challenge() {
     };
   }, [selectedLevel, activeBtn]);
 
+  useEffect(() => {
+    // 초기 마운트 시 업적 정보 가져오기
+    loadAchievements();
+  }, []); // 빈 배열 => 마운트 시 한 번만 호출
+
 
   return (
     <Container>

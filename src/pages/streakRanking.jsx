@@ -43,6 +43,7 @@ const LoadingText = styled.div`
 const RankingListWrapper = styled.div`
     position: relative;
     min-height: 100vh; /* Ensure it takes up enough space to center the loading text */
+    background-color: #382c28;
 `;
 
 function StreakRanking() {
@@ -95,8 +96,8 @@ function StreakRanking() {
         <div className="appContainer">
             <Header
                 rank={myRanking?.rank ?? "-"}
-                nickName={myRanking?.nickname ?? "게스트"}
-                score={myRanking?.streakDay ? `${myRanking.streakDay}일` : "0일"}
+                nickName={myRanking?.nickname ?? "로딩중"}
+                score={myRanking?.score ? `${myRanking.score}일` : "0일"}
                 profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
             />
             <Nav />
@@ -111,7 +112,7 @@ function StreakRanking() {
                 ) : streakRankings.length > 0 ? (
                     streakRankings.map((user) => (
                         <RankingItem
-                            key={user.rank}
+                            key={`${user.rank}-${user.nickname}`} // 유니크 key
                             rank={user.rank}
                             nickName={user.nickname}
                             score={`${user.score}일`}
