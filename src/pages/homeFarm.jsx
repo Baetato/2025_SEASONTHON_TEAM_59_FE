@@ -93,31 +93,51 @@ function getStoredUsername() {
 // API 응답 → 내부 completedChallenges로 매핑
 // - tileIndex는 서버가 안 주므로 0~8 순서 부여
 // - label: 서버 content 없으면 챌린지 한글명으로 대체하여 항상 명칭 노출
+// function mapApiToCompleted(apiCompleted) {
+//   console.log('🐛 API 응답 데이터:', apiCompleted);
+//   const now = new Date().toISOString();
+//   const mapped = (apiCompleted || [])
+//     .slice(0, 9)
+//     .map((row, idx) => {
+//       // 정의된 매핑이 없더라도 드롭하지 않고 고유 타입으로 유지해 진행률/표시가 가능하도록 함
+//       const type = CHALLENGE_ID_MAP[row.challengeId] ?? `custom_${row.challengeId}`;
+//       if (!CHALLENGE_ID_MAP[row.challengeId]) {
+//         console.warn(`⚠️ 알 수 없는 challengeId: ${row.challengeId} (임시로 ${type}로 처리)`);
+//       }
+//       const defaultMeta = CHALLENGE_TYPES.find((t) => t.id === type);
+//       const displayName = row.content || defaultMeta?.name || null;
+//       return {
+//         type,
+//         completedAt: now,
+//         tileIndex: idx,
+//         label: displayName, // 모달에서 항상 챌린지명 노출되도록
+//         originalChallengeId: row.challengeId, // 수확 API에서 사용
+//       };
+//     })
+//     .filter(Boolean);
+  
+//   console.log('🐛 매핑된 데이터:', mapped);
+//   return mapped;
+// }
+// API 응답 → 내부 completedChallenges로 매핑(서버 content를 이름으로 신뢰)
 function mapApiToCompleted(apiCompleted) {
-  console.log('🐛 API 응답 데이터:', apiCompleted);
   const now = new Date().toISOString();
-  const mapped = (apiCompleted || [])
+  return (apiCompleted || [])
     .slice(0, 9)
     .map((row, idx) => {
-      // 정의된 매핑이 없더라도 드롭하지 않고 고유 타입으로 유지해 진행률/표시가 가능하도록 함
-      const type = CHALLENGE_ID_MAP[row.challengeId] ?? `custom_${row.challengeId}`;
-      if (!CHALLENGE_ID_MAP[row.challengeId]) {
-        console.warn(`⚠️ 알 수 없는 challengeId: ${row.challengeId} (임시로 ${type}로 처리)`);
-      }
-      const defaultMeta = CHALLENGE_TYPES.find((t) => t.id === type);
-      const displayName = row.content || defaultMeta?.name || null;
+      const idNum = Number(row?.challengeId ?? row);
+      const type = `challenge_${idNum}`;             // ID 기반 고유 타입(중복 방지용)
+      const displayName = (row?.content?.trim?.())   // 사람이 읽는 이름
+        || `챌린지 #${idNum}`;
       return {
         type,
         completedAt: now,
         tileIndex: idx,
-        label: displayName, // 모달에서 항상 챌린지명 노출되도록
-        originalChallengeId: row.challengeId, // 수확 API에서 사용
+        label: displayName,
+        originalChallengeId: idNum,
       };
-    })
-    .filter(Boolean);
-  
-  console.log('🐛 매핑된 데이터:', mapped);
-  return mapped;
+    }
+  );
 }
 
 // 주차 → "M월 N주차 텃밭"
