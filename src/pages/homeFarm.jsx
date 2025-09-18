@@ -217,26 +217,11 @@ export default function HomeFarm() {
   }, []);*/
 
   useEffect(() => {
-    if (!completedChallenges.length) return;
-
-    /*setTileStates(prev => {
-      const next = { ...(prev || {}) };
-
-      // 0~7번은 기본 plant
-      for (let i = 0; i < 8; i++) next[i] = "plant";
-
-      // 8번은 서버 완료 챌린지 여부로 plant 처리
-      next[8] = "plant";
-
-      return next;
-    });*/
-
-    // 8번이 심어졌으면 전체 애니메이션 실행
-    if (tileStates[8] === "plant" || completedChallenges.length) {
+    if (completedChallenges.length === 9) {
       const t1 = setTimeout(() => {
         setTileStates(prev => {
           const next = { ...prev };
-          for (let i = 0; i < 9; i++) next[i] = "growing";
+          for (let i = 0; i < 9; i++) if (next[i] === "plant") next[i] = "growing";
           return next;
         });
       }, 1000);
@@ -244,15 +229,12 @@ export default function HomeFarm() {
       const t2 = setTimeout(() => {
         setTileStates(prev => {
           const next = { ...prev };
-          for (let i = 0; i < 9; i++) next[i] = "done";
+          for (let i = 0; i < 9; i++) if (next[i] === "growing") next[i] = "done";
           return next;
         });
       }, 2000);
 
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
+      return () => { clearTimeout(t1); clearTimeout(t2); };
     }
   }, [completedChallenges]);
 
@@ -296,7 +278,7 @@ export default function HomeFarm() {
     const nowIds = new Set(completedChallenges.map(c => c.originalChallengeId));
     const prevIds = prevIdsRef.current;
 
-    // 첫 렌더는 스킵(초기 0→N을 증가로 보지 않음)
+    // 첫 렌더 스킵
     if (!mountedRef.current) {
       prevIdsRef.current = nowIds;
       prevCountRef.current = now;
@@ -304,35 +286,7 @@ export default function HomeFarm() {
       return;
     }
 
-    // // 추가된 챌린지 ID들
-    // const addedIds = [...nowIds].filter(id => !prevIds.has(id));
-
-    // // 정확히 1개만 추가되었고, 개수도 +1일 때만
-    // if (now === before + 1 && addedIds.length === 1) {
-    //   const addedId = addedIds[0];
-    //   const added = completedChallenges.find(c => c.originalChallengeId === addedId);
-
-    //   if (added && !added.isHarvested) {
-    //     setTileStates(prev => {
-    //       // 이미 수확/상태가 있으면 덮어쓰지 않음
-    //       if (prev[added.tileIndex]) return prev;
-    //       return { ...prev, [added.tileIndex]: "plant" };
-    //     });
-    //   }
-    // }
-
-    // "0→1"일 때만 마지막 빈칸([2,2], index 8)을 심는다
-    if (before < now) {
-      setTileStates(prev => {
-        if (prev[8]) return prev;      // 이미 심겨있다면 그대로
-        return { ...prev, 8: "plant" };
-      });
-    }
-    
-    console.log('prev → now', prevCountRef.current, completedChallenges.length);
-    // console.log('addedIds', addedIds, completedChallenges.map(c=>[c.originalChallengeId,c.tileIndex]));
-
-    // 딱 9개가 된 그 순간에만 전체 연출
+    // 9개 완료 시 전체 연출
     if (before < 9 && now === 9) {
       setTileStates(prev => {
         const next = { ...(prev || {}) };
@@ -360,6 +314,7 @@ export default function HomeFarm() {
     prevIdsRef.current = nowIds;
     prevCountRef.current = now;
   }, [completedChallenges, setTileStates]);
+  
 
   // 마스코트 상태 (비로그인이어도 기본 idle 노출)
   const getMascotStatus = () =>
