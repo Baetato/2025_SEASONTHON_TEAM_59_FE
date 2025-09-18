@@ -573,8 +573,8 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  height: calc(100vh - 97px);   /* HeaderBar 높이만큼 뺌 (home-stage와 동일) */
   padding: 140px 20px 20px;     /* 동일한 상단 패딩 */
+  margin-bottom: 60px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

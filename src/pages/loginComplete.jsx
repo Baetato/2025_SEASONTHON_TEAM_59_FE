@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import api from "../api/api.js";
+import uploadProfileImage from "../api/uploadProfileImg.js";
 import { useUser } from "../states/userContext";
 
 import LoginTopBar from "../components/loginTopBar.jsx";
@@ -23,6 +24,7 @@ export default function LoginComplete() {
   const [regionName, setRegionName] = useState(state.regionName || "주소 불러오기 실패");
   const [error, setError] = useState(""); 
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [isUploading, setIsUploading] = useState(false); // 이미지 업로드 상태
 
   // 화면 진입 시 API 호출
   useEffect(() => {
@@ -50,6 +52,29 @@ export default function LoginComplete() {
     fetchNickname();
   }, []);
 
+  {/* 프로필 이미지 변경 핸들러 */}
+  const handleCameraClick = () => {
+    fileInputRef.current.click();
+  };
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true); // 업로드 시작
+
+      const result = await uploadProfileImage(file);
+      console.log("업로드 성공!", result);
+
+      // Context에서 유저 정보 갱신
+      fetchUser(); 
+    } catch (err) {
+      alert("업로드 실패!");
+    } finally {
+      setIsUploading(false); // 업로드 종료
+    }
+  };
+
   const handleNext = () => {
     if (loading) {
       alert("친구 코드 생성 중입니다. 잠시만 기다려주세요.");
@@ -75,7 +100,14 @@ export default function LoginComplete() {
             <ProfileContainer>
               <ProfileFrameImg src={ProfileFrame} alt="Profile Frame" />
               <ProfileExImg src={ProfileEx} alt="Profile Example" />
-              <CameraButton src={CameraBtn} alt="Camera Button" />
+              <CameraButton src={CameraBtn} alt="Camera Button" onClick={handleCameraClick}/>
+              <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
             </ProfileContainer>
 
             {loading ? (
