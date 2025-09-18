@@ -19,7 +19,7 @@ import { useUser } from "../states/userContext";
 export default function Stage({ index, status, hasCharacter, mascotStatus, onStartClick }) {
   const { user } = useUser();
   const avatarUrl = user?.avatarUrl || MasCotIdle;
-  const [currentMascot, setCurrentMascot] = useState(avatarUrl); // 현재 보여줄 마스코트 상태
+  const [currentMascot, setCurrentMascot] = useState("idle"); // 현재 보여줄 마스코트 상태
 
   const STATUS_IMAGES = {
     before: BeforeImg,
