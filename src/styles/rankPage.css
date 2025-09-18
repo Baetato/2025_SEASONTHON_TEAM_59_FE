@@ -1,25 +1,24 @@
 .appContainer {
-    min-height: 100vh; 
+    min-height: 100vh;
     width: 100%;
     max-width: 393px;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #382C28;
+    background-color: #382c28;
 }
 
 .loadApp {
-  height: 100vh;
-  width: 100%;
-  max-width: 393px;
-  margin: 0 auto; /* 가로 중앙 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #fff;
-  text-align: center; /* 텍스트 중앙 */
+    height: 100vh;
+    width: 100%;
+    max-width: 393px;
+    margin: 0 auto; /* 가로 중앙 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    text-align: center; /* 텍스트 중앙 */
 }
-
 
 .rankingList {
     flex: 1; /* 남은 공간 다 차지 */

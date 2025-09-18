@@ -7,7 +7,7 @@
     display: flex;
 }
 
-.dayStyle{
+.dayStyle {
     position: absolute;
     right: 20px;
     font-family: "Maplestory OTF", system-ui, sans-serif;
@@ -43,10 +43,10 @@
     white-space: nowrap;
 }
 
-.starStyle{
+.starStyle {
     margin-top: 90%;
     position: absolute;
-    width:36px;
+    width: 36px;
     height: 19px;
     z-index: 999;
 }
@@ -133,12 +133,11 @@
     flex: 0 0 76px;
 }
 
-.profileCon{
+.profileCon {
     position: absolute;
-    left :0px;
-    width : 51px;
+    left: 0px;
+    width: 51px;
     height: 51px;
-    object-fit: cover; 
 }
 
 .imgContainer {
@@ -175,10 +174,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between; /* 오른쪽 정렬 */
-    min-width: 0; 
+    min-width: 0;
     position: relative; /* 필요 시 유지 */
 }
-
 
 .rankStyleGold {
     /*1등*/
@@ -228,11 +226,11 @@
     -webkit-text-fill-color: transparent;
 }
 
-.point-margin{
+.point-margin {
     padding-left: 10px;
 }
 
-.leaf-margin{
+.leaf-margin {
     padding-left: 5px;
 }
 
