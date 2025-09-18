@@ -52,7 +52,7 @@
 }
 
 .pointStyle {
-    margin-left: 65px; /* leaf 이미지와 간격 */
+    margin-left: 15px; /* leaf 이미지와 간격 */
     color: #7cb29e;
     text-shadow: 0 2px 0 #382c28;
     -webkit-text-stroke: 1px #000;
@@ -166,7 +166,7 @@
     height: 22px;
     object-fit: cover;
     flex-shrink: 0; /* 크기 줄어들지 않게 */
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .centerContainer {

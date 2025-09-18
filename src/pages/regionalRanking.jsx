@@ -1,4 +1,3 @@
-// src/pages/RegionalRanking.jsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components"; // Import styled-components
 import Header from "../components/rankHeader";
@@ -17,7 +16,7 @@ import Footer from "../components/footer";
 // Styled component for LoadingText
 const LoadingText = styled.div`
     position: absolute;
-    top: 55%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%); /* 완전 중앙 정렬 */
 
@@ -39,6 +38,11 @@ const LoadingText = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
+`;
+
+const RankingListWrapper = styled.div`
+    position: relative;
+    min-height: 100vh; /* Ensure it takes up enough space to center the loading text */
 `;
 
 function RegionalRanking({ year, month } = {}) {
@@ -94,16 +98,6 @@ function RegionalRanking({ year, month } = {}) {
         });
     }, [currentYear, currentMonth]);
 
-    // 로딩 및 에러 UI
-    if (loading)
-        return (
-            <LoadingText>
-                불러오는 중<br />
-                ...
-            </LoadingText>
-        );
-    if (error) return <div className="appContainer">에러: {error}</div>;
-
     return (
         <div className="appContainer">
             <Header
@@ -113,8 +107,15 @@ function RegionalRanking({ year, month } = {}) {
                 profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
             />
             <Nav />
-            <div className="rankingList scrollGap">
-                {regionalRankings.length > 0 ? (
+            <RankingListWrapper className="rankingList scrollGap">
+                {loading ? (
+                    <LoadingText>
+                        불러오는 중<br />
+                        ...
+                    </LoadingText>
+                ) : error ? (
+                    <div>에러: {error}</div>
+                ) : regionalRankings.length > 0 ? (
                     regionalRankings.map((user) => (
                         <RankingItem
                             key={user.rank}
@@ -127,7 +128,7 @@ function RegionalRanking({ year, month } = {}) {
                 ) : (
                     <div className="emptyState">랭킹 데이터가 없습니다.</div>
                 )}
-            </div>
+            </RankingListWrapper>
             <Footer />
         </div>
     );
