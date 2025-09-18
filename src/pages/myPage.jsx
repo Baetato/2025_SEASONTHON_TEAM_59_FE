@@ -130,6 +130,13 @@ export default function MyPage() {
     }
   };
 
+  {/* 로그아웃 */}
+  const handleLogout = async () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    navigate("/login");
+  }
+
   // 페이지 진입 시 통계 정보 로드
   useEffect(() => {
     setTimeout(() => {
@@ -243,6 +250,7 @@ export default function MyPage() {
               { title: `${carEffect}대`, content: "자동차 1년간 운행 저감 효과" },
             ]}
           />
+          <Logout onClick={handleLogout}>로그아웃</Logout>
         </Content>
 
         {/* 닉네임 변경 모달 */}
@@ -550,4 +558,22 @@ const LoadingSpinner = styled.div`
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
+`;
+
+const Logout = styled.div`
+  -webkit-text-stroke-width: 1.5px;
+  -webkit-text-stroke-color: #281900;
+  font-family: "Maplestory OTF";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 22px; /* 110% */
+  letter-spacing: -0.408px;
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: 30px;
 `;

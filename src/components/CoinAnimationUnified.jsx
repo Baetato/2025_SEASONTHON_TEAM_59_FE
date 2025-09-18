@@ -13,8 +13,7 @@ export default function CoinAnimationUnified({
   delay = 0,
   onComplete,
 }) {
-  const initialPosition = start ?? { x: 0, y: 0 };
-  const [position, setPosition] = useState(initialPosition);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [endPos, setEndPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -79,13 +78,15 @@ export default function CoinAnimationUnified({
     variant === "farm" ? (
       <AnimatedCoinFarm src={leafIcon} alt="나뭇잎 코인" style={commonStyle} />
     ) : (
-      <AnimatedCoinStage src={leafIcon} alt="나뭇잎 코인" style={commonStyle} />
+      <AnimatedCoinStage src={leafIcon} alt="나뭇잎 코인" style={commonStyle} paused={true}/>
     )
   );
+  
+  if (position.x === 0 && position.y === 0) return null;
 
   // stage는 포탈 사용, farm은 기존대로 그대로 렌더
   if (variant === "stage") {
-    return ReactDOM.createPortal(node, document.body);
+    return node;
   }
   return node;
 }
@@ -114,17 +115,17 @@ const AnimatedCoinFarm = styled.img`
 // stage: 직선/짧은 이동
 const coinFlyStraight = keyframes`
   0% { transform: translate(var(--start-x), var(--start-y)) scale(1) rotate(0deg); opacity: 1; }
-  100% { transform: translate(var(--end-x), var(--end-y)) scale(0.5) rotate(180deg); opacity: 0.5; }
+  100% { transform: translate(var(--end-x), var(--end-y)) scale(0.5) rotate(180deg); opacity: 0.3; }
 `;
 
 const AnimatedCoinStage = styled.img`
   position: fixed;
   width: 30px;
   height: 30px;
-  z-index: 9999;
+  z-index: 99999;
   pointer-events: none;
   left: 0; top: 0;
-  animation: ${coinFlyStraight} 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: ${coinFlyStraight} 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: var(--delay, 0ms); /* 여기에 딜레이 적용 */
 `;
 
