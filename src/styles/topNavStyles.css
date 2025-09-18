@@ -12,12 +12,12 @@
     background: #261b18;
     border: none;
     cursor: pointer;
-    display: flex;                /* flex 박스 활성화 */
-    justify-content: center;      /* 가로 가운데 */
-    align-items: center;          /* 세로 가운데 */
+    display: flex; /* flex 박스 활성화 */
+    justify-content: center; /* 가로 가운데 */
+    align-items: center; /* 세로 가운데 */
 }
 
-.buttonContainer{
+.buttonContainer {
     margin: 2px;
     width: 119px;
     height: 27px;
@@ -34,9 +34,9 @@
     background-size: cover;
     background-position: center;
     cursor: pointer;
-    display: flex;                /* flex 박스 활성화 */
-    justify-content: center;      /* 가로 가운데 */
-    align-items: center;          /* 세로 가운데 */
+    display: flex; /* flex 박스 활성화 */
+    justify-content: center; /* 가로 가운데 */
+    align-items: center; /* 세로 가운데 */
 }
 
 .nonClickFont {
@@ -63,12 +63,11 @@
     height: 31px;
     flex-shrink: 0;
     border-radius: 5px;
-    background: #261B18;
+    background: #261b18;
     margin: 4px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    
 }
 
 @font-face {

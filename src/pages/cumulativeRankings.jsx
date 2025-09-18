@@ -16,7 +16,7 @@ import Footer from "../components/footer";
 const LoadingText = styled.div`
     white-space: nowrap;
     position: absolute;
-    top: 55%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
 
@@ -38,6 +38,12 @@ const LoadingText = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
+`;
+
+// Wrapper for the ranking list to ensure proper positioning
+const RankingListWrapper = styled.div`
+    position: relative;
+    min-height: 100vh; /* Ensure it takes up enough space to center the loading text */
 `;
 
 function Ranking() {
@@ -86,16 +92,6 @@ function Ranking() {
         });
     }, []);
 
-    // 로딩 및 에러 UI
-    if (loading)
-        return (
-            <LoadingText>
-                불러오는 중<br />
-                ...
-            </LoadingText>
-        );
-    if (error) return <div className="appContainer">에러: {error}</div>;
-
     return (
         <div className="appContainer">
             <Header
@@ -105,8 +101,15 @@ function Ranking() {
                 profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
             />
             <Nav />
-            <div className="rankingList scrollGap">
-                {totalRankings.length > 0 ? (
+            <RankingListWrapper className="rankingList scrollGap">
+                {loading ? (
+                    <LoadingText>
+                        불러오는 중<br />
+                        ...
+                    </LoadingText>
+                ) : error ? (
+                    <div>에러: {error}</div>
+                ) : totalRankings.length > 0 ? (
                     totalRankings.map((user) => (
                         <RankingItem
                             key={user.rank}
@@ -119,7 +122,7 @@ function Ranking() {
                 ) : (
                     <div className="emptyState">랭킹 데이터가 없습니다.</div>
                 )}
-            </div>
+            </RankingListWrapper>
             <Footer />
         </div>
     );
