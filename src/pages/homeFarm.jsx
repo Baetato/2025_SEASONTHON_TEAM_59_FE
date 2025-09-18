@@ -78,48 +78,23 @@ function getStoredUsername() {
 }
 
 // API 응답 → 내부 completedChallenges로 매핑(서버 content를 이름으로 신뢰)
-// function mapApiToCompleted(apiCompleted) {
-//   const now = new Date().toISOString();
-//   return (apiCompleted || [])
-//     .slice(0, 9)
-//     .map((row, idx) => {
-//       const idNum = Number(row?.challengeId ?? row);
-//       const type = `challenge_${idNum}`;             // ID 기반 고유 타입(중복 방지용)
-//       const displayName = (row?.content?.trim?.())   // 사람이 읽는 이름
-//         || `챌린지 #${idNum}`;
-//       return {
-//         type,
-//         completedAt: now,
-//         tileIndex: idx,
-//         label: displayName,
-//         originalChallengeId: idNum,
-//       };
-//     }
-//   );
-// }
-function mapApiToCompleted(apiCompleted, currentTileStates = {}, prevCompleted = []) {
+function mapApiToCompleted(apiFruits) {
   const now = new Date().toISOString();
-  const rows = Array.isArray(apiCompleted) ? apiCompleted.slice(0, 9) : [];
-
-  // 이미 배치된 타일 인덱스(이전 completedChallenges 기준) 보존
-  const used = new Set(prevCompleted.map(c => c.tileIndex));
-  // 그래도 비어있으면 tileStates 기준으로 0~8 중 존재하는 키도 사용 중으로 간주(초기 plant 0~7 보호)
-  Object.keys(currentTileStates || {}).forEach(k => used.add(Number(k)));
-
-  const pickNextSlot = () => {
-    for (let i = 0; i < 9; i++) if (!used.has(i)) return i;
-    return 0;
-  };
-
-  return rows.map((row) => {
+  const rows = Array.isArray(apiFruits) ? apiFruits.slice(0, 9) : [];
+  return rows.map((row, idx) => {
     const idNum = Number(row?.challengeId ?? row);
-    const type = `challenge_${idNum}`;
-    const label = (row?.content?.trim?.()) || `챌린지 #${idNum}`;
-    const tileIndex = pickNextSlot(); // ← 빈 칸부터 배치
-    used.add(tileIndex);
-    return { type, completedAt: now, tileIndex, label, originalChallengeId: idNum };
+    const type  = `challenge_${idNum}`;
+    const label = (row?.contents?.trim?.()) || (row?.content?.trim?.()) || `챌린지 #${idNum}`;
+    return {
+      type,
+      completedAt: now,
+      tileIndex: idx,                 // 서버 순서대로 0..n-1 배치 → 9번째가 오면 index 8 (마지막 빈칸) 사용
+      label,
+      originalChallengeId: idNum,
+      isHarvested: !!row?.isHarvested // 새 필드 반영
+    };
   });
- }
+}
 
 // 주차 → "M월 N주차 텃밭"
 function formatToMonthWeek(year, weekOfYear) {
@@ -176,9 +151,19 @@ export default function HomeFarm() {
         const res = await api.get("/v1/garden/weekly"); // 인터셉터로 토큰 자동
         console.log('🐛 주간 텃밭 현황 API 응답:', res.data);
         const data = res.data?.data || {};
-        // const mappedChallenges = mapApiToCompleted(data.completedChallenges); <- 이전 코드
-        const mappedChallenges = mapApiToCompleted(data.completedChallenges, tileStates, completedChallenges);
-        setCompletedChallenges(mappedChallenges);
+        const fruits = Array.isArray(data.fruits) ? data.fruits : [];
+        const mapped = mapApiToCompleted(fruits);   // idx→tileIndex
+        setCompletedChallenges(mapped); 
+
+        // 서버 수확 상태 동기화 (있으면)
+        const harvestedIdx = new Set(mapped.filter(c => c.isHarvested).map(c => c.tileIndex));
+        setHarvestedTiles(harvestedIdx);
+        setTileStates(prev => {
+          const next = { ...(prev || {}) };
+          mapped.forEach(c => { if (c.isHarvested) next[c.tileIndex] = "empty"; });
+          return next;
+        });
+
         setWeeklyMeta({
           year: data.year ?? null,
           weekOfYear: data.weekOfYear ?? null,
@@ -188,9 +173,9 @@ export default function HomeFarm() {
         setIsAuthed(true);
         
         console.log('🐛 주간 진행도:', {
-          완료된_챌린지: mappedChallenges.length,
+          완료된_챌린지: mapped.length,
           전체_챌린지: 9,
-          완료율: `${Math.round((mappedChallenges.length / 9) * 100)}%`
+          완료율: `${Math.round((mapped.length / 9) * 100)}%`
         });
       } catch (err) {
         // 401 등 비로그인 → 기본 노출
@@ -216,7 +201,7 @@ export default function HomeFarm() {
       }
     })();
   }, []);
-
+  
   const weekProgress = getWeekProgress(completedChallenges);
   
   // 초기 상태: 8칸은 'beginning(plant)'으로 채우기 (인덱스 0~7), 8번은 비워둠
@@ -245,47 +230,75 @@ export default function HomeFarm() {
   }, [user, isWeekEnd, completedChallenges]);
 
   // 주간 목표 달성 시 모든 타일을 done 상태로 전환
-  useEffect(() => {
-    if (weekProgress.isComplete && completedChallenges.length > 0) {
-      console.log('🎉 주간 목표 달성! 모든 타일을 수확 가능 상태로 전환');
-      const newTileStates = {};
-      completedChallenges.forEach(challenge => {
-        if (!harvestedTiles.has(challenge.tileIndex)) {
-          newTileStates[challenge.tileIndex] = "done";
-        }
-      });
-      console.log('🐛 전환될 타일 상태:', newTileStates);
-      setTileStates(prev => ({ ...prev, ...newTileStates }));
-    }
-  }, [weekProgress.isComplete, completedChallenges, harvestedTiles]);
+  // useEffect(() => {
+  //   if (weekProgress.isComplete && completedChallenges.length > 0) {
+  //     console.log('🎉 주간 목표 달성! 모든 타일을 수확 가능 상태로 전환');
+  //     const newTileStates = {};
+  //     completedChallenges.forEach(challenge => {
+  //       if (!harvestedTiles.has(challenge.tileIndex)) {
+  //         newTileStates[challenge.tileIndex] = "done";
+  //       }
+  //     });
+  //     console.log('🐛 전환될 타일 상태:', newTileStates);
+  //     setTileStates(prev => ({ ...prev, ...newTileStates }));
+  //   }
+  // }, [weekProgress.isComplete, completedChallenges, harvestedTiles]);
 
+  // 컴포넌트 바디 최상단에 선언
   const prevCountRef = useRef(0);
+  const prevIdsRef   = useRef(new Set());
+  const mountedRef   = useRef(false);
 
   useEffect(() => {
     const now = completedChallenges.length;
     const before = prevCountRef.current;
 
-    // 1) 새로 승인되어 개수가 증가한 경우 → 방금 채워진 빈 칸을 'plant'로 심기
-    if (now > before) {
-      // 첫 빈 칸 찾기
-      const occupied = new Set(Object.keys(tileStates).map(Number));
-      for (let i = 0; i < 9; i++) {
-        if (!occupied.has(i)) {
-          setTileStates(prev => ({ ...prev, [i]: "plant" }));
-          break;
-        }
-      }
+    const nowIds = new Set(completedChallenges.map(c => c.originalChallengeId));
+    const prevIds = prevIdsRef.current;
+
+    // 첫 렌더는 스킵(초기 0→N을 증가로 보지 않음)
+    if (!mountedRef.current) {
+      prevIdsRef.current = nowIds;
+      prevCountRef.current = now;
+      mountedRef.current = true;
+      return;
     }
 
-    // 2) 이번 주 9개가 꽉 찬 '순간' → 전체 연출(beginning→growing→done)
+    // // 추가된 챌린지 ID들
+    // const addedIds = [...nowIds].filter(id => !prevIds.has(id));
+
+    // // 정확히 1개만 추가되었고, 개수도 +1일 때만
+    // if (now === before + 1 && addedIds.length === 1) {
+    //   const addedId = addedIds[0];
+    //   const added = completedChallenges.find(c => c.originalChallengeId === addedId);
+
+    //   if (added && !added.isHarvested) {
+    //     setTileStates(prev => {
+    //       // 이미 수확/상태가 있으면 덮어쓰지 않음
+    //       if (prev[added.tileIndex]) return prev;
+    //       return { ...prev, [added.tileIndex]: "plant" };
+    //     });
+    //   }
+    // }
+
+    // "0→1"일 때만 마지막 빈칸([2,2], index 8)을 심는다
+    if (before < now) {
+      setTileStates(prev => {
+        if (prev[8]) return prev;      // 이미 심겨있다면 그대로
+        return { ...prev, 8: "plant" };
+      });
+    }
+    
+    console.log('prev → now', prevCountRef.current, completedChallenges.length);
+    // console.log('addedIds', addedIds, completedChallenges.map(c=>[c.originalChallengeId,c.tileIndex]));
+
+    // 딱 9개가 된 그 순간에만 전체 연출
     if (before < 9 && now === 9) {
-      // 즉시 plant로 통일
       setTileStates(prev => {
         const next = { ...(prev || {}) };
         for (let i = 0; i < 9; i++) next[i] = "plant";
         return next;
       });
-      // 1초 뒤 growing
       const t1 = setTimeout(() => {
         setTileStates(prev => {
           const next = { ...(prev || {}) };
@@ -293,7 +306,6 @@ export default function HomeFarm() {
           return next;
         });
       }, 1000);
-      // 2초 뒤 done
       const t2 = setTimeout(() => {
         setTileStates(prev => {
           const next = { ...(prev || {}) };
@@ -304,42 +316,10 @@ export default function HomeFarm() {
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
 
+    // 스냅샷 갱신
+    prevIdsRef.current = nowIds;
     prevCountRef.current = now;
-  }, [completedChallenges, tileStates]);
-
-  // 1칸 채워지면(최초 챌린지 도착) 8칸을 1초 후 grow, 2초 후 done으로 진행
-  useEffect(() => {
-    if (progressScheduledRef.current) return;
-    if (completedChallenges && completedChallenges.length >= 1) {
-      progressScheduledRef.current = true;
-      // 1초 후 grow
-      const t1 = setTimeout(() => {
-        setTileStates(prev => {
-          const next = { ...(prev || {}) };
-          for (let i = 0; i < 9; i++) {
-            if (next[i] === "plant") next[i] = "growing";
-          }
-          return next;
-        });
-      }, 1000);
-
-      // 2초 후 done
-      const t2 = setTimeout(() => {
-        setTileStates(prev => {
-          const next = { ...(prev || {}) };
-          for (let i = 0; i < 9; i++) {
-            if (next[i] === "growing") next[i] = "done";
-          }
-          return next;
-        });
-      }, 2000);
-
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
-    }
-  }, [completedChallenges]);
+  }, [completedChallenges, setTileStates]);
 
   // 마스코트 상태 (비로그인이어도 기본 idle 노출)
   const getMascotStatus = () =>
@@ -356,24 +336,6 @@ export default function HomeFarm() {
     return MASCOT_BY_STATUS[getMascotStatus()];
   };
 
-  // 각 타일 상태 - 개선된 로직
-  // const getTileStatus = (index) => {
-  //   const challenge = completedChallenges.find((c) => c.tileIndex === index);
-  //   if (!challenge) return "empty";
-    
-  //   // 수확된 타일인지 확인
-  //   if (harvestedTiles.has(index)) return "empty";
-    
-  //   // 수동으로 설정된 타일 상태가 있으면 우선 사용
-  //   const tileState = tileStates[index];
-  //   if (tileState) {
-  //     console.log(`🐛 타일 ${index} 상태:`, tileState);
-  //     return tileState;
-  //   }
-    
-  //   // 기본 상태: 챌린지가 완료되면 growing 상태
-  //   return "growing"; // 성장 중인 상태
-  // };
   const getTileStatus = (index) => {
     if (harvestedTiles.has(index)) return "empty";
     const manual = tileStates[index];  // 초기 8칸(plant) 유지
@@ -381,7 +343,7 @@ export default function HomeFarm() {
     if (manual) return manual;
     const challenge = completedChallenges.find((c) => c.tileIndex === index);
 
-    if (challenge) return "growing";
+    if (challenge) return challenge.isHarvested ? "empty" : "growing";
 
     return "empty";
   };
@@ -426,7 +388,7 @@ export default function HomeFarm() {
       challenge: {
         id: challenge.type,
         // 서버 content가 있으면 우선 사용 (예: "분리수거")
-        name: challenge.label || defaultMeta?.name || "완료한 활동",
+        name: challenge.label || "완료한 활동",
         icon: defaultMeta?.icon || "🌱",
       },
       completedAt: challenge.completedAt,
@@ -491,7 +453,7 @@ export default function HomeFarm() {
       if (!challenge) return;
 
       // 1) 서버 먼저: 바디 없이 POST, 인터셉터가 Bearer 자동 첨부
-      await api.post('/v1/garden/harvest');
+      await api.post(`/v1/garden/harvest/${challenge.originalChallengeId}`);
 
       // 2) 성공 후 UI 반영
       const coinId = Date.now() + index;
@@ -499,9 +461,9 @@ export default function HomeFarm() {
       setHarvestedTiles(prev => new Set([...prev, index]));
       setTileStates(prev => ({ ...prev, [index]: "empty" }));
 
-      // 3) 헤더 포인트 동기화(서버가 +5 누적)
+      // 3) 헤더 포인트 동기화(서버가 +9 누적)
       headerRef.current?.refreshUser?.();
-      try { headerRef.current?.addTestPoints?.(5); } catch (_) {}
+      try { headerRef.current?.addTestPoints?.(9); } catch (_) {}
 
     } catch (e) {
       console.error('❌ 수확 실패:', e);
@@ -551,15 +513,16 @@ export default function HomeFarm() {
                     <ClickableTile
                       key={i}
                       src={src}
-                      alt={
-                        challenge
-                          ? `${
-                              CHALLENGE_TYPES.find((t) => t.id === challenge.type)?.name ||
-                              challenge.label ||
-                              "완료한 활동"
-                            } 완료`
-                          : "빈 텃밭"
-                      }
+                      // alt={
+                      //   challenge
+                      //     ? `${
+                      //         CHALLENGE_TYPES.find((t) => t.id === challenge.type)?.name ||
+                      //         challenge.label ||
+                      //         "완료한 활동"
+                      //       } 완료`
+                      //     : "빈 텃밭"
+                      // }
+                      alt={challenge ? `${challenge.label || "완료한 활동"} 완료` : "빈 텃밭"}
                       style={{ "--row": r, "--col": c }}
                       draggable={false}
                       onClick={() => handleTileClick(i)}
