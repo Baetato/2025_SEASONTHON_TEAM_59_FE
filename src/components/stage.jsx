@@ -19,7 +19,7 @@ import { useUser } from "../states/userContext";
 export default function Stage({ index, status, hasCharacter, mascotStatus, onStartClick }) {
   const { user } = useUser();
   const avatarUrl = user?.avatarUrl || MasCotIdle;
-  const [currentMascot, setCurrentMascot] = useState("idle"); // 현재 보여줄 마스코트 상태
+  const [currentMascot, setCurrentMascot] = useState(avatarUrl); // 현재 보여줄 마스코트 상태
 
   const STATUS_IMAGES = {
     before: BeforeImg,
@@ -33,15 +33,6 @@ export default function Stage({ index, status, hasCharacter, mascotStatus, onSta
     happy: MasCotHappy,
   };
 
-  useEffect(() => {
-    setCurrentMascot(mascotStatus); // 부모가 내려준 상태 반영
-    if (mascotStatus !== "idle") {
-      const timer = setTimeout(() => {
-        setCurrentMascot("idle"); // 3초 뒤 기본 아바타로
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [mascotStatus]);
 
   // 캐릭터 클릭 → happy 2초 유지
   const handleCharacterClick = () => {

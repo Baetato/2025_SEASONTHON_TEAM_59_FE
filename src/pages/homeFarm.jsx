@@ -188,14 +188,14 @@ export default function HomeFarm() {
         console.error("주간 텃밭 현황 조회 실패:", err);
         
         // 테스트를 위한 임시 데이터 (개발 중에만 사용)
-        if (import.meta.env.DEV) {
+        /*if (import.meta.env.DEV) {
           console.log('🐛 테스트 모드: 임시 데이터 사용');
           const testData = generateTestData(8); // 8개 챌린지 완료 상태
           setCompletedChallenges(mapApiToCompleted(testData));
           setWeeklyMeta({ year: 2025, weekOfYear: 3 });
           setUsername('테스트 사용자');
           setIsAuthed(true);
-        }
+        }*/
       } finally {
         setLoading(false);
       }
@@ -205,7 +205,7 @@ export default function HomeFarm() {
   const weekProgress = getWeekProgress(completedChallenges);
   
   // 초기 상태: 8칸은 'beginning(plant)'으로 채우기 (인덱스 0~7), 8번은 비워둠
-  useEffect(() => {
+  /*useEffect(() => {
     setTileStates(prev => {
       if (Object.keys(prev || {}).length > 0) return prev; // 이미 세팅된 경우 건너뜀
       const base = {};
@@ -214,12 +214,12 @@ export default function HomeFarm() {
       }
       return base;
     });
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     if (!completedChallenges.length) return;
 
-    setTileStates(prev => {
+    /*setTileStates(prev => {
       const next = { ...(prev || {}) };
 
       // 0~7번은 기본 plant
@@ -229,7 +229,7 @@ export default function HomeFarm() {
       next[8] = "plant";
 
       return next;
-    });
+    });*/
 
     // 8번이 심어졌으면 전체 애니메이션 실행
     if (tileStates[8] === "plant" || completedChallenges.length) {
