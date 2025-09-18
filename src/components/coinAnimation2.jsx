@@ -74,28 +74,6 @@ const CoinAnimation2 = ({ tileIndex, start, delay = 0, onComplete }) => {
 
 export default CoinAnimation2;
 
-const coinFly = keyframes`
-  0% {
-    transform: translate(var(--start-x), var(--start-y)) scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  20% {
-    transform: translate(var(--start-x), calc(var(--start-y) - 10px)) scale(1.2) rotate(45deg);
-  }
-  50% {
-    transform: translate(var(--end-x), var(--end-y)) scale(1) rotate(180deg);
-    opacity: 1;
-  }
-  80% {
-    transform: translate(calc(var(--end-x) - 20px), calc(var(--end-y) - 20px)) scale(0.8) rotate(270deg);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(var(--end-x), var(--end-y)) scale(0.5) rotate(360deg);
-    opacity: 0;
-  }
-`;
-
 const coinFlyStraight = keyframes`
   0% {
     transform: translate(var(--start-x), var(--start-y)) scale(1) rotate(0deg);

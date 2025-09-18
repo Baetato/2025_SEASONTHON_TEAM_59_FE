@@ -221,33 +221,33 @@ export default function HomeStage() {
                             <GotoFarmButton src={GotoFarmBtn} alt="텃밭 이동" onClick={() => navigator("/home-farm")} />
                         </BtnWrapper>
 
-                        {/* ✅ 테스트용 버튼
-        <TestButton onClick={() => headerRef.current?.addTestPoints(100)}>
-          포인트 +100
-        </TestButton>
-        <TestButton
-          style={{ bottom: "15%", right: "5%" }}
-          onClick={() => {
-            // 20개의 코인 생성
-            const newCoins = Array.from({ length: 20 }).map(() => ({
-              id: uuidv4(),
-              start: {
-                x: window.innerWidth-130,
-                y: 220
-              },
-              delay: Math.random() * 800, // 0~0.5초 딜레이
-            }));
-            setAnimatingCoins(prev => [...prev, ...newCoins]);
-          }}
-        >
-          코인 날리기
-        </TestButton>*/}
+                        {/* ✅ 테스트용 버튼 */}
+                            <TestButton onClick={() => headerRef.current?.addTestPoints(100)}>
+                            포인트 +100
+                            </TestButton>
+                            <TestButton
+                            style={{ bottom: "15%", right: "5%" }}
+                            onClick={() => {
+                                // 20개의 코인 생성
+                                const newCoins = Array.from({ length: 20 }).map(() => ({
+                                id: uuidv4(),
+                                start: {
+                                    x: window.innerWidth-130,
+                                    y: 220
+                                },
+                                delay: Math.random() * 800, // 0~0.5초 딜레이
+                                }));
+                                setAnimatingCoins(prev => [...prev, ...newCoins]);
+                            }}
+                            >
+                            코인 날리기
+                            </TestButton>
 
                         {/* ✅ 코인 애니메이션 */}
                         {animatingCoins.map((coin) => (
                             <CoinAnimationUnified
                                 key={coin.id}
-                                variant="stage"
+                                //variant="stage"  //일단 farm껄로 쓰기.. TODO: stage용에서 왜 코인이 왼쪽 상단에 뜨는지 원인 찾기
                                 start={coin.start} // 시작 좌표
                                 delay={coin.delay || 0} // 딜레이
                                 onComplete={() => {
