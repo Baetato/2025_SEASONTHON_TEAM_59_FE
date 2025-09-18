@@ -221,7 +221,7 @@ export default function HomeStage() {
                             <GotoFarmButton src={GotoFarmBtn} alt="텃밭 이동" onClick={() => navigator("/home-farm")} />
                         </BtnWrapper>
 
-                        {/* ✅ 테스트용 버튼 */}
+                        {/* ✅ 테스트용 버튼
                             <TestButton onClick={() => headerRef.current?.addTestPoints(100)}>
                             포인트 +100
                             </TestButton>
@@ -241,7 +241,7 @@ export default function HomeStage() {
                             }}
                             >
                             코인 날리기
-                            </TestButton>
+                            </TestButton> */}
 
                         {/* ✅ 코인 애니메이션 */}
                         {animatingCoins.map((coin) => (
