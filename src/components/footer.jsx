@@ -25,8 +25,20 @@ export default function Footer() {
   ];
 
   const handleItemClick = (item) => {
-      // 라우팅
-      navigate(item.path);
+    // 커뮤니티 클릭 시 모달
+    if (item.id === "friend") {
+      setModalMessage("아직 준비중입니다!");
+      setModalOpen(true);
+      return; // 라우팅 막음
+    }
+
+    // 그 외 라우팅
+    navigate(item.path);
+  };
+
+  // 모달 닫기 함수
+  const closeModal = () => {
+    setModalOpen(false);
   };
 
   return (
@@ -61,6 +73,7 @@ export default function Footer() {
             <ModalBackground src={farmModal} alt="Modal Background" />
             <ModalMessage>{modalMessage}</ModalMessage>
           </ModalContent>
+          <ModalBtnMessage>확인</ModalBtnMessage>
         </ModalOverlay>
       )}
     </>
@@ -255,11 +268,33 @@ const ModalBackground = styled.img`
 `;
 
 const ModalMessage = styled.span`
-  position: relative;
+  position: absolute;
+  top: 65px;
   z-index: 1;
   font-family: "Maplestory OTF";
   font-size: 18px;
   font-weight: bold;
   color: #281900;
   text-align: center;
+`;
+
+const ModalBtnMessage = styled.span`
+  position: absolute;
+  top: 56%;
+  z-index: 1;
+
+  font-family: 'Maplestory OTF';
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: -0.408px;
+
+  background: linear-gradient(180deg, #FFE8B3 0%, #FFC870 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #281900;
+
+  cursor: pointer;
 `;

@@ -19,7 +19,7 @@ export default function LoginComplete() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state || {};
-  const { updateUser } = useUser();
+  const { user, updateUser } = useUser();
 
   const [nickname, setNickname] = useState(state.nickname || "사용자");
   const [regionName, setRegionName] = useState(state.regionName || "주소 불러오기 실패");
@@ -67,8 +67,7 @@ export default function LoginComplete() {
       const result = await uploadProfileImage(file);
       console.log("업로드 성공!", result);
 
-      // Context에서 유저 정보 갱신
-      fetchUser(); 
+      updateUser({ picture: result.data }); // Context 업데이트
     } catch (err) {
       alert("업로드 실패!");
     } finally {
@@ -100,7 +99,7 @@ export default function LoginComplete() {
 
             <ProfileContainer>
               <ProfileFrameImg src={ProfileFrame} alt="Profile Frame" />
-              <ProfileExImg src={ProfileEx} alt="Profile Example" />
+              <ProfileExImg src={user.picture || ProfileEx} alt="Profile Example" />
               <CameraButton src={CameraBtn} alt="Camera Button" onClick={handleCameraClick}/>
               <input
                   type="file"
@@ -193,6 +192,7 @@ const ProfileExImg = styled.img`
   left: 50%;
   width: 175px;
   height: 175px;
+  border-radius: 50%;
   transform: translate(-50%, -50%); /* 중앙 정렬 */
 `;
 
