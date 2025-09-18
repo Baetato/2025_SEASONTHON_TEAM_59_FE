@@ -7,7 +7,7 @@
     display: flex;
 }
 
-.dayStyle{
+.dayStyle {
     position: absolute;
     right: 20px;
     font-family: "Maplestory OTF", system-ui, sans-serif;
@@ -43,16 +43,16 @@
     white-space: nowrap;
 }
 
-.starStyle{
+.starStyle {
     margin-top: 90%;
     position: absolute;
-    width:36px;
+    width: 36px;
     height: 19px;
     z-index: 999;
 }
 
 .pointStyle {
-    margin-left: 65px; /* leaf 이미지와 간격 */
+    margin-left: 15px; /* leaf 이미지와 간격 */
     color: #7cb29e;
     text-shadow: 0 2px 0 #382c28;
     -webkit-text-stroke: 1px #000;
@@ -133,12 +133,11 @@
     flex: 0 0 76px;
 }
 
-.profileCon{
+.profileCon {
     position: absolute;
-    left :0px;
-    width : 51px;
+    left: 0px;
+    width: 51px;
     height: 51px;
-    object-fit: cover; 
 }
 
 .imgContainer {
@@ -167,7 +166,7 @@
     height: 22px;
     object-fit: cover;
     flex-shrink: 0; /* 크기 줄어들지 않게 */
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .centerContainer {
@@ -175,10 +174,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between; /* 오른쪽 정렬 */
-    min-width: 0; 
+    min-width: 0;
     position: relative; /* 필요 시 유지 */
 }
-
 
 .rankStyleGold {
     /*1등*/
@@ -228,11 +226,11 @@
     -webkit-text-fill-color: transparent;
 }
 
-.point-margin{
+.point-margin {
     padding-left: 10px;
 }
 
-.leaf-margin{
+.leaf-margin {
     padding-left: 5px;
 }
 
