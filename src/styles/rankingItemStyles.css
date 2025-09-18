@@ -14,14 +14,11 @@
     text-align: center;
     font-weight: 700;
     font-size: 16px;
-    /* 기본(fallback) 색상 — 그라데이션을 지원하지 않는 브라우저에서 사용 */
     color: #ffe8b3;
-    /* Chrome / Safari용 텍스트 투명 처리 (그라데이션 보이게 함) */
-    -webkit-background-clip: text;
     background-clip: text;
-    -webkit-text-fill-color: transparent;
-    /* 그라데이션 텍스트 (지원 브라우저에만 적용) */
     background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
+    text-shadow: 0 1px 0 #ffc870;
+    -webkit-text-stroke: 1px #000;
 }
 
 .rankingFrame {

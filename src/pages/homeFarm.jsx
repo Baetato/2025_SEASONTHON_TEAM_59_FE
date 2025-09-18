@@ -44,19 +44,6 @@ const MASCOT_BY_STATUS = {
   embarrassed: mascotEmbarrassed,
 };
 
-// API challengeId ↔ 내부 id 매핑 (필요 시 서버 값에 맞게 보정)
-const CHALLENGE_ID_MAP = {
-  1: "tumbler",
-  2: "recycling",
-  3: "plogging",
-  4: "public_transport",
-  5: "energy_saving",
-  6: "eco_shopping",
-  7: "paper_saving",
-  8: "water_saving",
-  9: "bike_walking",
-};
-
 const CHALLENGE_TYPES = [
   { id: "tumbler", name: "텀블러 사용", icon: "🥤" },
   { id: "recycling", name: "분리수거", icon: "♻️" },
@@ -90,34 +77,23 @@ function getStoredUsername() {
   return null;
 }
 
-// API 응답 → 내부 completedChallenges로 매핑
-// - tileIndex는 서버가 안 주므로 0~8 순서 부여
-// - label: 서버 content 없으면 챌린지 한글명으로 대체하여 항상 명칭 노출
-function mapApiToCompleted(apiCompleted) {
-  console.log('🐛 API 응답 데이터:', apiCompleted);
+// API 응답 → 내부 completedChallenges로 매핑(서버 content를 이름으로 신뢰)
+function mapApiToCompleted(apiFruits) {
   const now = new Date().toISOString();
-  const mapped = (apiCompleted || [])
-    .slice(0, 9)
-    .map((row, idx) => {
-      // 정의된 매핑이 없더라도 드롭하지 않고 고유 타입으로 유지해 진행률/표시가 가능하도록 함
-      const type = CHALLENGE_ID_MAP[row.challengeId] ?? `custom_${row.challengeId}`;
-      if (!CHALLENGE_ID_MAP[row.challengeId]) {
-        console.warn(`⚠️ 알 수 없는 challengeId: ${row.challengeId} (임시로 ${type}로 처리)`);
-      }
-      const defaultMeta = CHALLENGE_TYPES.find((t) => t.id === type);
-      const displayName = row.content || defaultMeta?.name || null;
-      return {
-        type,
-        completedAt: now,
-        tileIndex: idx,
-        label: displayName, // 모달에서 항상 챌린지명 노출되도록
-        originalChallengeId: row.challengeId, // 수확 API에서 사용
-      };
-    })
-    .filter(Boolean);
-  
-  console.log('🐛 매핑된 데이터:', mapped);
-  return mapped;
+  const rows = Array.isArray(apiFruits) ? apiFruits.slice(0, 9) : [];
+  return rows.map((row, idx) => {
+    const idNum = Number(row?.challengeId ?? row);
+    const type  = `challenge_${idNum}`;
+    const label = (row?.contents?.trim?.()) || (row?.content?.trim?.()) || `챌린지 #${idNum}`;
+    return {
+      type,
+      completedAt: now,
+      tileIndex: idx,                 // 서버 순서대로 0..n-1 배치 → 9번째가 오면 index 8 (마지막 빈칸) 사용
+      label,
+      originalChallengeId: idNum,
+      isHarvested: !!row?.isHarvested // 새 필드 반영
+    };
+  });
 }
 
 // 주차 → "M월 N주차 텃밭"
@@ -175,8 +151,19 @@ export default function HomeFarm() {
         const res = await api.get("/v1/garden/weekly"); // 인터셉터로 토큰 자동
         console.log('🐛 주간 텃밭 현황 API 응답:', res.data);
         const data = res.data?.data || {};
-        const mappedChallenges = mapApiToCompleted(data.completedChallenges);
-        setCompletedChallenges(mappedChallenges);
+        const fruits = Array.isArray(data.fruits) ? data.fruits : [];
+        const mapped = mapApiToCompleted(fruits);   // idx→tileIndex
+        setCompletedChallenges(mapped); 
+
+        // 서버 수확 상태 동기화 (있으면)
+        const harvestedIdx = new Set(mapped.filter(c => c.isHarvested).map(c => c.tileIndex));
+        setHarvestedTiles(harvestedIdx);
+        setTileStates(prev => {
+          const next = { ...(prev || {}) };
+          mapped.forEach(c => { if (c.isHarvested) next[c.tileIndex] = "empty"; });
+          return next;
+        });
+
         setWeeklyMeta({
           year: data.year ?? null,
           weekOfYear: data.weekOfYear ?? null,
@@ -186,9 +173,9 @@ export default function HomeFarm() {
         setIsAuthed(true);
         
         console.log('🐛 주간 진행도:', {
-          완료된_챌린지: mappedChallenges.length,
+          완료된_챌린지: mapped.length,
           전체_챌린지: 9,
-          완료율: `${Math.round((mappedChallenges.length / 9) * 100)}%`
+          완료율: `${Math.round((mapped.length / 9) * 100)}%`
         });
       } catch (err) {
         // 401 등 비로그인 → 기본 노출
@@ -203,7 +190,7 @@ export default function HomeFarm() {
         // 테스트를 위한 임시 데이터 (개발 중에만 사용)
         if (import.meta.env.DEV) {
           console.log('🐛 테스트 모드: 임시 데이터 사용');
-          const testData = generateTestData(5); // 5개 챌린지 완료 상태
+          const testData = generateTestData(8); // 8개 챌린지 완료 상태
           setCompletedChallenges(mapApiToCompleted(testData));
           setWeeklyMeta({ year: 2025, weekOfYear: 3 });
           setUsername('테스트 사용자');
@@ -214,7 +201,7 @@ export default function HomeFarm() {
       }
     })();
   }, []);
-
+  
   const weekProgress = getWeekProgress(completedChallenges);
   
   // 초기 상태: 8칸은 'beginning(plant)'으로 채우기 (인덱스 0~7), 8번은 비워둠
@@ -229,6 +216,46 @@ export default function HomeFarm() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!completedChallenges.length) return;
+
+    setTileStates(prev => {
+      const next = { ...(prev || {}) };
+
+      // 0~7번은 기본 plant
+      for (let i = 0; i < 8; i++) next[i] = "plant";
+
+      // 8번은 서버 완료 챌린지 여부로 plant 처리
+      next[8] = "plant";
+
+      return next;
+    });
+
+    // 8번이 심어졌으면 전체 애니메이션 실행
+    if (tileStates[8] === "plant" || completedChallenges.length) {
+      const t1 = setTimeout(() => {
+        setTileStates(prev => {
+          const next = { ...prev };
+          for (let i = 0; i < 9; i++) next[i] = "growing";
+          return next;
+        });
+      }, 1000);
+
+      const t2 = setTimeout(() => {
+        setTileStates(prev => {
+          const next = { ...prev };
+          for (let i = 0; i < 9; i++) next[i] = "done";
+          return next;
+        });
+      }, 2000);
+
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+  }, [completedChallenges]);
+
   // 마스코트 상태 반영
   useEffect(() => {
     if (!user?.avatarUrl) return;
@@ -242,55 +269,97 @@ export default function HomeFarm() {
     setCurrentMascot(user.avatarUrl || mascotImage);
   }, [user, isWeekEnd, completedChallenges]);
 
-
   // 주간 목표 달성 시 모든 타일을 done 상태로 전환
-  useEffect(() => {
-    if (weekProgress.isComplete && completedChallenges.length > 0) {
-      console.log('🎉 주간 목표 달성! 모든 타일을 수확 가능 상태로 전환');
-      const newTileStates = {};
-      completedChallenges.forEach(challenge => {
-        if (!harvestedTiles.has(challenge.tileIndex)) {
-          newTileStates[challenge.tileIndex] = "done";
-        }
-      });
-      console.log('🐛 전환될 타일 상태:', newTileStates);
-      setTileStates(prev => ({ ...prev, ...newTileStates }));
-    }
-  }, [weekProgress.isComplete, completedChallenges, harvestedTiles]);
+  // useEffect(() => {
+  //   if (weekProgress.isComplete && completedChallenges.length > 0) {
+  //     console.log('🎉 주간 목표 달성! 모든 타일을 수확 가능 상태로 전환');
+  //     const newTileStates = {};
+  //     completedChallenges.forEach(challenge => {
+  //       if (!harvestedTiles.has(challenge.tileIndex)) {
+  //         newTileStates[challenge.tileIndex] = "done";
+  //       }
+  //     });
+  //     console.log('🐛 전환될 타일 상태:', newTileStates);
+  //     setTileStates(prev => ({ ...prev, ...newTileStates }));
+  //   }
+  // }, [weekProgress.isComplete, completedChallenges, harvestedTiles]);
 
-  // 1칸 채워지면(최초 챌린지 도착) 8칸을 1초 후 grow, 2초 후 done으로 진행
+  // 컴포넌트 바디 최상단에 선언
+  const prevCountRef = useRef(0);
+  const prevIdsRef   = useRef(new Set());
+  const mountedRef   = useRef(false);
+
   useEffect(() => {
-    if (progressScheduledRef.current) return;
-    if (completedChallenges && completedChallenges.length >= 1) {
-      progressScheduledRef.current = true;
-      // 1초 후 grow
+    const now = completedChallenges.length;
+    const before = prevCountRef.current;
+
+    const nowIds = new Set(completedChallenges.map(c => c.originalChallengeId));
+    const prevIds = prevIdsRef.current;
+
+    // 첫 렌더는 스킵(초기 0→N을 증가로 보지 않음)
+    if (!mountedRef.current) {
+      prevIdsRef.current = nowIds;
+      prevCountRef.current = now;
+      mountedRef.current = true;
+      return;
+    }
+
+    // // 추가된 챌린지 ID들
+    // const addedIds = [...nowIds].filter(id => !prevIds.has(id));
+
+    // // 정확히 1개만 추가되었고, 개수도 +1일 때만
+    // if (now === before + 1 && addedIds.length === 1) {
+    //   const addedId = addedIds[0];
+    //   const added = completedChallenges.find(c => c.originalChallengeId === addedId);
+
+    //   if (added && !added.isHarvested) {
+    //     setTileStates(prev => {
+    //       // 이미 수확/상태가 있으면 덮어쓰지 않음
+    //       if (prev[added.tileIndex]) return prev;
+    //       return { ...prev, [added.tileIndex]: "plant" };
+    //     });
+    //   }
+    // }
+
+    // "0→1"일 때만 마지막 빈칸([2,2], index 8)을 심는다
+    if (before < now) {
+      setTileStates(prev => {
+        if (prev[8]) return prev;      // 이미 심겨있다면 그대로
+        return { ...prev, 8: "plant" };
+      });
+    }
+    
+    console.log('prev → now', prevCountRef.current, completedChallenges.length);
+    // console.log('addedIds', addedIds, completedChallenges.map(c=>[c.originalChallengeId,c.tileIndex]));
+
+    // 딱 9개가 된 그 순간에만 전체 연출
+    if (before < 9 && now === 9) {
+      setTileStates(prev => {
+        const next = { ...(prev || {}) };
+        for (let i = 0; i < 9; i++) next[i] = "plant";
+        return next;
+      });
       const t1 = setTimeout(() => {
         setTileStates(prev => {
           const next = { ...(prev || {}) };
-          for (let i = 0; i < 9; i++) {
-            if (next[i] === "plant") next[i] = "growing";
-          }
+          for (let i = 0; i < 9; i++) if (next[i] === "plant") next[i] = "growing";
           return next;
         });
       }, 1000);
-
-      // 2초 후 done
       const t2 = setTimeout(() => {
         setTileStates(prev => {
           const next = { ...(prev || {}) };
-          for (let i = 0; i < 9; i++) {
-            if (next[i] === "growing") next[i] = "done";
-          }
+          for (let i = 0; i < 9; i++) if (next[i] === "growing") next[i] = "done";
           return next;
         });
       }, 2000);
-
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
+      return () => { clearTimeout(t1); clearTimeout(t2); };
     }
-  }, [completedChallenges]);
+
+    // 스냅샷 갱신
+    prevIdsRef.current = nowIds;
+    prevCountRef.current = now;
+  }, [completedChallenges, setTileStates]);
 
   // 마스코트 상태 (비로그인이어도 기본 idle 노출)
   const getMascotStatus = () =>
@@ -307,23 +376,16 @@ export default function HomeFarm() {
     return MASCOT_BY_STATUS[getMascotStatus()];
   };
 
-  // 각 타일 상태 - 개선된 로직
   const getTileStatus = (index) => {
-    const challenge = completedChallenges.find((c) => c.tileIndex === index);
-    if (!challenge) return "empty";
-    
-    // 수확된 타일인지 확인
     if (harvestedTiles.has(index)) return "empty";
-    
-    // 수동으로 설정된 타일 상태가 있으면 우선 사용
-    const tileState = tileStates[index];
-    if (tileState) {
-      console.log(`🐛 타일 ${index} 상태:`, tileState);
-      return tileState;
-    }
-    
-    // 기본 상태: 챌린지가 완료되면 growing 상태
-    return "growing"; // 성장 중인 상태
+    const manual = tileStates[index];  // 초기 8칸(plant) 유지
+
+    if (manual) return manual;
+    const challenge = completedChallenges.find((c) => c.tileIndex === index);
+
+    if (challenge) return challenge.isHarvested ? "empty" : "growing";
+
+    return "empty";
   };
 
   // 타일 클릭 → 상태에 따른 처리
@@ -366,7 +428,7 @@ export default function HomeFarm() {
       challenge: {
         id: challenge.type,
         // 서버 content가 있으면 우선 사용 (예: "분리수거")
-        name: challenge.label || defaultMeta?.name || "완료한 활동",
+        name: challenge.label || "완료한 활동",
         icon: defaultMeta?.icon || "🌱",
       },
       completedAt: challenge.completedAt,
@@ -375,49 +437,80 @@ export default function HomeFarm() {
   };
   
   // 수확 처리 함수
+  // const handleHarvest = async (index) => {
+  //   try {
+  //     // 중복 클릭 방지
+  //     if (harvesting.has(index)) return;
+  //     setHarvesting(prev => new Set([...prev, index]));
+      
+  //     const challenge = completedChallenges.find(c => c.tileIndex === index);
+  //     if (!challenge) return; // 안전장치
+
+  //     console.log('🐛 수확 시도:', { 
+  //       tileIndex: index, 
+  //       challengeType: challenge.type,
+  //       originalChallengeId: challenge.originalChallengeId,
+  //       label: challenge.label
+  //     });
+
+  //     // 1) 서버 먼저: 바디 없이 POST, 인터셉터가 Bearer 토큰 자동 첨부
+  //     await api.post('/v1/garden/harvest');
+  //     console.log('✅ 서버 수확 성공(+9 반영)');
+
+  //     // 2) UI 반영: 코인 애니메이션 → 수확 완료 처리
+  //     const coinId = Date.now() + index;
+  //     setAnimatingCoins(prev => [...prev, { id: coinId, tileIndex: index }]);
+  //     setHarvestedTiles(prev => new Set([...prev, index]));
+  //     setTileStates(prev => ({ ...prev, [index]: "empty" })); // 수확 후 빈칸
+  
+  //     // 3) 헤더 포인트/유저정보 동기화
+  //     headerRef.current?.refreshUser?.();
+  //     // 필요하면 체감 피드백용 임시 +9(서버 반영은 이미 완료)
+  //     try { headerRef.current?.addTestPoints?.(5); } catch (_) {}
+  
+  //   } catch (error) {
+  //     console.error('수확 처리 실패:', error);
+  //     console.error('❌ 수확 실패:', error);
+  //     alert(error?.response?.data?.message || '수확에 실패했습니다. 다시 시도해주세요.');
+  //   }
+  //   finally {
+  //     setHarvesting(prev => {
+  //     const s = new Set(prev);
+  //     s.delete(index);
+  //     return s;
+  //     });
+  //   }
+  // };
+
+  // 수정된 수확 처리 함수
+  const [harvesting, setHarvesting] = useState(new Set());
+
   const handleHarvest = async (index) => {
     try {
-      // 수확된 타일로 표시
-      setHarvestedTiles(prev => new Set([...prev, index]));
-      
-      // 헤더 포인트 즉시 +5 (애니메이션과 동시 진행)
-      try {
-        if (headerRef.current?.addTestPoints) {
-          headerRef.current.addTestPoints(5);
-        }
-      } catch (e) { /* noop */ }
+      if (harvesting.has(index)) return;
+      setHarvesting(prev => new Set([...prev, index]));
 
-      // 코인 애니메이션 시작
+      const challenge = completedChallenges.find(c => c.tileIndex === index);
+      if (!challenge) return;
+
+      // 1) 서버 먼저: 바디 없이 POST, 인터셉터가 Bearer 자동 첨부
+      await api.post(`/v1/garden/harvest/${challenge.originalChallengeId}`);
+
+      // 2) 성공 후 UI 반영
       const coinId = Date.now() + index;
       setAnimatingCoins(prev => [...prev, { id: coinId, tileIndex: index }]);
-      
-      // 서버에 수확 API 호출 (예시 - 실제 API 엔드포인트에 맞게 수정 필요)
-      try {
-        const challenge = completedChallenges.find(c => c.tileIndex === index);
-        if (challenge) {
-          console.log('🐛 수확 시도:', { 
-            tileIndex: index, 
-            challengeType: challenge.type,
-            originalChallengeId: challenge.originalChallengeId,
-            label: challenge.label
-          });
-          
-          // 임시 성공 시뮬레이션
-          console.log('✅ 수확 완료!');
-        }
-      } catch (apiError) {
-        console.error('❌ 수확 API 호출 실패:', apiError);
-        // API 실패 시 로컬 상태 되돌리기
-        setHarvestedTiles(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(index);
-          return newSet;
-        });
-        setAnimatingCoins(prev => prev.filter(coin => coin.id !== coinId));
-      }
-      
-    } catch (error) {
-      console.error('수확 처리 실패:', error);
+      setHarvestedTiles(prev => new Set([...prev, index]));
+      setTileStates(prev => ({ ...prev, [index]: "empty" }));
+
+      // 3) 헤더 포인트 동기화(서버가 +9 누적)
+      headerRef.current?.refreshUser?.();
+      try { headerRef.current?.addTestPoints?.(9); } catch (_) {}
+
+    } catch (e) {
+      console.error('❌ 수확 실패:', e);
+      alert(e?.response?.data?.message || '수확에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setHarvesting(prev => { const s = new Set(prev); s.delete(index); return s; });
     }
   };
 
@@ -461,15 +554,16 @@ export default function HomeFarm() {
                     <ClickableTile
                       key={i}
                       src={src}
-                      alt={
-                        challenge
-                          ? `${
-                              CHALLENGE_TYPES.find((t) => t.id === challenge.type)?.name ||
-                              challenge.label ||
-                              "완료한 활동"
-                            } 완료`
-                          : "빈 텃밭"
-                      }
+                      // alt={
+                      //   challenge
+                      //     ? `${
+                      //         CHALLENGE_TYPES.find((t) => t.id === challenge.type)?.name ||
+                      //         challenge.label ||
+                      //         "완료한 활동"
+                      //       } 완료`
+                      //     : "빈 텃밭"
+                      // }
+                      alt={challenge ? `${challenge.label || "완료한 활동"} 완료` : "빈 텃밭"}
                       style={{ "--row": r, "--col": c }}
                       draggable={false}
                       onClick={() => handleTileClick(i)}
@@ -573,8 +667,8 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  height: calc(100vh - 97px);   /* HeaderBar 높이만큼 뺌 (home-stage와 동일) */
   padding: 140px 20px 20px;     /* 동일한 상단 패딩 */
+  margin-bottom: 60px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -635,7 +729,6 @@ const ClickableTile = styled.img`
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center bottom;
-  filter: ${(p) => (p.$hasChallenge ? "none" : "grayscale(0.3)")};
   z-index: ${(p) => (p.$hasChallenge ? "5" : "1")};
 
   &:hover {
@@ -645,7 +738,6 @@ const ClickableTile = styled.img`
       transform: scale(1.08) translateY(-2px);
       filter: brightness(1.1) saturate(1.2);
       z-index: 10;
-      box-shadow: 0 8px 16px rgba(0,0,0,.2);
     `
         : `
       transform: scale(1.03) translateY(-1px);

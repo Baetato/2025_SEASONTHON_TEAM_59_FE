@@ -1,13 +1,41 @@
 import { useState, useEffect } from "react";
+import styled from "styled-components";
 import "../styles/dashStyle.css";
 import DashButtonImg from "../assets/ChoiceBtn.png";
 import StaticImg from "../assets/statistics.png";
-import { getGlobalCarbonStatics } from "../api/rankingApi"; // API 함수 임포트
+import { getGlobalCarbonStatics } from "../api/rankingApi";
+
+// Styled component for LoadingText
+const LoadingText = styled.div`
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 완전 중앙 정렬 */
+
+    text-align: center;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #281900;
+    font-family: "Maplestory OTF";
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.408px;
+
+    background: linear-gradient(180deg, #ffe8b3 0%, #ffc870 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+`;
 
 export default function DashBoardBody() {
     const [stats, setStats] = useState({
         totalCarbonReduction: 0,
-        serviceOperatingDays: 0,
+        totalMemberCount: 0,
         dailyAverageReduction: 0,
         treesPlantedEffect: 0,
         carEmissionReductionEffect: 0,
@@ -20,13 +48,15 @@ export default function DashBoardBody() {
             try {
                 const response = await getGlobalCarbonStatics();
                 // API 응답에서 data 객체를 추출
-                setStats(response.data || {
-                    totalCarbonReduction: 0,
-                    serviceOperatingDays: 0,
-                    dailyAverageReduction: 0,
-                    treesPlantedEffect: 0,
-                    carEmissionReductionEffect: 0,
-                });
+                setStats(
+                    response.data || {
+                        totalCarbonReduction: 0,
+                        totalMemberCount: 0,
+                        dailyAverageReduction: 0,
+                        treesPlantedEffect: 0,
+                        carEmissionReductionEffect: 0,
+                    }
+                );
                 setLoading(false);
             } catch (err) {
                 console.error("API Error:", err.message || err);
@@ -39,7 +69,7 @@ export default function DashBoardBody() {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingText>로딩 중...</LoadingText>;
     }
 
     if (error) {
@@ -61,8 +91,8 @@ export default function DashBoardBody() {
                         </div>
                         <div className="dashInfo">
                             <img src={DashButtonImg} alt="대시버튼 컨테이너" className="imgCon" />
-                            <span className="inner-text">서비스 운영일수</span>
-                            <span className="inner-value">{`${stats.serviceOperatingDays.toLocaleString()}일`}</span>
+                            <span className="inner-text">전체 사용자 수</span>
+                            <span className="inner-value">{`${stats.totalMemberCount.toLocaleString()}명`}</span>
                         </div>
                         <div className="dashInfo">
                             <img src={DashButtonImg} alt="대시버튼 컨테이너" className="imgCon" />

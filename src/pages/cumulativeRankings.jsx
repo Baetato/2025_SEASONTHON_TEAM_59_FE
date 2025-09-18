@@ -16,7 +16,7 @@ import Footer from "../components/footer";
 const LoadingText = styled.div`
     white-space: nowrap;
     position: absolute;
-    top: 55%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
 
@@ -38,6 +38,13 @@ const LoadingText = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
+`;
+
+// Wrapper for the ranking list to ensure proper positioning
+const RankingListWrapper = styled.div`
+    position: relative;
+    min-height: 100vh; /* Ensure it takes up enough space to center the loading text */
+    background-color: #382c28;
 `;
 
 function Ranking() {
@@ -86,30 +93,27 @@ function Ranking() {
         });
     }, []);
 
-    // 로딩 및 에러 UI
-    if (loading)
-        return (
-            <LoadingText>
-                불러오는 중<br />
-                ...
-            </LoadingText>
-        );
-    if (error) return <div className="appContainer">에러: {error}</div>;
-
     return (
         <div className="appContainer">
             <Header
                 rank={myRanking?.rank ?? "-"}
-                nickName={myRanking?.nickname ?? "게스트"}
+                nickName={myRanking?.nickname ?? "로딩중"}
                 point={myRanking?.score ? `${myRanking.score}P` : "0P"}
                 profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
             />
             <Nav />
-            <div className="rankingList scrollGap">
-                {totalRankings.length > 0 ? (
+            <RankingListWrapper className="rankingList scrollGap">
+                {loading ? (
+                    <LoadingText>
+                        불러오는 중<br />
+                        ...
+                    </LoadingText>
+                ) : error ? (
+                    <div>에러: {error}</div>
+                ) : totalRankings.length > 0 ? (
                     totalRankings.map((user) => (
                         <RankingItem
-                            key={user.rank}
+                            key={`${user.rank}-${user.nickname}`}
                             rank={user.rank}
                             nickName={user.nickname}
                             point={`${user.score}P`} // score를 point로 변환
@@ -119,7 +123,7 @@ function Ranking() {
                 ) : (
                     <div className="emptyState">랭킹 데이터가 없습니다.</div>
                 )}
-            </div>
+            </RankingListWrapper>
             <Footer />
         </div>
     );

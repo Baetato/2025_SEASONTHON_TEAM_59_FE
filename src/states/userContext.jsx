@@ -5,10 +5,12 @@ import api from "../api/api.js";
 const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
+
   const [user, setUser] = useState({
     nickname: "",
     picture: "",
     avatarUrl: "", 
+    avatarName: "", // <- 추가
     level: 0,
     exp: 0,
     point: 0,
@@ -25,6 +27,7 @@ export const UserProvider = ({ children }) => {
         nickname: data.nickname,
         picture: data.picture,
         avatarUrl: data.avatarUrl,
+        avatarName: "리프",
         level: data.level,
         exp: data.exp,
         point: data.point,

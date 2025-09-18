@@ -1,4 +1,3 @@
-// src/pages/streakRanking.jsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components"; // Import styled-components
 import Header from "../components/rankStreakHeader";
@@ -16,7 +15,7 @@ import Footer from "../components/footer";
 // Styled component for LoadingText
 const LoadingText = styled.div`
     position: absolute;
-    top: 55%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%); /* 완전 중앙 정렬 */
 
@@ -38,6 +37,13 @@ const LoadingText = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
+`;
+
+// Wrapper for the ranking list to ensure proper positioning
+const RankingListWrapper = styled.div`
+    position: relative;
+    min-height: 100vh; /* Ensure it takes up enough space to center the loading text */
+    background-color: #382c28;
 `;
 
 function StreakRanking() {
@@ -86,30 +92,27 @@ function StreakRanking() {
         });
     }, []);
 
-    // 로딩 및 에러 UI
-    if (loading)
-        return (
-            <LoadingText>
-                불러오는 중<br />
-                ...
-            </LoadingText>
-        );
-    if (error) return <div className="appContainer">에러: {error}</div>;
-
     return (
         <div className="appContainer">
             <Header
                 rank={myRanking?.rank ?? "-"}
-                nickName={myRanking?.nickname ?? "게스트"}
-                score={myRanking?.streakDay ? `${myRanking.streakDay}일` : "0일"}
+                nickName={myRanking?.nickname ?? "로딩중"}
+                score={myRanking?.score ? `${myRanking.score}일` : "0일"}
                 profileImageUrl={myRanking?.profileImageUrl ?? ProfileImg}
             />
             <Nav />
-            <div className="rankingList scrollGap">
-                {streakRankings.length > 0 ? (
+            <RankingListWrapper className="rankingList scrollGap">
+                {loading ? (
+                    <LoadingText>
+                        불러오는 중<br />
+                        ...
+                    </LoadingText>
+                ) : error ? (
+                    <div>에러: {error}</div>
+                ) : streakRankings.length > 0 ? (
                     streakRankings.map((user) => (
                         <RankingItem
-                            key={user.rank}
+                            key={`${user.rank}-${user.nickname}`} // 유니크 key
                             rank={user.rank}
                             nickName={user.nickname}
                             score={`${user.score}일`}
@@ -119,7 +122,7 @@ function StreakRanking() {
                 ) : (
                     <div className="emptyState">랭킹 데이터가 없습니다.</div>
                 )}
-            </div>
+            </RankingListWrapper>
             <Footer />
         </div>
     );

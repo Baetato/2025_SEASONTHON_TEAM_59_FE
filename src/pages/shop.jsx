@@ -22,7 +22,7 @@ import { getShopItems, purchaseAvatar, equipAvatar } from "../api/shopApi.js";
 const TABS = ["캐릭터", "캐릭터 스킨", "장신구", "펫", "열매", <>스테이지<br/>스킨</>];
 
 export default function ShopPage() {
-  const { user } = useUser();
+  const { user, updateUser } = useUser();
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [modalStep, setModalStep] = useState(null); // null | 'buy_confirm' | 'use_confirm' | 'error'
   const [modalMessage, setModalMessage] = useState(""); // 오류 메시지
@@ -70,6 +70,10 @@ export default function ShopPage() {
   const handleEquip = async (item) => {
     try {
       await equipAvatar(item.avatarId);
+      // 구매 성공 시 Context 업데이트
+      updateUser({
+        avatarName: item.name,
+      });
     } catch (err) {
       setModalMessage(err.message);
       setModalStep('error');
@@ -131,7 +135,7 @@ export default function ShopPage() {
       {/* 사용 여부 모달 */}
       <ShopModal
         isOpen={modalStep === 'use_confirm'}
-        title={<span>바로 상품을<br/>사용할까요?</span>}
+        title={<span>바로 캐릭터를<br/>변경할까요?</span>}
         buttons={[
           { label: '아니오', onClick: () => setModalStep(null) },
           { label: '예', onClick: () => handleEquip(selectedAvatar) }
@@ -166,6 +170,7 @@ function renderTabContent(activeTab, avatars, onClickItem) {
           image={it.avatarUrl}
           price={it.point}
           disabled={it.isOwned}
+          isEquipped={it.isEquipped}
           onClick={it.isOwned ? undefined : () => onClickItem(it)}
         />
       ))}

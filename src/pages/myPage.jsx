@@ -36,9 +36,9 @@ export default function MyPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [achievementLoading, setAchievementLoading] = useState(false);
   const [achievements, setAchievements] = useState([]);
-  const [carbonText, setCarbonText] = useState("대단해요! 지금까지 ___ kgCO₂eq 절약했어요!");
-  const [treeEffect, setTreeEffect] = useState("0그루 나무 심기와 동일한 효과");
-  const [carEffect, setCarEffect] = useState("0대 자동차 1년간 운행 저감 효과");
+  const [carbonText, setCarbonText] = useState(0);
+  const [treeEffect, setTreeEffect] = useState(0);
+  const [carEffect, setCarEffect] = useState(0);
 
   const MAX_ACHIEVEMENTS = 10;
 
@@ -186,21 +186,41 @@ export default function MyPage() {
             </ProfileContainer>
           </ContainerBackGround>
 
-          {/* 리프업 파트너 섹션 */}
           <ContainerBackGround $height="245px">
-            <div style={{ display: 'flex', displayDirection: 'row' }}>
-              <Title $top={"-19px"} $left={"14px"}>내 리프업 파트너</Title>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between', 
+              alignItems: 'flex-start',
+              position: 'relative',
+            }}>
+              <Title $top="-19px" $left="0">내 리프업 파트너</Title>
+
+              {/* 리프업 캐릭터 */}
               <LeafCharacterContainer>
                 <LeafCharacterImg src={user?.avatarUrl} alt="리프업 파트너" />
                 <StageImg src={Stage} alt="스테이지 배경" />
                 <ClosetIcon src={ClosetIcn} alt="옷장 아이콘" />
               </LeafCharacterContainer>
-              <div style={{ position: 'absolute', top: '-2.5%', right: '-2%', width: '189px', height: '232px' }}>
-                <LeafName>샥샥이</LeafName>
-                <LeafDescription>샥샥거려서 샥샥이입니다. <br/>환경을 위해 열심히 노력할게요!</LeafDescription>
+
+              {/* 캐릭터 정보 */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                maxWidth: '50%',   // 폭 제한
+                marginLeft: '5px',
+                flexShrink: 0
+              }}>
+                <LeafName>{user?.avatarName || "리프"}</LeafName>
+                <LeafDescription>
+                  {user?.avatarName === "캐럿"
+                    ? `화분에서 자라난 나뭇잎 토끼 리프!\n기쁠 때 예쁜 분홍색 꽃을 피워요.`
+                    : `화분에서 자라난 나뭇잎 고양이 리프!\n기쁠 때 예쁜 분홍색 꽃을 피워요.`}
+                </LeafDescription>
                 <FenceIcon src={FenceIcn} alt="울타리 아이콘" />
               </div>
-            </div >
+            </div>
           </ContainerBackGround>
 
           {/* 업적 섹션 */}
@@ -407,17 +427,15 @@ const ProfileInfo = styled.div`
 const LeafCharacterContainer = styled.div`
   border-radius: 3px;
   background: linear-gradient(180deg, #43714F 0%, #92C39D 100%);
-  width: 180px;
+  width: 50%;
   height: 232px;
   flex-shrink: 0;
-  position: absolute; /* 배경 위에 겹치도록 */
-  top: -6px;        /* 위로 살짝 겹치게 */
-  left: -1%;
+  margin-left: -4px;
 `
 const LeafCharacterImg = styled.img`
   width: 147px;
   height: 173px;
-  margin: 10px 15px;
+  margin: 15px 11px;
   z-index: 5;
   position: absolute;
 `;
@@ -427,15 +445,16 @@ const StageImg = styled.img`
   height: 125px;
   position: absolute;
   top: 41%;
-  left: 9%;
+  left: 2%;
 `;
 
 const ClosetIcon = styled.img`
   width: 39.742px;
   height: 43px;
   position: absolute;
+  z-index: 6;
   bottom: 10px;
-  right: 10px;
+  left: 120px;
   cursor: pointer;
   /* 부드러운 변환 */
   transition: transform 0.2s ease;
@@ -447,7 +466,7 @@ const ClosetIcon = styled.img`
 `;
 
 const LeafName = styled.div`
-  width: 189px;
+  width: 180px;
   height: 37px;
   flex-shrink: 0;
   border-radius: 3px 3px 3px 3px;
@@ -476,13 +495,14 @@ const LeafDescription = styled.div`
 `;
 
 const FenceIcon = styled.img`
-  width: 190px;
+  width: 180px;
   height: 51.788px;
   position: absolute;
   bottom: 0;
 `
 const Grid = styled.div`
   margin-top: 10px;
+  margin-left: -4px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;

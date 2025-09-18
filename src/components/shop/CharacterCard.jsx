@@ -2,11 +2,18 @@ import React from "react";
 import styled from "styled-components";
 import characterCardBg from "../../assets/characterModal.png";
 
-export default function CharacterCard({ name, image, price, disabled, onClick }) {
+export default function CharacterCard({ name, image, price, disabled, isEquipped, onClick }) {
   return (
     <Card role="button" aria-label={`${name} 카드`} onClick={onClick} className={disabled ? "disabled" : ""}>
       <Bg src={characterCardBg} alt="" aria-hidden="true" />
       <TopName>{name}</TopName>
+
+      {/* 상태 표시 (장착중 / 구매완료) */}
+      {(isEquipped || disabled) && (
+        <StatusOverlay>
+          {isEquipped ? "장착중" : "구매완료"}
+        </StatusOverlay>
+      )}
 
       {/* 이 wrapper가 실제로 이미지를 잘라주는 역할 */}
       <ImageViewport>
@@ -61,6 +68,24 @@ const TopName = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 1.2px #281900; /* 외곽선 */
+`;
+
+const StatusOverlay = styled.div`
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 6px;
+  border-radius: 6px;
+  color: #000;
+  opacity: 0.5;
+  font-family: "SUITE Variable";
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 13px;
+  text-align: center;
+  z-index: 999;
+  pointer-events: none;
 `;
 
 // const Fill = styled.span`

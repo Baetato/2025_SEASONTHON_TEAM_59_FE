@@ -11,7 +11,7 @@ import rank3Star from "../assets/rank3-star.png"
 import imgBox from "../assets/IcnBox.png"
 import { useNavigate } from "react-router-dom";
 
-function Header({ rank, nickName, score, profileImgUrl }) {
+function Header({ rank, nickName, score, profileImageUrl }) {
 
     const navigate = useNavigate();
     const rankClassName = rank === 1 ? "rankStyleGold" : rank === 2 ? "rankStyleSilver" : rank === 3 ? "rankStyleBronze" : "rankStyle";
@@ -27,7 +27,7 @@ function Header({ rank, nickName, score, profileImgUrl }) {
                     </div>
                     <div className="imgContainer">
                         <img src={iconBox} alt="프로필 테두리" className="profileCon" />
-                        <img src={profileImgUrl || ProfileImg} alt="프로필 이미지" className="imgStyle" />
+                        <img src={profileImageUrl || ProfileImg} alt="프로필 이미지" className="imgStyle" />
                         {rankStar && <img src={rankStar} alt="스타 이미지" className = "starStyle" />}
                     </div>
                     <div className="centerContainer">
